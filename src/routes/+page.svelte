@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { User } from './+page';
+	import MyButton from '$lib/components/MyButton.svelte'
 	const user: User = {
 		username: 'Trung'
 	};
@@ -12,4 +13,5 @@
 <Button on:click={() => clicked++} class="myClass">
 	<Label>With a Class</Label>
 </Button>
+<MyButton></MyButton>
 <div>Clicked: {clicked}</div>
