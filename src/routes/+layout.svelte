@@ -1,7 +1,7 @@
 <script lang="ts">
     import "../app.css";
-    import NavBar from "$lib/components/NavBar.svelte"
+    import Header from "$lib/components/NavBar/Header.svelte"
 </script>
   
-<NavBar></NavBar>
+<Header></Header>
 <slot />
