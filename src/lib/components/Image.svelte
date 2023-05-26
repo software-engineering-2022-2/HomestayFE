@@ -2,7 +2,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 	export let src: string;
-	export let className: string;
+	export let className: string = "";
 	export let alt: string = "Image";
 
 	let loaded = false;
