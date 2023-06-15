@@ -4,10 +4,11 @@
 </script>
 
 <div>
-    <div class="flex justify-center items-center bg-[#41644A] text-white">
-        <div class="2xl:py-9 2xl:text-4xl font-bold">Homestay Name</div>
+    <div class="flex py-3 justify-center items-center bg-[#41644A] text-white">
+        <div class="w-[56px]"></div>
+        <div class="text-2xl font-bold flex flex-grow justify-center items-center">Homestay Name</div>
         <AuthenMenu/>
     </div>
-    <MenuBar></MenuBar>
-         
+
+    <MenuBar></MenuBar>    
 </div>

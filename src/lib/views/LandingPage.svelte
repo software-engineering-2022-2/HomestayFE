@@ -13,16 +13,16 @@
 
 <div class="relative bg-homestay-bg bg-no-repeat bg-cover bg-opacity-50 min-h-screen min-w-full pb-36">
     
-    <Center className="pt-24">
+    <Center className="pt-20">
         <SearchBar></SearchBar>
     </Center>
 
     <Offer></Offer>
-    <Center className="mt-32">
+    <Center className="pt-20">
         <CustomerReview></CustomerReview>
     </Center>
 
-    <Discount className="mt-24"></Discount>
+    <Discount className="mt-20"></Discount>
     <Contact></Contact>
     <Footer></Footer>
 </div>

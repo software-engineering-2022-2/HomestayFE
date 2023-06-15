@@ -54,12 +54,12 @@
 </script>
 
 <div class="relative" bind:this={dropdownRef}>
-  <button class="ml-4" on:click={toggleDropdown}>
-    <iconify-icon class="text-4xl" icon='mingcute:menu-fill'></iconify-icon>
+  <button class="pt-[6px]" on:click={toggleDropdown}>
+    <iconify-icon class="text-2xl px-4" icon='mingcute:menu-fill'></iconify-icon>
   </button>
 
   {#if showDropdown}
-    <div class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+    <div class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
       <div class="py-1 flex flex-col" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
         <button class="block px-4 py-2 text-lg text-gray-700 font-bold hover:bg-gray-100" role="menuitem" on:click={signUp}>Sign up</button>
         <button class="block px-4 py-2 text-lg text-gray-700 font-bold hover:bg-gray-100" role="menuitem" on:click={login}>Log in</button>
