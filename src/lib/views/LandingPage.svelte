@@ -11,7 +11,7 @@
     
 </script>
 
-<div class="relative bg-homestay-bg bg-no-repeat bg-cover bg-opacity-50 min-h-screen min-w-full pb-36">
+<div class="relative bg-homestay-bg bg-no-repeat bg-cover bg-opacity-50 min-h-screen min-w-full">
     
     <Center className="pt-20">
         <SearchBar></SearchBar>
