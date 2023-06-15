@@ -3,11 +3,11 @@
     import Item from "./Item.svelte";
 </script>
 
-<Center className="pt-24">
-    <div class="text-white underline-offset-4 underline font-bold text-5xl">OFFER</div>
+<Center className="pt-20">
+    <div class="text-white underline-offset-4 underline font-semibold text-3xl">OFFERS</div>
 </Center>
 
-<div class="flex flex-row gap-x-[100px] justify-center p-16">
+<div class="flex flex-row gap-x-[80px] justify-center px-16 py-16">
     <Item></Item>
     <Item></Item>
     <Item></Item>
@@ -16,5 +16,5 @@
 
 
 <Center>
-    <button class="bg-[#E86A33] text-white w-[250px] h-[50px] rounded-2xl text-2xl font-bold">View all offers</button>
+    <button class="bg-[#E86A33] text-white w-[200px] h-[40px] rounded-xl text-xl font-semibold">View all offers</button>
 </Center>
