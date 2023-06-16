@@ -5,6 +5,9 @@ export default {
     extend: {
       backgroundImage: {
         'homestay-bg': "url('/background_image.jpg')",
+      },
+      fontFamily: {
+        'lato': ['Lato', 'sans-serif']
       }
     },
   },
