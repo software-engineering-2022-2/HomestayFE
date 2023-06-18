@@ -24,4 +24,9 @@ interface Review {
     content: string
 }
 
-export {StarType, type HomestayInfo, type PricingConfig, type Review};
+interface TokenPair{
+    token: string,
+    refreshToken: string
+}
+
+export {StarType, type HomestayInfo, type PricingConfig, type Review, type TokenPair};
