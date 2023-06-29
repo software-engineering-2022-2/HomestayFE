@@ -8,6 +8,7 @@
     import { userApi } from '$lib/api/api';
     import { userDetailStore, clearUserDetailStore } from "$lib/store/store";
     import { clearTokens } from "$lib/api/headers";
+	import { onMount } from "svelte";
 
     async function getUserDetail() {
         // Do token verification
@@ -21,8 +22,9 @@
             }
         }
     }
-
-    getUserDetail();
+    onMount(() => {
+        getUserDetail();
+    });
 </script>
   
 
