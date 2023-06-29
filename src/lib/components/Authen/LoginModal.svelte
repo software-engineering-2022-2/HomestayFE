@@ -1,7 +1,8 @@
 <script>
 import { createEventDispatcher } from 'svelte';
-import { authApi } from '$lib/api/api';
+import { authApi, userApi } from '$lib/api/api';
 import { tokens } from '$lib/api/headers';
+import { userDetailStore } from '$lib/store/store';
 
 const dispatch = createEventDispatcher();
 
@@ -16,12 +17,19 @@ async function handleSubmit() {
     console.log(tokenPair)
     // After Login Approved
     
-    if (tokenPair){
-        // Add tokens to store
-        tokens.set(tokenPair)
-    } else {
+    if (tokenPair === null){
         // TODO: Raise error or something
+        return;
     }
+    // Add tokens to store
+    tokens.set(tokenPair)
+    localStorage.setItem('username', email);
+    let userDetail = await userApi.getUserDetail(email);
+    
+    if (userDetail === null){
+        return;
+    }
+    userDetailStore.set(userDetail);
 
     // Dispatch the "close" event to close the modal
     dispatch('close');

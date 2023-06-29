@@ -10,8 +10,8 @@ export const tokens = writable({
 
 if (browser){
     tokens.set({
-        token: localStorage.getItem('token') as string,
-        refreshToken: localStorage.getItem('refreshToken') as string
+        token: localStorage.getItem('token') || "",
+        refreshToken: localStorage.getItem('refreshToken') || "",
     })
 }
 
@@ -21,6 +21,15 @@ tokens.subscribe((value) => {
         localStorage.setItem('refreshToken', value.refreshToken);
     }
 })
+
+export function clearTokens(){
+    if(browser){
+        tokens.set({
+            token: "",
+            refreshToken: ""
+        })
+    }
+}
 
 export const authHeader = derived(tokens, ($tokens) => {
     if (browser) {
