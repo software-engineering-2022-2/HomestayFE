@@ -61,10 +61,11 @@
                     <!-- add more services here -->
                 </div>
             </div>
-        </div>          
+        </div>   
+        <div>Total price: (Dynamic)</div>       
         <div class="flex items-center justify-between">
             <button class="bg-[#E86A33] hover:bg-[#FF8C66] text-white font-medium py-2 px-4 rounded" type="button">
-                Calculate price
+                Order
             </button>
             <button class="bg-gray-300 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded" type="button">
                 Cancel
