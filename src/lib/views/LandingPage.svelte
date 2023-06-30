@@ -8,7 +8,6 @@
     import Discount from "$lib/components/LandingPage/Discount.svelte";
 	import Contact from "$lib/components/LandingPage/Contact.svelte";
 	import Footer from "$lib/components/LandingPage/Footer.svelte";
-    
 </script>
 
 <div class="relative bg-homestay-bg bg-no-repeat bg-cover bg-opacity-50 min-h-screen min-w-full">
