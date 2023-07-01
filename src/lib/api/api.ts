@@ -58,7 +58,7 @@ class UserAPI {
 
     async getUserDetail(username: string): Promise<UserDetail | null> {
         try {
-            const response: AxiosResponse = await axios.get(`${USER_API}${username}`, get(authHeader));
+            const response: AxiosResponse = await axios.get(`${USER_API}${username}/`, get(authHeader));
             if (response.status != 200){
                 console.log(response.data);
                 return null;
@@ -76,6 +76,35 @@ class UserAPI {
                 streetNumber: response.data.street_number
             };
             return userDetail;
+        } catch (err) {
+            console.log(err);
+            return null; 
+        }
+    }
+
+    async updateUserDetail(username: string, userDetail: UserDetail){
+        try {
+            const response: AxiosResponse = await axios.put(
+                `${USER_API}${username}/`,
+                userDetail,
+                get(authHeader));
+            if (response.status != 200){
+                console.log(response.data);
+                return null;
+            }
+            const newUserDetail: UserDetail = {
+                username: response.data.username,
+                firstName: response.data.first_name,
+                lastName: response.data.last_name,
+                phoneNumber: response.data.phone_number,
+                avatar: response.data.avatar,
+                city: response.data.city,
+                district: response.data.district,
+                email: response.data.email,
+                streetName: response.data.street_name,
+                streetNumber: response.data.street_number
+            };
+            return newUserDetail;
         } catch (err) {
             console.log(err);
             return null; 
