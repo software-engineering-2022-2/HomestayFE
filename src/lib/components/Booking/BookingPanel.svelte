@@ -1,5 +1,5 @@
 <script lang="ts">
-    
+    import MoreInfo from "./MoreInfo.svelte";
 </script>
 
 <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
@@ -62,7 +62,29 @@
                 </div>
             </div>
         </div>   
-        <div>Total price: (Dynamic)</div>       
+        <div class="-mx-3 md:flex mb-2">
+            <div class="px-3">
+                <label class="uppercase tracking-wide text-gray-700 text-sm font-bold mb-2" for="grid-total-price">
+                    Total price:
+                </label>
+            </div>
+            <div class="text-gray-700  text-md font-bold mb-2 px-3">
+                <!-- call API here -->
+                $100
+            </div>
+        </div>   
+        <div class="-mx-3 md:flex mb-6">
+            <div class="px-3">
+                <label class="tracking-wide text-gray-700 text-sm font-bold mb-2" for="grid-total-price">
+                    DEPOSIT<MoreInfo/>: 
+                </label>
+            </div>
+            <div class="text-[#E86A33] text-md font-bold mb-2 px-3">
+                <!-- call API here -->
+                $30
+            </div>
+            
+        </div>    
         <div class="flex items-center justify-between">
             <button class="bg-[#E86A33] hover:bg-[#FF8C66] text-white font-medium py-2 px-4 rounded" type="button">
                 Order
