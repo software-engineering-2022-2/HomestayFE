@@ -3,10 +3,8 @@
 	import Contact from "$lib/components/LandingPage/Contact.svelte";
 	import Footer from "$lib/components/LandingPage/Footer.svelte";
 	import SearchBar from "$lib/components/LandingPage/SearchBar.svelte";
-import Header from "$lib/components/NavBar/Header.svelte";
+	import Header from "$lib/components/NavBar/Header.svelte";
 	import SearchItems from "$lib/components/SearchResult/SearchItems.svelte";
-
-
 </script>
 
 <Header></Header>
