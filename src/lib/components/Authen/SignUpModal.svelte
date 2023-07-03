@@ -1,5 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte';
+  import { authApi } from '$lib/api/api';
 
   const dispatch = createEventDispatcher();
 
@@ -7,14 +8,21 @@
   let password = '';
   let confirmPassword = '';
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (password !== confirmPassword) {
       alert('Passwords do not match!');
+      dispatch('close');
       return;
     }
 
     // You can add your sign-up logic here
     // ...
+    let registerResult = await authApi.userRegister(email, password);
+    if (!registerResult){
+      alert(`Register failed because account ${email} exists!`);
+      dispatch('close');
+      return;
+    }
 
     // Dispatch the "close" event to close the modal
     dispatch('close');
@@ -37,7 +45,7 @@
           Email:
         </label>
         <input class="w-full py-2 px-3 rounded border border-gray-300 text-lg text-gray-700" 
-          type="email" id="email-input" bind:value={email} required />
+          type="text" id="email-input" bind:value={email} required />
       </div>
       <div class="mb-6">
         <label class="block text-lg font-bold mb-2 text-gray-700" for="password-input">
