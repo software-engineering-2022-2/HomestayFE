@@ -1,6 +1,5 @@
 import { writable } from "svelte/store";
 import type { UserDetail } from "$lib/types/types";
-import { get } from 'svelte/store';
 
 import { browser } from '$app/environment';
 

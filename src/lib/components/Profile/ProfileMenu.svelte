@@ -1,9 +1,9 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte';
     import { goto } from "$app/navigation";
-    import { userDetailStore, clearUserDetailStore } from '$lib/store/store';
+    import { userDetailStore } from '$lib/store/store';
     import { get } from 'svelte/store';
-    import { tokens, clearTokens } from '$lib/api/headers';
+    import { reloadStore } from '$lib/store/reload';
   
     let showDropdown = false;
     let dropdownRef: HTMLElement;
@@ -41,8 +41,7 @@
   
     function logout() {
       showDropdown = false;
-      clearUserDetailStore();
-      clearTokens();
+      reloadStore.set(true)
     }
 
   </script>

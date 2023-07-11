@@ -4,29 +4,27 @@
 	import { userDetailStore } from '$lib/store/store';
 	import type { UserDetail } from '$lib/types/types';
 	import { get } from 'svelte/store';
-	import { onMount } from 'svelte';
 	import { userApi } from '$lib/api/api';
-	import { clearTokens } from '$lib/api/headers';
-	import { clearUserDetailStore } from '$lib/store/store';
+	import { reloadStore } from '$lib/store/reload';
 
 	$: if (browser && $userDetailStore.username === '') {
 		goto('/');
 	}
 	let isEditing = false;
 	let formUserDetail: UserDetail;
-	onMount(() => {
+
+	$: if (isEditing) {
 		formUserDetail = get(userDetailStore);
-	});
+	}
 
 	async function updateProfile() {
-        console.log(formUserDetail, $userDetailStore.username)
-		// const newUserDetail = await userApi.updateUserDetail($userDetailStore.username, formUserDetail);
-		// if (newUserDetail !== null) {
-		// 	userDetailStore.set(newUserDetail);
-		// } else {
-		// 	clearTokens();
-		// 	clearUserDetailStore();
-		// }
+		formUserDetail.avatar = undefined
+		const newUserDetail = await userApi.updateUserDetail($userDetailStore.username, formUserDetail);
+		if (newUserDetail !== null) {
+			userDetailStore.set(newUserDetail);
+		} else {
+			reloadStore.set(true);
+		}
 		isEditing = false;
 	}
 </script>
@@ -49,7 +47,7 @@
 		<div>
 			<div class="key">First name</div>
 			{#if isEditing}
-				<input type="text" bind:value={formUserDetail.firstName} />
+				<input class="w-full value_input" type="text" bind:value={formUserDetail.firstName} />
 			{:else}
 				<div class="value">
 					{$userDetailStore.firstName === '' ? 'Unfilled' : $userDetailStore.firstName}
@@ -60,7 +58,7 @@
 			<div class="key">Last name</div>
 
 			{#if isEditing}
-				<input type="text" bind:value={formUserDetail.lastName} />
+				<input class="w-full value_input" type="text" bind:value={formUserDetail.lastName} />
 			{:else}
 				<div class="value">
 					{$userDetailStore.lastName === '' ? 'Unfilled' : $userDetailStore.lastName}
@@ -79,7 +77,7 @@
 			<div class="key">Phone</div>
 
 			{#if isEditing}
-				<input type="text" bind:value={formUserDetail.phoneNumber} />
+				<input class="w-full value_input" type="text" bind:value={formUserDetail.phoneNumber} />
 			{:else}
 				<div class="value">{$userDetailStore.phoneNumber || 'Unfilled'}</div>
 			{/if}
@@ -87,7 +85,7 @@
 		<div>
 			<div class="key">Email</div>
 			{#if isEditing}
-				<input type="email" bind:value={formUserDetail.email} />
+				<input class="w-full value_input" type="email" bind:value={formUserDetail.email} />
 			{:else}
 				<div class="value">{$userDetailStore.email || 'Unfilled'}</div>
 			{/if}
@@ -99,7 +97,7 @@
 			<div class="key">Street number</div>
 
 			{#if isEditing}
-				<input type="text" bind:value={formUserDetail.streetNumber} />
+				<input class="w-full value_input" type="text" bind:value={formUserDetail.streetNumber} />
 			{:else}
 				<div class="value">{$userDetailStore.streetNumber || 'Unfilled'}</div>
 			{/if}
@@ -107,7 +105,7 @@
 		<div>
 			<div class="key">Street name</div>
 			{#if isEditing}
-				<input type="text" bind:value={formUserDetail.streetName} />
+				<input class="w-full value_input" type="text" bind:value={formUserDetail.streetName} />
 			{:else}
 				<div class="value">{$userDetailStore.streetName || 'Unfilled'}</div>
 			{/if}
@@ -115,7 +113,7 @@
 		<div>
 			<div class="key">District</div>
 			{#if isEditing}
-				<input type="text" bind:value={formUserDetail.district} />
+				<input class="w-full value_input" type="text" bind:value={formUserDetail.district} />
 			{:else}
 				<div class="value">{$userDetailStore.district || 'Unfilled'}</div>
 			{/if}
@@ -123,7 +121,7 @@
 		<div>
 			<div class="key">City</div>
 			{#if isEditing}
-				<input type="text" bind:value={formUserDetail.city} />
+				<input class="w-full value_input" type="text" bind:value={formUserDetail.city} />
 			{:else}
 				<div class="value">{$userDetailStore.city || 'Unfilled'}</div>
 			{/if}
@@ -153,6 +151,15 @@
 		font-size: 1.125rem;
 		font-style: normal;
 		font-weight: 600;
+		line-height: normal;
+	}
+
+	input {
+		color: #9a9595;
+		font-size: 1.125rem;
+		font-style: normal;
+		font-weight: 400;
+		border: 1px solid black;
 		line-height: normal;
 	}
 	.button_text {

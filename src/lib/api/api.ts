@@ -51,6 +51,28 @@ class AuthAPI {
             return false; 
         }
     }
+
+    async refreshToken(refreshToken: string){
+        try {
+            const response: AxiosResponse = await axios.post(TOKEN_API, {
+                "refresh": refreshToken
+            }, get(noAuthHeader));
+            if (response.status != 200){
+                console.log(response.data);
+                return null;
+            }
+            const tokens: TokenPair = {
+                token: response.data.access,
+                refreshToken: refreshToken
+            };
+            return tokens;
+      
+        } catch (err) {
+            console.log(err);
+            return null; 
+        }
+    }
+
     
 }
 
