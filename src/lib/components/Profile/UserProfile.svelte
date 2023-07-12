@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import { userDetailStore } from '$lib/store/store';
+	import { userDetailStore } from '$lib/stores/stores';
 	import type { UserDetail } from '$lib/types/types';
 	import { get } from 'svelte/store';
 	import { onMount } from 'svelte';
-	import { userApi } from '$lib/api/api';
+	import { userAPI } from '$lib/api/api';
 	import { clearTokens } from '$lib/api/headers';
-	import { clearUserDetailStore } from '$lib/store/store';
+	import { clearUserDetailStore } from '$lib/stores/stores';
 
 	$: if (browser && $userDetailStore.username === '') {
 		goto('/');

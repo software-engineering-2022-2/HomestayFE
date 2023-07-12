@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte';
-  import { authApi } from '$lib/api/api';
+  import { authAPI } from '$lib/api/api';
 
   const dispatch = createEventDispatcher();
 
@@ -17,7 +17,7 @@
 
     // You can add your sign-up logic here
     // ...
-    let registerResult = await authApi.userRegister(email, password);
+    let registerResult = await authAPI.userRegister(email, password);
     if (!registerResult){
       alert(`Register failed because account ${email} exists!`);
       dispatch('close');

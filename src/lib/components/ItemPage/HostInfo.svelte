@@ -1,17 +1,16 @@
 <script lang="ts">
     export let className = '';
-	let hostname = 'Long Hoang';
-	let maxGuests = 21;
-	let rooms = 12;
+	
+	import { hostInfo } from "$lib/stores/stores";
 </script>
 
 <div class="flex flex-row justify-between {className}">
 	<div>
-		<div class="font-[500] text-2xl font-lato">Hosted by {hostname}</div>
+		<div class="font-[500] text-2xl font-lato">Hosted by {$hostInfo.name}</div>
 		<div class="flex flex-row items-center space-x-2">
-			<div class="text-[#555555] text-xl">{maxGuests} guests</div>
+			<div class="text-[#555555] text-xl">{$hostInfo.numGuests} guests</div>
 			<div class="text-[#555555] text-xl">·</div>
-			<div class="text-[#555555] text-xl">{rooms} rooms</div>
+			<div class="text-[#555555] text-xl">{$hostInfo.numRooms} rooms</div>
 		</div>
 	</div>
     <div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	let dollarPerNight = 100;
+	import { homestayInfo } from '$lib/stores/stores';
 
 	import Flatpickr from 'svelte-flatpickr';
 
@@ -19,9 +19,10 @@
 	style="box-shadow: 0px 0px 2px 3px rgba(0, 0, 0, 0.25);border-radius: 24px;"
 >
 	<div
-		class="flex flex-row pb-3 border-b-black border-b-[1px] text-[#E86A33] font-lato font-bold text-2xl after:content-['night'] after:text-black after:font-normal after:ml-2"
+		class="flex flex-row pb-3 border-b-[#777777] border-b-[1.8px] text-[#E86A33] font-lato font-bold text-2xl after:content-['night'] after:text-black after:font-normal after:ml-2"
 	>
-		${dollarPerNight.toString()}
+		<!-- ${dollarPerNight.toString()} -->
+		${$homestayInfo.price}
 	</div>
 
 	<div class="grid grid-cols-2 py-3" style="max-width: 600px;">

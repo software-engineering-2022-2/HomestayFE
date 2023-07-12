@@ -3,7 +3,7 @@
     import AuthenMenu from '../Authen/AuthenMenu.svelte';
 	import ProfileMenu from '../Profile/ProfileMenu.svelte';
     
-    import { userDetailStore } from "$lib/store/store";
+    import { userDetailStore } from "$lib/stores/stores";
 
     $: isAuthenicated = $userDetailStore.username !== "";
 </script>
@@ -13,9 +13,9 @@
         <div class="w-[56px]"></div>
         <a href="/" class="cursor-pointer text-2xl font-bold flex flex-grow justify-center items-center">Homestay Name</a>
         {#if isAuthenicated === false}
-        <AuthenMenu/>
+            <AuthenMenu/>
         {:else}
-        <ProfileMenu/>
+            <ProfileMenu/>
         {/if }
     </div>
 

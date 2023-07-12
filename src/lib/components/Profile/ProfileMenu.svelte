@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte';
     import { goto } from "$app/navigation";
-    import { userDetailStore, clearUserDetailStore } from '$lib/store/store';
+    import { userDetailStore, clearUserDetailStore } from '$lib/stores/stores';
     import { get } from 'svelte/store';
     import { tokens, clearTokens } from '$lib/api/headers';
   
