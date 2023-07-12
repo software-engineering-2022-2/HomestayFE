@@ -12,7 +12,7 @@
 
 <div class="relative bg-homestay-bg bg-no-repeat bg-cover bg-opacity-50 min-h-screen min-w-full">
     
-    <Center className="pt-20">
+    <Center className="pt-20 px-8">
         <SearchBar></SearchBar>
     </Center>
 
