@@ -14,7 +14,8 @@
     <Item></Item>
 </div>
 
-
 <Center>
-    <button class="bg-[#E86A33] text-white w-[200px] h-[40px] rounded-xl text-xl font-semibold">View all offers</button>
+    <a href="/homestay/" class="cursor-pointer">
+        <button class="bg-[#E86A33] hover:bg-[#d1582d] text-white w-[200px] h-[40px] rounded-xl text-xl font-semibold">View all offers</button>
+    </a>
 </Center>

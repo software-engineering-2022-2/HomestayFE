@@ -12,17 +12,6 @@ import ReservationZone from "$lib/components/ItemPage/ReservationZone.svelte";
 import DetailHostInfo from "$lib/components/ItemPage/DetailHostInfo.svelte";
 import Footer from "$lib/components/LandingPage/Footer.svelte";
 
-import { homestayInfo } from "$lib/stores/stores";
-import { homestayAPI } from "$lib/api/api";
-import { onMount } from "svelte";
-
-onMount(async () => {
-  let info = await homestayAPI.getHomestayInfo("efae2c69-9fdd-49af-af88-8c4c70de6325");
-  if (info != null) {
-    homestayInfo.set(info);
-  }
-});
-
 </script>
 
 <Header />

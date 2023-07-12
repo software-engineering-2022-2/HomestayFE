@@ -5,6 +5,7 @@ enum StarType{
 }
 
 interface HomestayInfo {
+    id?: string
     name: string
     description: string
     stars?: number

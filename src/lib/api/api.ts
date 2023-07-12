@@ -144,6 +144,34 @@ class HomestayAPI {
             return null;
         }
     }
+
+    async getAllHomestayInfo(): Promise<HomestayInfo[] | null> {
+        try {
+            const response: AxiosResponse =
+                await axios.get(`${HOMESTAY_API}`,
+                get(noAuthHeader));
+
+            if (response.status != 200){
+                console.log(response.data);
+                return null;
+            }
+
+            const homestays: HomestayInfo[] = response.data.map((homestay: any) => {
+                return {
+                    id: homestay.id,
+                    name: homestay.name,
+                    description: homestay.description,
+                    address: homestay.district + ", " + homestay.city,
+                    price: homestay.price
+                };
+            });
+
+            return homestays;
+        } catch (error) {
+            console.log(error);
+            return null;
+        }
+    }
 }
 
 export const authAPI = new AuthAPI();
