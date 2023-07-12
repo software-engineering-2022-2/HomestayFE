@@ -8,6 +8,6 @@
 </script>
 
 <div class="flex flex-col space-y-[6px] {className}">
-	<div class="font-[400] font-lato text-3xl">Description</div>
-	<div class="text-2xl text-[#555555] font-lato">{description}</div>
+	<div class="font-[400] font-lato text-2xl">Description</div>
+	<div class="text-xl text-[#555555] font-lato">{description}</div>
 </div>

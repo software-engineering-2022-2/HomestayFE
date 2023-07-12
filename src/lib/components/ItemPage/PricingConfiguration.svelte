@@ -20,18 +20,18 @@
 </script>
 
 <div class="flex flex-col space-y-[6px] {className}">
-	<div class="font-[400] text-3xl font-lato">Price Configuration</div>
+	<div class="font-[400] text-2xl font-lato">Price Configuration</div>
     <div class="grid grid-cols-3 items-center gap-y-5 gap-x-6">
-        <div class="text-[#E86A33] text-2xl font-lato">Deposit Percentage</div>
+        <div class="text-[#E86A33] text-xl font-lato">Deposit Percentage</div>
         <StaticProgressBar percentage={priceConfig.depositPercentage}></StaticProgressBar>
-        <div class="font-lato text-[#555555] text-2xl font-[700]">{normalizedPriceConfig.depositPercentage}%</div>
+        <div class="font-lato text-[#555555] text-xl font-[700]">{normalizedPriceConfig.depositPercentage}%</div>
         
-        <div class="text-[#E86A33] text-2xl font-lato">Free Cancelation Days</div>
+        <div class="text-[#E86A33] text-xl font-lato">Free Cancelation Days</div>
         <StaticProgressBar percentage={normalizedPriceConfig.freeCancelationDays / 7}></StaticProgressBar>
-        <div class="font-lato text-[#555555] text-2xl font-[700]">{normalizedPriceConfig.freeCancelationDays} days</div> 
+        <div class="font-lato text-[#555555] text-xl font-[700]">{normalizedPriceConfig.freeCancelationDays} days</div> 
         
-        <div class="text-[#E86A33] text-2xl font-lato">Cancelation Refund</div>
+        <div class="text-[#E86A33] text-xl font-lato">Cancelation Refund</div>
         <StaticProgressBar percentage={priceConfig.cancelationRefund}></StaticProgressBar>
-        <div class="font-lato text-[#555555] text-2xl font-[700]">{normalizedPriceConfig.cancelationRefund}%</div>
+        <div class="font-lato text-[#555555] text-xl font-[700]">{normalizedPriceConfig.cancelationRefund}%</div>
     </div>
 </div>
