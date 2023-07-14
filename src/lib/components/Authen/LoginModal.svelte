@@ -19,6 +19,7 @@ async function handleSubmit() {
     
     if (tokenPair === null){
         // TODO: Raise error or something
+        alert("Wrong password?");
         return;
     }
     // Add tokens to store
@@ -27,6 +28,7 @@ async function handleSubmit() {
     let userDetail = await userAPI.getUserDetail(email);
     
     if (userDetail === null){
+        alert("Cannot get user detail!");
         return;
     }
     userDetailStore.set(userDetail);
