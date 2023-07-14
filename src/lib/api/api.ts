@@ -1,8 +1,9 @@
 import axios from 'axios';
 import type { AxiosResponse } from 'axios';
-import type {HomestayInfo, TokenPair, UserDetail} from '$lib/types/types'
+import type {HomestayInfo, TokenPair, UpdateProfileErrorResponse, UserDetail} from '$lib/types/types'
 import { get } from 'svelte/store';
 import { authHeader, noAuthHeader, uploadAvatarHeader } from './headers';
+import { FieldsError, UnauthorizedError } from './exception';
 
 
 const BACKEND_BASE_URL = 'http://localhost:8000'
@@ -15,131 +16,109 @@ const HOMESTAY_API = `${BACKEND_BASE_URL}/api/homestays/`
 
 class AuthAPI {
 
-    async userLogin(username: string, password: string): Promise<TokenPair | null> {
-        try {
-            const response: AxiosResponse = await axios.post(TOKEN_API, {
-            username: username,
-            password: password
-            }, get(noAuthHeader));
+    async userLogin(username: string, password: string): Promise<TokenPair> {
+        const response: AxiosResponse = await axios.post(TOKEN_API, {
+        username: username,
+        password: password
+        }, get(noAuthHeader));
 
-            if (response.status != 200){
-                console.log(response.data);
-                return null;
-            }
-
-            const tokens: TokenPair = {
-                token: response.data.access,
-                refreshToken: response.data.refresh
-            };
-            return tokens;
-      
-        } catch (err) {
-            console.log(err);
-            return null; 
+        if (response.status == 401){
+            console.log(response.data);
+            throw new UnauthorizedError("Wrong username or password")
         }
+
+        const tokens: TokenPair = {
+            token: response.data.access,
+            refreshToken: response.data.refresh
+        };
+        return tokens;
     }
 
     async userRegister(username: string, password: string): Promise<boolean> {
-        try {
-            const response: AxiosResponse = await axios.post(TOKEN_API, {
-            username: username,
-            password: password
-            }, get(noAuthHeader));
+        const response: AxiosResponse = await axios.post(TOKEN_API, {
+        username: username,
+        password: password
+        }, get(noAuthHeader));
 
-            if (response.status != 201){
-                console.log(response.data);
-                return false;
-            }
-            return true;
-        } catch (err) {
-            console.log(err);
-            return false; 
+        if (response.status != 201){
+            console.log(response.data);
+            return false;
         }
+        return true;
     }
 
-    async refreshToken(refreshToken: string){
-        try {
-            const response: AxiosResponse = await axios.post(TOKEN_API, {
-                "refresh": refreshToken
-            }, get(noAuthHeader));
-            if (response.status != 200){
-                console.log(response.data);
-                return null;
-            }
-            const tokens: TokenPair = {
-                token: response.data.access,
-                refreshToken: refreshToken
-            };
-            return tokens;
-      
-        } catch (err) {
-            console.log(err);
-            return null; 
+    async refreshToken(refreshToken: string): Promise<TokenPair>{
+        const response: AxiosResponse = await axios.post(TOKEN_API, {
+            "refresh": refreshToken
+        }, get(noAuthHeader));
+        if (response.status == 401){
+            console.log(response.data);
+            throw new UnauthorizedError("Token is invalid or expired")
         }
+        const tokens: TokenPair = {
+            token: response.data.access,
+            refreshToken: refreshToken
+        };
+        return tokens;
     }
-
     
 }
 
 class UserAPI {
 
-    async getUserDetail(username: string): Promise<UserDetail | null> {
-        try {
-            const response: AxiosResponse = await axios.get(`${USER_API}${username}/`, get(authHeader));
+    async getUserDetail(username: string): Promise<UserDetail> {
+        const response: AxiosResponse = await axios.get(`${USER_API}${username}/`, get(authHeader));
 
-            if (response.status != 200){
-                console.log(response.data);
-                return null;
-            }
-
-            const userDetail: UserDetail = {
-                username: response.data.username,
-                firstName: response.data.first_name,
-                lastName: response.data.last_name,
-                phoneNumber: response.data.phone_number,
-                avatar: response.data.avatar,
-                city: response.data.city,
-                district: response.data.district,
-                email: response.data.email,
-                streetName: response.data.street_name,
-                streetNumber: response.data.street_number
-            };
-            return userDetail;
-        } catch (err) {
-            console.log(err);
-            return null; 
+        if (response.status == 401){
+            console.log(response.data);
+            throw new UnauthorizedError("Token is invalid or expired")
         }
+
+        const userDetail: UserDetail = {
+            username: response.data.username,
+            firstName: response.data.first_name,
+            lastName: response.data.last_name,
+            phoneNumber: response.data.phone_number,
+            avatar: response.data.avatar,
+            city: response.data.city,
+            district: response.data.district,
+            email: response.data.email,
+            streetName: response.data.street_name,
+            streetNumber: response.data.street_number
+        };
+        return userDetail;
     }
 
     async updateUserDetail(username: string, userDetail: UserDetail){
-        try {
-            const response: AxiosResponse = await axios.put(
-                `${USER_API}${username}/`,
-                userDetail,
-                get(authHeader));
+        const response: AxiosResponse = await axios.put(
+            `${USER_API}${username}/`,
+            userDetail,
+            get(authHeader));
 
-            if (response.status != 200){
-                console.log(response.data);
-                return null;
-            }
-
-            const newUserDetail: UserDetail = {
-                username: response.data.username,
-                firstName: response.data.first_name,
-                lastName: response.data.last_name,
-                phoneNumber: response.data.phone_number,
-                avatar: response.data.avatar,
-                city: response.data.city,
-                district: response.data.district,
-                email: response.data.email,
-                streetName: response.data.street_name,
-                streetNumber: response.data.street_number
-            };
-            return newUserDetail;
-        } catch (err) {
-            console.log(err);
-            return null; 
+        if (response.status == 401){
+            console.log(response.data);
+            throw new UnauthorizedError("Token is invalid or expired")
         }
+
+        if (response.status == 400){
+            console.log(response.data);
+            const fieldsError = response.data as UpdateProfileErrorResponse;
+            throw new FieldsError("Bad Request", fieldsError)
+        }
+
+        const newUserDetail: UserDetail = {
+            username: response.data.username,
+            firstName: response.data.first_name,
+            lastName: response.data.last_name,
+            phoneNumber: response.data.phone_number,
+            avatar: response.data.avatar,
+            city: response.data.city,
+            district: response.data.district,
+            email: response.data.email,
+            streetName: response.data.street_name,
+            streetNumber: response.data.street_number
+        };
+        return newUserDetail;
     }
 
     async updatePassword(username: string, password: string, newPassword: string): Promise<boolean>{
