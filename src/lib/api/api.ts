@@ -2,10 +2,11 @@ import axios from 'axios';
 import type { AxiosResponse } from 'axios';
 import type {TokenPair, UserDetail} from '$lib/types/types'
 import { get } from 'svelte/store';
-import { authHeader, noAuthHeader } from './headers';
+import { authHeader, noAuthHeader, uploadAvatarHeader } from './headers';
 
 
 const BACKEND_BASE_URL = 'http://localhost:8000'
+export const BACKEND_MEDIA_URL = 'http://localhost:8000/media'
 const TOKEN_API = `${BACKEND_BASE_URL}/api/token/`
 // const TOKEN_REFRESH_API = `${BACKEND_BASE_URL}/api/token/refresh/`
 const USER_API = `${BACKEND_BASE_URL}/api/users/`
@@ -51,6 +52,28 @@ class AuthAPI {
             return false; 
         }
     }
+
+    async refreshToken(refreshToken: string){
+        try {
+            const response: AxiosResponse = await axios.post(TOKEN_API, {
+                "refresh": refreshToken
+            }, get(noAuthHeader));
+            if (response.status != 200){
+                console.log(response.data);
+                return null;
+            }
+            const tokens: TokenPair = {
+                token: response.data.access,
+                refreshToken: refreshToken
+            };
+            return tokens;
+      
+        } catch (err) {
+            console.log(err);
+            return null; 
+        }
+    }
+
     
 }
 
@@ -108,6 +131,46 @@ class UserAPI {
         } catch (err) {
             console.log(err);
             return null; 
+        }
+    }
+
+    async updatePassword(username: string, password: string, newPassword: string): Promise<boolean>{
+        try {
+            const response: AxiosResponse = await axios.put(
+                `${USER_API}${username}/password/`,
+                {
+                    username: username,
+                    password: password,
+                    new_password: newPassword
+                },
+                get(authHeader));
+            if (response.status != 200){
+                console.log(response.data);
+                return false;
+            }
+            return true;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    async updateAvatar(username: string, image: File): Promise<string | null>{
+        try {
+            const formData = new FormData();
+            formData.append('image', image);
+            const response: AxiosResponse = await axios.put(
+                `${USER_API}${username}/avatar/`,
+                formData,
+                get(uploadAvatarHeader));
+            if (response.status != 200){
+                console.log(response.data);
+                return null;
+            }
+            return response.data.avatar;
+        } catch (err) {
+            console.log(err);
+            return null;
         }
     }
 }

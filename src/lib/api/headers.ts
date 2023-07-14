@@ -31,6 +31,22 @@ export function clearTokens(){
     }
 }
 
+export const uploadAvatarHeader = derived(tokens, ($tokens) => {
+    if (browser) {
+      return {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': 'Bearer ' + $tokens.token
+        }
+      };
+    }
+    return {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        }
+    };
+});
+
 export const authHeader = derived(tokens, ($tokens) => {
     if (browser) {
       return {
