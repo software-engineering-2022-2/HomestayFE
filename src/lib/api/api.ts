@@ -132,6 +132,27 @@ class UserAPI {
             return null; 
         }
     }
+
+    async updatePassword(username: string, password: string, newPassword: string): Promise<boolean>{
+        try {
+            const response: AxiosResponse = await axios.put(
+                `${USER_API}${username}/password/`,
+                {
+                    username: username,
+                    password: password,
+                    new_password: newPassword
+                },
+                get(authHeader));
+            if (response.status != 200){
+                console.log(response.data);
+                return false;
+            }
+            return true;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
 }
 
 export const authApi = new AuthAPI();

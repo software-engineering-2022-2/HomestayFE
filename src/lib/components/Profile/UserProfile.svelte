@@ -6,11 +6,13 @@
 	import { get } from 'svelte/store';
 	import { userApi } from '$lib/api/api';
 	import { reloadStore } from '$lib/store/reload';
+	import ChangePasswordModal from './ChangePasswordModal.svelte';
 
 	$: if (browser && $userDetailStore.username === '') {
 		goto('/');
 	}
 	let isEditing = false;
+	let isPasswordEditing = false;
 	let formUserDetail: UserDetail;
 
 	$: if (isEditing) {
@@ -26,6 +28,17 @@
 			reloadStore.set(true);
 		}
 		isEditing = false;
+	}
+
+	async function handleChangePassword(event: { detail: { password: string; newPassword: string } }){
+		const { password, newPassword } = event.detail;
+		const result = await userApi.updatePassword($userDetailStore.username, password, newPassword);
+		if (result){
+			alert('Change password success!');
+		} else {
+			alert('Change password failed!');
+		}
+		isPasswordEditing = false;
 	}
 </script>
 
@@ -69,9 +82,12 @@
 			<div class="key">Username</div>
 			<div class="value">{$userDetailStore.username}</div>
 		</div>
-		<div>
-			<div class="key">Password</div>
-			<div class="value">********</div>
+		<div class="flex flex-row items-center">
+			<button class="key">Password</button> 
+			<button on:click={()=> isPasswordEditing = true}><iconify-icon icon="bxs:edit"></iconify-icon></button>
+			{#if isPasswordEditing}
+				<ChangePasswordModal on:submit={handleChangePassword} on:cancel={()=> isPasswordEditing = false}></ChangePasswordModal>
+			{/if}
 		</div>
 		<div>
 			<div class="key">Phone</div>
