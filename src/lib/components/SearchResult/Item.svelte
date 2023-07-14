@@ -5,6 +5,12 @@
 	import Star from '../Star.svelte';
 	import { StarType } from '$lib/types/types';
 	import CustomDot from './CustomDot.svelte';
+
+	export let address = "Hai Ba Trung, Hanoi";
+	export let avgRating = 4.8;
+	export let price = 123;
+	export let hostName = "Long Hoang";
+
 </script>
 
 <div
@@ -32,14 +38,15 @@
 			</div>
 		{/each}
 	</Carousel>
+
 	<div class="flex flex-col">
 		<div class="flex flex-row">
-			<div class="grow font-bold text-[1.125rem]">Hoan Kiem, Hanoi</div>
+			<div class="grow font-bold text-[1.125rem]">{address}</div>
 			<div class="grow-0"><Star starType={StarType.FULL} /></div>
-			<div class="grow-0 text-[#E86A33]">4.9</div>
+			<div class="grow-0 text-[#E86A33]">{avgRating}</div>
 		</div>
-		<div class="text-[#777] text-[1.125rem]">Stay with Long Hoang · SuperHost</div>
+		<div class="text-[#777] text-[1.125rem]">Stay with {hostName} · SuperHost</div>
 		<div class="text-[#777] text-[1.125rem]">Jun 20 - 25</div>
-		<div><span class="font-bold">$50</span> night</div>
+		<div><span class="font-bold">${price}</span> night</div>
 	</div>
 </div>

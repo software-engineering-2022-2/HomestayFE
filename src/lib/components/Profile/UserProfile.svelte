@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import { userDetailStore } from '$lib/store/store';
+	import { userDetailStore } from '$lib/stores/stores';
 	import type { UserDetail } from '$lib/types/types';
 	import { get } from 'svelte/store';
-	import { userApi } from '$lib/api/api';
-	import { reloadStore } from '$lib/store/reload';
+	import { userAPI } from '$lib/api/api';
+	import { reloadStore } from '$lib/stores/reload';
 	import ChangePasswordModal from './ChangePasswordModal.svelte';
 	import { BACKEND_MEDIA_URL } from '$lib/api/api';
 
@@ -22,7 +22,7 @@
 
 	async function updateProfile() {
 		formUserDetail.avatar = undefined
-		const newUserDetail = await userApi.updateUserDetail($userDetailStore.username, formUserDetail);
+		const newUserDetail = await userAPI.updateUserDetail($userDetailStore.username, formUserDetail);
 		if (newUserDetail !== null) {
 			userDetailStore.set(newUserDetail);
 		} else {
@@ -33,7 +33,7 @@
 
 	async function handleChangePassword(event: { detail: { password: string; newPassword: string } }){
 		const { password, newPassword } = event.detail;
-		const result = await userApi.updatePassword($userDetailStore.username, password, newPassword);
+		const result = await userAPI.updatePassword($userDetailStore.username, password, newPassword);
 		if (result){
 			alert('Change password success!');
 		} else {
@@ -53,7 +53,7 @@
 
 	async function updateAvatar() {
 		if (files && files[0]){
-			const avatar = await userApi.updateAvatar($userDetailStore.username, files[0]);
+			const avatar = await userAPI.updateAvatar($userDetailStore.username, files[0]);
 			if (avatar){
 				userDetailStore.update(storeValue => {
 					storeValue.avatar = avatar;

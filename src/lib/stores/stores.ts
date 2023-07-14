@@ -1,5 +1,7 @@
 import { writable } from "svelte/store";
-import type { UserDetail } from "$lib/types/types";
+import { get } from 'svelte/store';
+
+import type { HomestayInfo, HostInfo, UserDetail } from "$lib/types/types";
 
 import { browser } from '$app/environment';
 
@@ -34,3 +36,19 @@ export function clearUserDetailStore(){
 }
 
 export {userDetailStore};
+
+export const homestayInfo = writable<HomestayInfo>({
+    name: "",
+    description: "",
+    stars: 0,
+    numReviews: 0,
+    address: "",
+    price: 0
+});
+
+export const hostInfo = writable<HostInfo>({
+    hostID: "",
+    name: "",
+    numGuests: 0,
+    numRooms: 0
+});

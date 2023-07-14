@@ -1,6 +1,6 @@
 import axios from 'axios';
 import type { AxiosResponse } from 'axios';
-import type {TokenPair, UserDetail} from '$lib/types/types'
+import type {HomestayInfo, TokenPair, UserDetail} from '$lib/types/types'
 import { get } from 'svelte/store';
 import { authHeader, noAuthHeader, uploadAvatarHeader } from './headers';
 
@@ -10,6 +10,7 @@ export const BACKEND_MEDIA_URL = 'http://localhost:8000/media'
 const TOKEN_API = `${BACKEND_BASE_URL}/api/token/`
 // const TOKEN_REFRESH_API = `${BACKEND_BASE_URL}/api/token/refresh/`
 const USER_API = `${BACKEND_BASE_URL}/api/users/`
+const HOMESTAY_API = `${BACKEND_BASE_URL}/api/homestays/`
 
 
 class AuthAPI {
@@ -20,10 +21,12 @@ class AuthAPI {
             username: username,
             password: password
             }, get(noAuthHeader));
+
             if (response.status != 200){
                 console.log(response.data);
                 return null;
             }
+
             const tokens: TokenPair = {
                 token: response.data.access,
                 refreshToken: response.data.refresh
@@ -42,6 +45,7 @@ class AuthAPI {
             username: username,
             password: password
             }, get(noAuthHeader));
+
             if (response.status != 201){
                 console.log(response.data);
                 return false;
@@ -82,10 +86,12 @@ class UserAPI {
     async getUserDetail(username: string): Promise<UserDetail | null> {
         try {
             const response: AxiosResponse = await axios.get(`${USER_API}${username}/`, get(authHeader));
+
             if (response.status != 200){
                 console.log(response.data);
                 return null;
             }
+
             const userDetail: UserDetail = {
                 username: response.data.username,
                 firstName: response.data.first_name,
@@ -111,10 +117,12 @@ class UserAPI {
                 `${USER_API}${username}/`,
                 userDetail,
                 get(authHeader));
+
             if (response.status != 200){
                 console.log(response.data);
                 return null;
             }
+
             const newUserDetail: UserDetail = {
                 username: response.data.username,
                 firstName: response.data.first_name,
@@ -175,6 +183,61 @@ class UserAPI {
     }
 }
 
-export const authApi = new AuthAPI();
-export const userApi = new UserAPI();
+class HomestayAPI {
+    async getHomestayInfo(homestayID: string): Promise<HomestayInfo | null> {
+        try {
+            const response: AxiosResponse =
+                await axios.get(`${HOMESTAY_API}${homestayID}/`,
+                get(noAuthHeader));
+
+            if (response.status != 200){
+                console.log(response.data);
+                return null;
+            }
+
+            const homestayInfo: HomestayInfo = {
+                name: response.data.name,
+                description: response.data.description,
+                address: response.data.district + ", " + response.data.city,
+                price: response.data.price
+            }
+            return homestayInfo;
+        } catch (error) {
+            console.log(error);
+            return null;
+        }
+    }
+
+    async getAllHomestayInfo(): Promise<HomestayInfo[] | null> {
+        try {
+            const response: AxiosResponse =
+                await axios.get(`${HOMESTAY_API}`,
+                get(noAuthHeader));
+
+            if (response.status != 200){
+                console.log(response.data);
+                return null;
+            }
+
+            const homestays: HomestayInfo[] = response.data.map((homestay: any) => {
+                return {
+                    id: homestay.id,
+                    name: homestay.name,
+                    description: homestay.description,
+                    address: homestay.district + ", " + homestay.city,
+                    price: homestay.price
+                };
+            });
+
+            return homestays;
+        } catch (error) {
+            console.log(error);
+            return null;
+        }
+    }
+}
+
+export const authAPI = new AuthAPI();
+export const userAPI = new UserAPI();
+export const homestayAPI = new HomestayAPI();
 

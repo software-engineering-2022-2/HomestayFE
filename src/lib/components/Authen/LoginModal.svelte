@@ -1,8 +1,8 @@
 <script>
 import { createEventDispatcher } from 'svelte';
-import { authApi, userApi } from '$lib/api/api';
+import { authAPI, userAPI } from '$lib/api/api';
 import { tokens } from '$lib/api/headers';
-import { userDetailStore } from '$lib/store/store';
+import { userDetailStore } from '$lib/stores/stores';
 
 const dispatch = createEventDispatcher();
 
@@ -12,7 +12,7 @@ let password = '';
 async function handleSubmit() {
     // You can add your login logic here
     // ...
-    let tokenPair = await authApi.userLogin(email, password);
+    let tokenPair = await authAPI.userLogin(email, password);
 
     console.log(tokenPair)
     // After Login Approved
@@ -25,7 +25,7 @@ async function handleSubmit() {
     // Add tokens to store
     tokens.set(tokenPair)
     localStorage.setItem('username', email);
-    let userDetail = await userApi.getUserDetail(email);
+    let userDetail = await userAPI.getUserDetail(email);
     
     if (userDetail === null){
         alert("Cannot get user detail!");

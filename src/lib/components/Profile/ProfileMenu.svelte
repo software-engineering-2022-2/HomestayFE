@@ -1,9 +1,9 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte';
     import { goto } from "$app/navigation";
-    import { userDetailStore } from '$lib/store/store';
+    import { userDetailStore } from '$lib/stores/stores';
     import { get } from 'svelte/store';
-    import { reloadStore } from '$lib/store/reload';
+    import { reloadStore } from '$lib/stores/reload';
   
     let showDropdown = false;
     let dropdownRef: HTMLElement;
