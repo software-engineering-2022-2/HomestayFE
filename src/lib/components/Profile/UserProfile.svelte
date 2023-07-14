@@ -7,6 +7,7 @@
 	import { userApi } from '$lib/api/api';
 	import { reloadStore } from '$lib/store/reload';
 	import ChangePasswordModal from './ChangePasswordModal.svelte';
+	import { BACKEND_MEDIA_URL } from '$lib/api/api';
 
 	$: if (browser && $userDetailStore.username === '') {
 		goto('/');
@@ -40,6 +41,30 @@
 		}
 		isPasswordEditing = false;
 	}
+
+	async function openFileDialog() {
+		const fileInput = document.getElementById('avatar-upload');
+		if (fileInput){
+			fileInput.click();
+		}
+	}
+
+	let files: FileList;
+
+	async function updateAvatar() {
+		if (files && files[0]){
+			const avatar = await userApi.updateAvatar($userDetailStore.username, files[0]);
+			if (avatar){
+				userDetailStore.update(storeValue => {
+					storeValue.avatar = avatar;
+					return storeValue;
+				});
+				alert("Upload Image Success");
+			} else {
+				alert("Upload Image Failed");
+			}
+		}
+	}
 </script>
 
 <div
@@ -49,9 +74,15 @@
 
 	<div class="overflow-clip rounded-full h-[10rem] w-[10rem] border border-black">
 		<div class="relative flex flex-col items-center">
+			{#if $userDetailStore.avatar}
+			<div><img class="h-[10rem] w-[10rem] object-cover" src={`${BACKEND_MEDIA_URL}/${$userDetailStore.avatar}`} alt="" /></div>
+			{:else}
 			<iconify-icon class="text-[10rem] rounded-full" icon="healthicons:ui-user-profile" />
+			{/if}
+			
 			<div class="absolute bottom-0 w-[8.4rem] h-[2.3rem] text-white bg-[#374151B2]">
-				<button class="h-full w-full">Replace</button>
+				<input bind:files={files} accept="image/*" id="avatar-upload" style="display: none;" type="file" on:change={updateAvatar}>
+				<button class="h-full w-full" on:click={openFileDialog}>Replace</button>
 			</div>
 		</div>
 	</div>
