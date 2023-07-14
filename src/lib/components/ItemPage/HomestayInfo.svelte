@@ -16,14 +16,14 @@
 </script>
 
 <div class="{className}">
-    <div class="font-[500] text-4xl px-1 py-2">{homestayInfo.name}</div>
+    <div class="font-bold text-3xl px-1 py-2 text-[#222222]">{homestayInfo.name}</div>
     <div class="flex flex-row items-center justify-start space-x-2">
-        <Star starType={StarType.FULL} className="text-4xl"></Star>
-        <div class="text-2xl text-[#E86A33]">{homestayInfo.stars}</div>
-        <div class="text-4xl">·</div>
-        <div class="underline text-[#555555] text-2xl underline-offset-4">{homestayInfo.numReviews} reviews</div>
-        <div class="text-4xl">·</div>
-        <div class="underline text-[#555555] text-2xl underline-offset-4">{homestayInfo.address}</div>
+        <Star starType={StarType.FULL} className="text-2xl"></Star>
+        <div class="text-xl text-[#E86A33]">{homestayInfo.stars}</div>
+        <div class="text-2xl">·</div>
+        <div class="underline text-[#555555] text-xl underline-offset-4">{homestayInfo.numReviews} reviews</div>
+        <div class="text-2xl">·</div>
+        <div class="underline text-[#555555] text-xl underline-offset-4">{homestayInfo.address}</div>
         <div></div>
     </div>
 </div>

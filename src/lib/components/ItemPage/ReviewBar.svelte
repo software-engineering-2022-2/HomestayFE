@@ -12,9 +12,9 @@
 </script>
 
 <div class="flex flex-row items-center justify-start space-x-2">
-    <Star starType={StarType.FULL} className="text-4xl"></Star>
-    <div class="text-3xl font-[700] font-lato text-[#E86A33]">{homestayInfo.stars}</div>
-    <div class="text-5xl">·</div>
-    <div class="text-3xl font-[500]">{homestayInfo.numReviews} reviews</div>
+    <Star starType={StarType.FULL} className="text-2xl"></Star>
+    <div class="text-2xl font-[700] font-lato text-[#E86A33]">{homestayInfo.stars}</div>
+    <div class="text-2xl">·</div>
+    <div class="text-2xl font-[500]">{homestayInfo.numReviews} reviews</div>
     <div></div>
 </div>
