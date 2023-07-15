@@ -1,9 +1,10 @@
 import axios, { AxiosError } from 'axios';
 import type { AxiosResponse } from 'axios';
-import type {HomestayInfo, TokenPair, UserDetail} from '$lib/types/types'
+import type {HomestayInfo, ManagerInfo, TokenPair, UserDetail} from '$lib/types/types'
 import { get } from 'svelte/store';
 import { authHeader, noAuthHeader, uploadAvatarHeader } from './headers';
 import { FieldsError, UnauthorizedError, NotFoundError } from './exception';
+import { extractUrl } from '$lib/types/utils';
 
 
 const BACKEND_BASE_URL = 'http://localhost:8000'
@@ -12,6 +13,7 @@ const TOKEN_API = `${BACKEND_BASE_URL}/api/token/`
 // const TOKEN_REFRESH_API = `${BACKEND_BASE_URL}/api/token/refresh/`
 const USER_API = `${BACKEND_BASE_URL}/api/users/`
 const HOMESTAY_API = `${BACKEND_BASE_URL}/api/homestays/`
+const MANAGER_PROFILE_API = `${USER_API}manager_profile/`
 
 
 class AuthAPI {
@@ -239,7 +241,7 @@ class HomestayAPI {
         let response: AxiosResponse
         try {
             response = await axios.get(`${HOMESTAY_API}${homestayID}/`,
-            get(noAuthHeader));
+                get(noAuthHeader));
         } catch (err) {
             if (err instanceof AxiosError){
                 response = err.response as AxiosResponse
@@ -250,9 +252,11 @@ class HomestayAPI {
     
         const homestayInfo: HomestayInfo = {
             name: response.data.name,
+            managerID: response.data.manager_id,
             description: response.data.description,
             address: response.data.district + ", " + response.data.city,
-            price: response.data.price
+            price: response.data.price,
+            imageLink: extractUrl(response.data.image)
         }
         return homestayInfo;
     }
@@ -261,7 +265,7 @@ class HomestayAPI {
         let response: AxiosResponse
         try {
             response = await axios.get(`${HOMESTAY_API}`,
-            get(noAuthHeader));
+                get(noAuthHeader));
         } catch (err) {
             if (err instanceof AxiosError){
                 response = err.response as AxiosResponse
@@ -274,10 +278,12 @@ class HomestayAPI {
         const homestays: HomestayInfo[] = data.map((homestayRecord: Record<string, string | number>) => {
             const homestay: HomestayInfo = {
                 id: homestayRecord.id as string,
+                managerID: homestayRecord.manager_id as string,
                 name: homestayRecord.name as string,
                 description: homestayRecord.description as string,
                 address: homestayRecord.district + ", " + homestayRecord.city,
-                price: homestayRecord.price as number
+                price: homestayRecord.price as number,
+                imageLink: extractUrl(homestayRecord.image as string)
             }
             return homestay;
         });
@@ -286,7 +292,31 @@ class HomestayAPI {
     }
 }
 
+class ManagerAPI {
+    async getManagerInfo(managerID: string): Promise<ManagerInfo> {
+        let response: AxiosResponse
+        try {
+            response = await axios.get(`${MANAGER_PROFILE_API}${managerID}/`,
+                get(noAuthHeader));
+        } catch (err) {
+            if (err instanceof AxiosError){
+                response = err.response as AxiosResponse
+            } else {
+                throw Error("Nothing")
+            }  
+        }
+
+        const managerInfo: ManagerInfo = {
+            name: response.data.first_name + " " + response.data.last_name,
+            avatarLink: extractUrl(response.data.avatar),
+            numHomestays: response.data.number_of_homestays
+        }
+        return managerInfo;
+    }
+}
+
 export const authAPI = new AuthAPI();
 export const userAPI = new UserAPI();
 export const homestayAPI = new HomestayAPI();
+export const managerAPI = new ManagerAPI();
 

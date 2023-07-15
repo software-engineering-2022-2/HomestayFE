@@ -6,19 +6,20 @@ enum StarType{
 
 interface HomestayInfo {
     id?: string
+    managerID: string
     name: string
     description: string
     stars?: number
     numReviews?: number
     address: string
     price: number
+    imageLink: string
 }
 
-interface HostInfo {
-    hostID: string
+interface ManagerInfo {
     name: string
-    numGuests: number
-    numRooms: number
+    avatarLink: string
+    numHomestays: number
 }
 
 interface PricingConfig {
@@ -54,7 +55,7 @@ export interface UserDetail{
 
 export {StarType, 
     type HomestayInfo, 
-    type HostInfo,
+    type ManagerInfo,
     type PricingConfig, 
     type Review, 
     type TokenPair};
