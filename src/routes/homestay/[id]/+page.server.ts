@@ -1,14 +1,21 @@
 import { error } from '@sveltejs/kit'
-import { homestayAPI } from "$lib/api/api";
+import { homestayAPI, managerAPI } from "$lib/api/api";
 import type { PageServerLoad } from './$types';
-import type { HomestayInfo } from '$lib/types/types';
+import type { HomestayInfo, ManagerInfo } from '$lib/types/types';
 
 export const load = (async ({ params }) => {
-    let info: HomestayInfo
+    let homestayInfoRes: HomestayInfo
+    let managerInfoRes: ManagerInfo
     try {
-        info = await homestayAPI.getHomestayInfo(params.id);
+        homestayInfoRes = await homestayAPI.getHomestayInfo(params.id);
+        // console.log(homestayInfoRes);
+        managerInfoRes = await managerAPI.getManagerInfo(homestayInfoRes.managerID);
+        // console.log(managerInfoRes);
     } catch (err){
         throw error(404);
     }
-    return {info};
+    return {
+        homestayInfo: homestayInfoRes,
+        managerInfo: managerInfoRes
+    }
 }) satisfies PageServerLoad;

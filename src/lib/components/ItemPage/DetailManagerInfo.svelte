@@ -1,16 +1,23 @@
 <script lang="ts">
     export let className = '';
-	let hostname = 'Long Hoang';
-	let maxGuests = 21;
-	let rooms = 12;
+	import { managerInfo } from "$lib/stores/stores";
+	
 </script>
 <div class="flex flex-col space-y-3 {className}">
 	<div class="flex flex-row space-x-4">
 		<div>
-			<div class="font-[500] text-2xl font-lato">Hosted by {hostname}</div>
+			<div class="font-[500] text-2xl font-lato">Hosted by {$managerInfo.name} </div>
 			<div class="text-xl font-lato text-[#555555]">Joined in 2023</div>
 		</div>
-		<iconify-icon class="text-6xl" icon="healthicons:ui-user-profile"></iconify-icon>
+		{#if $managerInfo.avatarLink}
+			<img 
+				class="w-[64px] h-[64px] object-cover rounded-full"
+				src="{$managerInfo.avatarLink}" 
+				alt="Manager avatar"
+			>
+		{:else}
+			<iconify-icon class="text-6xl" icon="healthicons:ui-user-profile"></iconify-icon>
+		{/if}
 	</div>
 	<div class="flex flex-row items-center space-x-10">
 		<div class="flex flex-row items-center space-x-3">
@@ -24,7 +31,7 @@
 	</div>
 
 	<div class="whitespace-pre-line font-lato text-xl text-[#333333]">
-		<strong>Long Hoang is a Superhost</strong>
+		<strong>{$managerInfo.name} is a Superhost</strong>
 		
 		Superhosts are experienced, highly rated hosts who are 
 		committed to providing great stays for guests.
