@@ -6,7 +6,7 @@ import { authHeader, noAuthHeader, uploadAvatarHeader } from './headers';
 import { FieldsError, UnauthorizedError, NotFoundError } from './exception';
 
 
-const BACKEND_BASE_URL = 'http://localhost:8000'
+const BACKEND_BASE_URL = 'http://127.0.0.1:8000'
 export const BACKEND_MEDIA_URL = 'http://localhost:8000/media'
 const TOKEN_API = `${BACKEND_BASE_URL}/api/token/`
 // const TOKEN_REFRESH_API = `${BACKEND_BASE_URL}/api/token/refresh/`
@@ -262,6 +262,38 @@ class HomestayAPI {
         try {
             response = await axios.get(`${HOMESTAY_API}`,
             get(noAuthHeader));
+        } catch (err) {
+            if (err instanceof AxiosError){
+                response = err.response as AxiosResponse
+            } else {
+                throw Error("Nothing")
+            }  
+        }
+    
+        const data = response.data as Array<any>;
+        const homestays: HomestayInfo[] = data.map((homestayRecord: Record<string, string | number>) => {
+            const homestay: HomestayInfo = {
+                id: homestayRecord.id as string,
+                name: homestayRecord.name as string,
+                description: homestayRecord.description as string,
+                address: homestayRecord.district + ", " + homestayRecord.city,
+                price: homestayRecord.price as number
+            }
+            return homestay;
+        });
+
+        return homestays;
+    }
+
+    async getAllHomestayInfoByCondition(searchParams: URLSearchParams): Promise<HomestayInfo[]> {
+        let response: AxiosResponse
+        try {
+            response = await axios.get(`${HOMESTAY_API}`,
+            {
+                ...get(noAuthHeader),
+                params: searchParams
+            }
+            );
         } catch (err) {
             if (err instanceof AxiosError){
                 response = err.response as AxiosResponse

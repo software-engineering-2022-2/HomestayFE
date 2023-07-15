@@ -6,5 +6,5 @@
 </script>
 
 <button on:click class="caret-transparent h-[0.5rem] w-[0.5rem] rounded-full bg-white {opacity} cursor-pointer">
-
+<div style="display: none;">{symbol}</div>
 </button>
