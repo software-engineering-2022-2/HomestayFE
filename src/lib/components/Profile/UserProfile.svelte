@@ -8,38 +8,59 @@
 	import { reloadStore } from '$lib/stores/reload';
 	import ChangePasswordModal from './ChangePasswordModal.svelte';
 	import { BACKEND_MEDIA_URL } from '$lib/api/api';
+	import { UnauthorizedError, FieldsError, NotFoundError} from '$lib/api/exception';
 
 	$: if (browser && $userDetailStore.username === '') {
 		goto('/');
 	}
 	let isEditing = false;
 	let isPasswordEditing = false;
-	let formUserDetail: UserDetail;
+	let formUserDetail: UserDetail = {
+		username: "",
+		first_name: "",
+		last_name: ""
+	};
 
-	$: if (isEditing) {
-		formUserDetail = get(userDetailStore);
+	$: if (isEditing){
+		formUserDetail = Object.assign({}, get(userDetailStore));
 	}
 
 	async function updateProfile() {
 		formUserDetail.avatar = undefined
-		const newUserDetail = await userAPI.updateUserDetail($userDetailStore.username, formUserDetail);
-		if (newUserDetail !== null) {
-			userDetailStore.set(newUserDetail);
-		} else {
-			reloadStore.set(true);
-		}
+		let newUserDetail: UserDetail
+		try {
+			newUserDetail = await userAPI.updateUserDetail($userDetailStore.username, formUserDetail);
+		} catch (error) {
+			if (error instanceof UnauthorizedError){
+				alert(error.message)
+				reloadStore.set(true);
+			}
+			if (error instanceof FieldsError){
+				alert(error.getMessage())
+				isEditing = false;
+			}
+			return;
+		}	
+		userDetailStore.set(newUserDetail);
 		isEditing = false;
 	}
 
 	async function handleChangePassword(event: { detail: { password: string; newPassword: string } }){
 		const { password, newPassword } = event.detail;
-		const result = await userAPI.updatePassword($userDetailStore.username, password, newPassword);
-		if (result){
-			alert('Change password success!');
-		} else {
-			alert('Change password failed!');
+		try {
+			await userAPI.updatePassword($userDetailStore.username, password, newPassword);
+		} catch (error){
+			if (error instanceof UnauthorizedError){
+				alert(error.message)
+			}
+			if (error instanceof FieldsError){
+				alert(error.getMessage())
+			}
+			return;
+		} finally {
+			isPasswordEditing = false;
 		}
-		isPasswordEditing = false;
+		alert('Change password success!')
 	}
 
 	async function openFileDialog() {
@@ -53,16 +74,23 @@
 
 	async function updateAvatar() {
 		if (files && files[0]){
-			const avatar = await userAPI.updateAvatar($userDetailStore.username, files[0]);
-			if (avatar){
-				userDetailStore.update(storeValue => {
-					storeValue.avatar = avatar;
-					return storeValue;
-				});
-				alert("Upload Image Success");
-			} else {
-				alert("Upload Image Failed");
+			let avatar: string
+			try {
+				avatar = await userAPI.updateAvatar($userDetailStore.username, files[0]);
+			} catch (error){
+				if (error instanceof UnauthorizedError){
+					alert(error.message)
+				}
+				if (error instanceof FieldsError) {
+					alert(error.getMessage())
+				}
+				return;
 			}
+			userDetailStore.update(storeValue => {
+				storeValue.avatar = avatar;
+				return storeValue;
+			});
+			alert("Upload Image Success");
 		}
 	}
 </script>
@@ -91,10 +119,10 @@
 		<div>
 			<div class="key">First name</div>
 			{#if isEditing}
-				<input class="w-full value_input" type="text" bind:value={formUserDetail.firstName} />
+				<input class="w-full value_input" type="text" bind:value={formUserDetail.first_name} />
 			{:else}
 				<div class="value">
-					{$userDetailStore.firstName === '' ? 'Unfilled' : $userDetailStore.firstName}
+					{$userDetailStore.first_name === '' ? 'Unfilled' : $userDetailStore.first_name}
 				</div>
 			{/if}
 		</div>
@@ -102,10 +130,10 @@
 			<div class="key">Last name</div>
 
 			{#if isEditing}
-				<input class="w-full value_input" type="text" bind:value={formUserDetail.lastName} />
+				<input class="w-full value_input" type="text" bind:value={formUserDetail.last_name} />
 			{:else}
 				<div class="value">
-					{$userDetailStore.lastName === '' ? 'Unfilled' : $userDetailStore.lastName}
+					{$userDetailStore.last_name === '' ? 'Unfilled' : $userDetailStore.last_name}
 				</div>
 			{/if}
 		</div>
@@ -124,9 +152,9 @@
 			<div class="key">Phone</div>
 
 			{#if isEditing}
-				<input class="w-full value_input" type="text" bind:value={formUserDetail.phoneNumber} />
+				<input class="w-full value_input" type="text" bind:value={formUserDetail.phone_number} />
 			{:else}
-				<div class="value">{$userDetailStore.phoneNumber || 'Unfilled'}</div>
+				<div class="value">{$userDetailStore.phone_number || 'Unfilled'}</div>
 			{/if}
 		</div>
 		<div>
@@ -144,17 +172,17 @@
 			<div class="key">Street number</div>
 
 			{#if isEditing}
-				<input class="w-full value_input" type="text" bind:value={formUserDetail.streetNumber} />
+				<input class="w-full value_input" type="text" bind:value={formUserDetail.street_number} />
 			{:else}
-				<div class="value">{$userDetailStore.streetNumber || 'Unfilled'}</div>
+				<div class="value">{$userDetailStore.street_number || 'Unfilled'}</div>
 			{/if}
 		</div>
 		<div>
 			<div class="key">Street name</div>
 			{#if isEditing}
-				<input class="w-full value_input" type="text" bind:value={formUserDetail.streetName} />
+				<input class="w-full value_input" type="text" bind:value={formUserDetail.street_name} />
 			{:else}
-				<div class="value">{$userDetailStore.streetName || 'Unfilled'}</div>
+				<div class="value">{$userDetailStore.street_name || 'Unfilled'}</div>
 			{/if}
 		</div>
 		<div>
@@ -178,6 +206,7 @@
 	<div>
         {#if isEditing}
             <button class="button_text rounded-xl bg-[#41644A] w-[10rem] h-[2.5rem]" on:click={updateProfile}>Update profile</button>
+			<button class="button_text rounded-xl bg-[#d28a2c] w-[10rem] h-[2.5rem]" on:click={() => (isEditing = false)}>Cancel</button>
         {:else}
             <button class="button_text rounded-xl bg-[#41644A] w-[10rem] h-[2.5rem]" on:click={() => (isEditing = true)}>Edit</button>
         {/if}

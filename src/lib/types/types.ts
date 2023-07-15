@@ -41,11 +41,11 @@ interface TokenPair{
 
 export interface UserDetail{
     username: string,
-    firstName: string,
-    lastName: string,
-    phoneNumber?: string,
-    streetName?: string,
-    streetNumber?: string,
+    first_name: string,
+    last_name: string,
+    phone_number?: string,
+    street_name?: string,
+    street_number?: string,
     district?: string,
     city?: string,
     avatar?: string,

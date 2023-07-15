@@ -1,8 +1,10 @@
-<script>
+<script lang="ts">
 import { createEventDispatcher } from 'svelte';
 import { authAPI, userAPI } from '$lib/api/api';
 import { tokens } from '$lib/api/headers';
 import { userDetailStore } from '$lib/stores/stores';
+import { NotFoundError, UnauthorizedError } from '$lib/api/exception';
+import type { TokenPair, UserDetail } from '$lib/types/types';
 
 const dispatch = createEventDispatcher();
 
@@ -10,29 +12,25 @@ let email = '';
 let password = '';
 
 async function handleSubmit() {
-    // You can add your login logic here
-    // ...
-    let tokenPair = await authAPI.userLogin(email, password);
-
-    console.log(tokenPair)
-    // After Login Approved
-    
-    if (tokenPair === null){
-        // TODO: Raise error or something
-        alert("Wrong password?");
+    // Do Login
+    let tokenPair: TokenPair
+    try{
+        tokenPair = await authAPI.userLogin(email, password);
+    } catch(error){
+        if (error instanceof UnauthorizedError){
+            alert(error.message);
+        }
         return;
     }
+    console.log(tokenPair)
     // Add tokens to store
     tokens.set(tokenPair)
     localStorage.setItem('username', email);
-    let userDetail = await userAPI.getUserDetail(email);
-    
-    if (userDetail === null){
-        alert("Cannot get user detail!");
-        return;
-    }
-    userDetailStore.set(userDetail);
 
+    userDetailStore.update(value => {
+        value.username = email
+        return value
+    })
     // Dispatch the "close" event to close the modal
     dispatch('close');
 }
