@@ -63,7 +63,7 @@ class AuthAPI {
 
         if (response.status == 400){
             console.log(response.data);
-            const fieldsError = response.data as Object
+            const fieldsError = response.data as object
             throw new FieldsError("Bad Request", fieldsError)
         }
     }
@@ -157,7 +157,7 @@ class UserAPI {
 
         if (response.status == 400){
             console.log(response.data);
-            const fieldsError = response.data as Object
+            const fieldsError = response.data as object
             throw new FieldsError("Bad Request", fieldsError)
         }
 
@@ -201,7 +201,7 @@ class UserAPI {
         }
         if (response.status == 400){
             console.log(response.data);
-            const fieldsError = response.data as Object
+            const fieldsError = response.data as object
             throw new FieldsError("Bad Request", fieldsError)
         }
     }
@@ -229,7 +229,7 @@ class UserAPI {
         }
         if (response.status == 400){
             console.log(response.data);
-            const fieldsError = response.data as Object
+            const fieldsError = response.data as object
             throw new FieldsError("Bad Request", fieldsError)
         }
         return response.data.avatar;
@@ -274,7 +274,7 @@ class HomestayAPI {
             }  
         }
     
-        const data = response.data as Array<any>;
+        const data = response.data as Array<Record<string, string | number>>;
         const homestays: HomestayInfo[] = data.map((homestayRecord: Record<string, string | number>) => {
             const homestay: HomestayInfo = {
                 id: homestayRecord.id as string,
@@ -308,14 +308,16 @@ class HomestayAPI {
             }  
         }
     
-        const data = response.data as Array<any>;
+        const data = response.data as Array<Record<string, string | number>>;
         const homestays: HomestayInfo[] = data.map((homestayRecord: Record<string, string | number>) => {
             const homestay: HomestayInfo = {
                 id: homestayRecord.id as string,
+                managerID: homestayRecord.manager_id as string,
                 name: homestayRecord.name as string,
                 description: homestayRecord.description as string,
                 address: homestayRecord.district + ", " + homestayRecord.city,
-                price: homestayRecord.price as number
+                price: homestayRecord.price as number,
+                imageLink: extractUrl(homestayRecord.image as string)
             }
             return homestay;
         });

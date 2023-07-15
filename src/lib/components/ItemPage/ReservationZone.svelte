@@ -9,9 +9,7 @@
 	let checkinDate: Date;
 	let checkoutDate: Date;
 
-	$: checkinDateString =  checkinDate?checkinDate.toLocaleDateString(): "Add Date";
-	$: checkoutdateString = checkoutDate?checkoutDate.toLocaleDateString(): "Add Date";
-	const flatpickrOptions = { inline: true, static: true, wrap: true };
+	const flatpickrOptions = {};
 </script>
 
 <div
@@ -33,26 +31,21 @@
 		<div class="grid grid-cols-2 rounded-xl border-2 border-[#555555] justify-items-center">
 			<div class="flex pl-3 py-3 flex-col w-full border-r border-r-[#555555]">
 				<div class="font-bold text-md font-lato">CHECK-IN</div>
-				<div class="text-[#555555] text-xl">{checkinDateString}</div>
+				<Flatpickr options={flatpickrOptions} bind:value={checkinDate} element="#checkin">
+					<div class="flatpickr" id="checkin">
+						<input type="text" class="w-full" data-input />
+					</div>
+				</Flatpickr>
 			</div>
 			<div class="flex pl-3 py-3 flex-col w-full border-l border-l-[#555555]">
 				<div class="font-bold text-md font-lato">CHECK-OUT</div>
-				<div class="text-[#555555] text-xl">{checkoutdateString}</div>
+				<Flatpickr options={flatpickrOptions} bind:value={checkoutDate} element="#checkout">
+					<div class="flatpickr" id="checkout">
+						<input type="text" class="w-full" data-input />
+					</div>
+				</Flatpickr>
 			</div>
 		</div>
-	</div>
-
-	<div class="flex flex-row justify-center space-x-5 mt-4">
-		<Flatpickr options={flatpickrOptions} bind:value={checkinDate} element="#checkin">
-			<div class="flatpickr hidden" id="checkin">
-				<input class="hidden" type="text" data-input />
-			</div>
-		</Flatpickr>
-		<Flatpickr options={flatpickrOptions} bind:value={checkoutDate} element="#checkout">
-			<div class="flatpickr hidden" id="checkout">
-				<input class="hidden" type="text" data-input />
-			</div>
-		</Flatpickr>
 	</div>
 	
 	<div class="flex flex-row justify-end items-center space-x-5 mt-7">
