@@ -42,7 +42,7 @@
     <form on:submit|preventDefault={handleSubmit}>
       <div class="mb-6">
         <label class="block text-lg font-bold mb-2 text-gray-700" for="email-input">
-          Email:
+          Username:
         </label>
         <input class="w-full py-2 px-3 rounded border border-gray-300 text-lg text-gray-700" 
           type="text" id="email-input" bind:value={email} required />

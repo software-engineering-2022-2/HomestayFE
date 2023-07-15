@@ -1,6 +1,11 @@
 <script lang="ts">
+	import { goto } from "$app/navigation";
     import Center from "$lib/components/Center.svelte";
     import Item from "./Item.svelte";
+
+    function showAllHomestays() {
+        goto(`/homestay`);
+    }
 </script>
 
 <Center className="pt-20">
@@ -15,7 +20,5 @@
 </div>
 
 <Center>
-    <a href="/homestay/" class="cursor-pointer">
-        <button class="bg-[#E86A33] hover:bg-[#d1582d] text-white w-[200px] h-[40px] rounded-xl text-xl font-semibold">View all offers</button>
-    </a>
+    <button on:click={showAllHomestays} class="bg-[#E86A33] hover:bg-[#d1582d] text-white w-[200px] h-[40px] rounded-xl text-xl font-semibold">View all offers</button>
 </Center>

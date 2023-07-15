@@ -67,153 +67,121 @@
 	}
 </script>
 
-<div
-	class="bg-white w-[41.5rem] h-[42rem] rounded-xl flex flex-col items-center py-6 px-12 space-y-6 justify-between"
->
-	<div class="text-[#374151] font-bold underline text-3xl">User profile</div>
+<div class="bg-white w-[42rem] h-[42rem] rounded-xl flex flex-col items-center py-6 px-12 space-y-6 justify-between">
+	<div class="text-[#374151] font-bold text-3xl">User profile</div>
 
-	<div class="overflow-clip rounded-full h-[10rem] w-[10rem] border border-black">
+	<div class="overflow-clip rounded-full h-[10rem] w-[8.7rem] border-2 border-gray-500">
 		<div class="relative flex flex-col items-center">
 			{#if $userDetailStore.avatar}
-			<div><img class="h-[10rem] w-[10rem] object-cover" src={`${BACKEND_MEDIA_URL}/${$userDetailStore.avatar}`} alt="" /></div>
+				<div><img class="h-[10rem] w-[8.7rem] object-cover" src={`${BACKEND_MEDIA_URL}/${$userDetailStore.avatar}`} alt=""/></div>
 			{:else}
-			<iconify-icon class="text-[10rem] rounded-full" icon="healthicons:ui-user-profile" />
+				<iconify-icon class="text-[10rem] rounded-full" icon="healthicons:ui-user-profile" />
 			{/if}
 			
-			<div class="absolute bottom-0 w-[8.4rem] h-[2.3rem] text-white bg-[#374151B2]">
+			<div class="absolute bottom-2 w-[8.4rem] h-[5rem] text-white">
 				<input bind:files={files} accept="image/*" id="avatar-upload" style="display: none;" type="file" on:change={updateAvatar}>
 				<button class="h-full w-full" on:click={openFileDialog}>Replace</button>
 			</div>
 		</div>
 	</div>
 
-	<div class="grid grid-cols-2 self-start w-full">
+	<div class="grid grid-cols-2 self-start w-full gap-3">
 		<div>
-			<div class="key">First name</div>
+			<div class="text-xl">First name</div>
 			{#if isEditing}
-				<input class="w-full value_input" type="text" bind:value={formUserDetail.firstName} />
+				<input class="w-full value_input border-2 rounded" type="text" bind:value={formUserDetail.firstName} />
 			{:else}
-				<div class="value">
+				<div class="text-lg text-gray-500">
 					{$userDetailStore.firstName === '' ? 'Unfilled' : $userDetailStore.firstName}
 				</div>
 			{/if}
 		</div>
 		<div>
-			<div class="key">Last name</div>
+			<div class="text-xl">Last name</div>
 
 			{#if isEditing}
-				<input class="w-full value_input" type="text" bind:value={formUserDetail.lastName} />
+				<input class="w-full value_input border-2 rounded" type="text" bind:value={formUserDetail.lastName} />
 			{:else}
-				<div class="value">
+				<div class="text-lg text-gray-500">
 					{$userDetailStore.lastName === '' ? 'Unfilled' : $userDetailStore.lastName}
 				</div>
 			{/if}
 		</div>
 		<div>
-			<div class="key">Username</div>
-			<div class="value">{$userDetailStore.username}</div>
+			<div class="text-xl">Username</div>
+			<div class="text-lg text-gray-500">{$userDetailStore.username}</div>
 		</div>
-		<div class="flex flex-row items-center">
-			<button class="key">Password</button> 
-			<button on:click={()=> isPasswordEditing = true}><iconify-icon icon="bxs:edit"></iconify-icon></button>
+		<div>
+			<button class="text-xl">Password</button> 
+			<button class="text-lg" on:click={()=> isPasswordEditing = true}><iconify-icon icon="bxs:edit"></iconify-icon></button>
 			{#if isPasswordEditing}
 				<ChangePasswordModal on:submit={handleChangePassword} on:cancel={()=> isPasswordEditing = false}></ChangePasswordModal>
+			{:else}
+				<div>*****</div>
 			{/if}
 		</div>
 		<div>
-			<div class="key">Phone</div>
+			<div class="text-xl">Phone</div>
 
 			{#if isEditing}
-				<input class="w-full value_input" type="text" bind:value={formUserDetail.phoneNumber} />
+				<input class="w-full value_input border-2 rounded" type="text" bind:value={formUserDetail.phoneNumber} />
 			{:else}
-				<div class="value">{$userDetailStore.phoneNumber || 'Unfilled'}</div>
+				<div class="text-lg text-gray-500">{$userDetailStore.phoneNumber || 'Unfilled'}</div>
 			{/if}
 		</div>
 		<div>
-			<div class="key">Email</div>
+			<div class="text-xl">Email</div>
 			{#if isEditing}
-				<input class="w-full value_input" type="email" bind:value={formUserDetail.email} />
+				<input class="w-full value_input border-2 rounded" type="email" bind:value={formUserDetail.email} />
 			{:else}
-				<div class="value">{$userDetailStore.email || 'Unfilled'}</div>
+				<div class="text-lg text-gray-500">{$userDetailStore.email || 'Unfilled'}</div>
 			{/if}
 		</div>
 	</div>
 
-	<div class="grid grid-cols-2 self-start w-full">
+	<div class="grid grid-cols-2 self-start w-full gap-3">
 		<div>
-			<div class="key">Street number</div>
+			<div class="text-xl">Street number</div>
 
 			{#if isEditing}
-				<input class="w-full value_input" type="text" bind:value={formUserDetail.streetNumber} />
+				<input class="w-full value_input border-2 rounded" type="text" bind:value={formUserDetail.streetNumber} />
 			{:else}
-				<div class="value">{$userDetailStore.streetNumber || 'Unfilled'}</div>
+				<div class="text-lg text-gray-500">{$userDetailStore.streetNumber || 'Unfilled'}</div>
 			{/if}
 		</div>
 		<div>
-			<div class="key">Street name</div>
+			<div class="text-xl">Street name</div>
 			{#if isEditing}
-				<input class="w-full value_input" type="text" bind:value={formUserDetail.streetName} />
+				<input class="w-full value_input border-2 rounded" type="text" bind:value={formUserDetail.streetName} />
 			{:else}
-				<div class="value">{$userDetailStore.streetName || 'Unfilled'}</div>
+				<div class="text-lg text-gray-500">{$userDetailStore.streetName || 'Unfilled'}</div>
 			{/if}
 		</div>
 		<div>
-			<div class="key">District</div>
+			<div class="text-xl">District</div>
 			{#if isEditing}
-				<input class="w-full value_input" type="text" bind:value={formUserDetail.district} />
+				<input class="w-full value_input border-2 rounded" type="text" bind:value={formUserDetail.district} />
 			{:else}
-				<div class="value">{$userDetailStore.district || 'Unfilled'}</div>
+				<div class="text-lg text-gray-500">{$userDetailStore.district || 'Unfilled'}</div>
 			{/if}
 		</div>
 		<div>
-			<div class="key">City</div>
+			<div class="text-xl">City</div>
 			{#if isEditing}
-				<input class="w-full value_input" type="text" bind:value={formUserDetail.city} />
+				<input class="w-full value_input border-2 rounded" type="text" bind:value={formUserDetail.city} />
 			{:else}
-				<div class="value">{$userDetailStore.city || 'Unfilled'}</div>
+				<div class="text-lg text-gray-500">{$userDetailStore.city || 'Unfilled'}</div>
 			{/if}
 		</div>
 	</div>
 
 	<div>
         {#if isEditing}
-            <button class="button_text rounded-xl bg-[#41644A] w-[10rem] h-[2.5rem]" on:click={updateProfile}>Update profile</button>
+            <button class="text-lg text-white rounded-xl bg-[#41644A] w-[10rem] h-[2.5rem]" on:click={updateProfile}>Update profile</button>
         {:else}
-            <button class="button_text rounded-xl bg-[#41644A] w-[10rem] h-[2.5rem]" on:click={() => (isEditing = true)}>Edit</button>
+            <button class="text-lg text-white rounded-xl bg-[#41644A] w-[10rem] h-[2.5rem]" on:click={() => (isEditing = true)}>Edit</button>
         {/if}
 	</div>
 </div>
 
-<style>
-	.key {
-		color: #374151;
-		font-size: 1.25rem;
-		font-style: normal;
-		font-weight: 600;
-		line-height: normal;
-	}
 
-	.value {
-		color: #777;
-		font-size: 1.125rem;
-		font-style: normal;
-		font-weight: 600;
-		line-height: normal;
-	}
-
-	input {
-		color: #9a9595;
-		font-size: 1.125rem;
-		font-style: normal;
-		font-weight: 400;
-		border: 1px solid black;
-		line-height: normal;
-	}
-	.button_text {
-		color: #fff;
-		font-size: 1.125rem;
-		font-style: normal;
-		font-weight: 600;
-		line-height: normal;
-	}
-</style>
