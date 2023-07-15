@@ -5,7 +5,7 @@ enum StarType{
 }
 
 interface HomestayInfo {
-    id?: string
+    id: string
     managerID: string
     name: string
     description: string
@@ -20,6 +20,20 @@ interface ManagerInfo {
     name: string
     avatarLink: string
     numHomestays: number
+}
+
+interface IServiceType {
+    id: number,
+    name: string
+}
+
+interface IService {
+    id: number,
+    price: number,
+    description: string,
+    availability: boolean,
+    service_type_id: number,
+    service_type: IServiceType
 }
 
 interface PricingConfig {
@@ -58,4 +72,6 @@ export {StarType,
     type ManagerInfo,
     type PricingConfig, 
     type Review, 
-    type TokenPair};
+    type TokenPair,
+    type IService,
+    type IServiceType};

@@ -1,5 +1,10 @@
 <script lang="ts">
+    import type {HomestayInfo, IService} from '$lib/types/types'
     import MoreInfo from "./MoreInfo.svelte";
+    import { getContext } from "svelte";
+
+    const homestayInfo: HomestayInfo = getContext("homestayInfo") 
+    const homestayServices: IService[] =  getContext("homestayServices")
 </script>
 
 <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
@@ -9,7 +14,7 @@
                 <label class="block uppercase tracking-wide text-gray-700 text-sm font-bold mb-2" for="grid-first-name">
                     Homestay Name
                 </label>
-                <input class="appearance-none block w-full bg-gray-200 text-gray-700 border-2 border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-first-name" type="text" placeholder="Homestay Name">
+                <input class="appearance-none block w-full bg-gray-200 text-gray-700 border-2 border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-first-name" type="text" placeholder={homestayInfo.name} disabled>
             </div>
         </div>
         <div class="-mx-3 md:flex mb-6">
@@ -46,18 +51,14 @@
                     Additional services
                 </label>
                 <div class="grid grid-cols-2 gap-2">
-                    <label class="inline-flex items-center">
-                        <input type="checkbox" class="form-checkbox h-5 w-5 text-gray-600" name="breakfast" value="breakfast" id="grid-breakfast">
-                        <span class="ml-2 text-gray-700">Breakfast</span>
-                    </label>
-                    <label class="inline-flex items-center">
-                        <input type="checkbox" class="form-checkbox h-5 w-5 text-gray-600" name="bikes" value="bikes" id="grid-bikes">
-                        <span class="ml-2 text-gray-700">Bike renting</span>
-                    </label>
-                    <label class="inline-flex items-center">
-                        <input type="checkbox" class="form-checkbox h-5 w-5 text-gray-600" name="bikes" value="bikes" id="grid-bikes">
-                        <span class="ml-2 text-gray-700">Sauna</span>
-                    </label>
+                    {#each homestayServices as service}
+                        {#if service.availability}
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="form-checkbox h-5 w-5 text-gray-600" name={service.service_type.name} value={service.id}>
+                                <span class="ml-2 text-gray-700">{service.service_type.name}</span>
+                            </label>
+                        {/if}
+                    {/each}
                     <!-- add more services here -->
                 </div>
             </div>

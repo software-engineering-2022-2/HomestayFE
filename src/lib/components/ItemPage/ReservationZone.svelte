@@ -5,6 +5,7 @@
 
 	import 'flatpickr/dist/flatpickr.css';
 	import 'flatpickr/dist/themes/material_green.css';
+	import { goto } from '$app/navigation';
 
 	let checkinDate: Date;
 	let checkoutDate: Date;
@@ -50,6 +51,6 @@
 	
 	<div class="flex flex-row justify-end items-center space-x-5 mt-7">
 		<button class="text-[#555555] text-xl underline underline-offset-4">Clear dates</button>
-		<button class="text-xl py-2 px-10 rounded-xl bg-[#41644A] font-bold text-white">Reserve</button>
+		<button on:click={()=> goto(`/homestay/${$homestayInfo.id}/booking`)} class="text-xl py-2 px-10 rounded-xl bg-[#41644A] font-bold text-white">Reserve</button>
 	</div>
 </div>

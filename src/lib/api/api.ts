@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import type { AxiosResponse } from 'axios';
-import type {HomestayInfo, ManagerInfo, TokenPair, UserDetail} from '$lib/types/types'
+import type {HomestayInfo, IService, ManagerInfo, TokenPair, UserDetail} from '$lib/types/types'
 import { get } from 'svelte/store';
 import { authHeader, noAuthHeader, uploadAvatarHeader } from './headers';
 import { FieldsError, UnauthorizedError, NotFoundError } from './exception';
@@ -251,6 +251,7 @@ class HomestayAPI {
         }
     
         const homestayInfo: HomestayInfo = {
+            id: response.data.id,
             name: response.data.name,
             managerID: response.data.manager_id,
             description: response.data.description,
@@ -349,8 +350,27 @@ class ManagerAPI {
     }
 }
 
+class ServiceAPI {
+    async getHomestayServices(homestayID: string): Promise<IService[]> {
+        let response: AxiosResponse
+        try {
+            response = await axios.get(`${HOMESTAY_API}${homestayID}/services/`,
+                get(noAuthHeader));
+        } catch (err) {
+            if (err instanceof AxiosError){
+                response = err.response as AxiosResponse
+            } else {
+                throw Error("Nothing")
+            }  
+        }
+        const homestayServices = response.data as IService[]
+        return homestayServices;
+    }
+}
+
 export const authAPI = new AuthAPI();
 export const userAPI = new UserAPI();
 export const homestayAPI = new HomestayAPI();
 export const managerAPI = new ManagerAPI();
+export const serviceAPI = new ServiceAPI();
 

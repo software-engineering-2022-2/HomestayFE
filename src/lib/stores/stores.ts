@@ -1,5 +1,4 @@
 import { writable } from "svelte/store";
-import { get } from 'svelte/store';
 
 import type { HomestayInfo, ManagerInfo, UserDetail } from "$lib/types/types";
 
@@ -38,6 +37,7 @@ export function clearUserDetailStore(){
 export {userDetailStore};
 
 export const homestayInfo = writable<HomestayInfo>({
+    id: "",
     name: "",
     managerID: "",
     description: "",
