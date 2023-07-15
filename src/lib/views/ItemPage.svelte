@@ -3,13 +3,13 @@ import Header from "$lib/components/NavBar/Header.svelte";
 import HomestayInfo from "$lib/components/ItemPage/HomestayInfo.svelte";
 import ImageGroup from "$lib/components/ItemPage/ImageGroup.svelte";
 import Center from "$lib/components/Center.svelte";
-import HostInfo from "$lib/components/ItemPage/HostInfo.svelte";
+import HostInfo from "$lib/components/ItemPage/ManagerInfo.svelte";
 import HomestayDescription from "$lib/components/ItemPage/HomestayDescription.svelte";
 import PricingConfiguration from "$lib/components/ItemPage/PricingConfiguration.svelte";
 import IncludedServices from "$lib/components/ItemPage/IncludedServices.svelte";
 import HomestayReviews from "$lib/components/ItemPage/HomestayReviews.svelte";
 import ReservationZone from "$lib/components/ItemPage/ReservationZone.svelte";
-import DetailHostInfo from "$lib/components/ItemPage/DetailHostInfo.svelte";
+import DetailHostInfo from "$lib/components/ItemPage/DetailManagerInfo.svelte";
 import Footer from "$lib/components/LandingPage/Footer.svelte";
 
 </script>

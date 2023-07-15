@@ -17,9 +17,9 @@
 
 <Center>
 	<div class="grid grid-cols-4 gap-x-8 gap-y-8 mx-8" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
-        {#each data.info as { id, name, description, address, price}}
+        {#each data.info as { id, name, description, address, price, imageLink}}
         <a href="homestay/{id}">
-            <Item address={address} price={price}></Item>
+            <Item {address} {price} {imageLink}></Item>
         </a>
         {/each}
     </div>

@@ -10,6 +10,7 @@
 	export let avgRating = 4.8;
 	export let price = 123;
 	export let hostName = "Long Hoang";
+	export let imageLink = "";
 
 </script>
 
@@ -31,9 +32,9 @@
 			<div class="basis-1/3" />
 		</div>
 		{#each images as src, imageIndex (src)}
-			<div class="img-container min-w-[17.5rem] min-h-[16.5rem]">
+			<div class="img-container min-w-[17.5rem] h-[16.5rem]">
 				{#if loaded.includes(imageIndex)}
-					<img class="w-full h-full object-cover" {src} alt="" />
+					<img class="w-full h-full object-cover" src="{imageLink}" alt="" />
 				{/if}
 			</div>
 		{/each}
