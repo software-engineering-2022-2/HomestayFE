@@ -1,4 +1,5 @@
 <script lang="ts">
+    // export let imgPath = "/";
 </script>
 
 <div class="flex flex-col rounded-xl overflow-hidden">

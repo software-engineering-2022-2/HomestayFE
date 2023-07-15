@@ -1,5 +1,4 @@
 <script lang="ts">
-    import MenuBar from "./MenuBar.svelte";
     import AuthenMenu from '../Authen/AuthenMenu.svelte';
 	import ProfileMenu from '../Profile/ProfileMenu.svelte';
     
@@ -18,6 +17,4 @@
             <ProfileMenu/>
         {/if }
     </div>
-
-    <MenuBar></MenuBar>    
 </div>

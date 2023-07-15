@@ -1,5 +1,3 @@
-<!-- <div class="bg-homestay-bg min-w-full h-auto object-contain"> -->
-
 <script lang="ts">
     import SearchBar from "$lib/components/LandingPage/SearchBar.svelte";
     import Offer from "$lib/components/LandingPage/Offer.svelte";
