@@ -11,19 +11,8 @@
 	import { onMount } from "svelte";
     import { browser } from "$app/environment";
     import { reloadStore } from "$lib/stores/reload";
-
-    async function getUserDetail() {
-        // Do token verification
-        if (get(tokens).token !== ""){
-            let userDetail = await userAPI.getUserDetail(get(userDetailStore).username);
-            if (userDetail !== null){
-                userDetailStore.set(userDetail);
-            } else {
-                reloadStore.set(true); 
-            }
-        }
-    }
-
+	import type { UserDetail } from "$lib/types/types";
+	import { NotFoundError, UnauthorizedError } from "$lib/api/exception";
 
     // Reload when value is set to true
     reloadStore.subscribe((value) => {
@@ -33,6 +22,26 @@
             reloadStore.set(false);
         }
     })
+
+    async function getUserDetail() {
+        // Do token verification
+        let userDetail: UserDetail
+        if (get(tokens).token !== ""){
+            try {
+                userDetail = await userAPI.getUserDetail(get(userDetailStore).username);
+            } catch (error){
+                if (error instanceof UnauthorizedError){
+                    // alert(error.message)
+                }
+                if (error instanceof NotFoundError){
+                    // alert(error.message)
+                }
+                reloadStore.set(true); 
+                return;
+            }
+            userDetailStore.set(userDetail);
+        }
+    }
 
     onMount(() => {
         getUserDetail();
