@@ -51,7 +51,7 @@
     <button on:click={toggleDropdown}>
       <!-- TODO: Change avatar -->
       {#if $userDetailStore && $userDetailStore.avatar}
-        <div class="px-4"><img class="w-[2rem] h-[2rem] object-cover" alt="" src={`${BACKEND_MEDIA_URL}/${$userDetailStore.avatar}`}></div>
+        <div class="px-4"><img class="w-[2rem] h-[2rem] object-cover rounded border-white border-2" alt="" src={`${BACKEND_MEDIA_URL}/${$userDetailStore.avatar}`}></div>
       {:else}
         <iconify-icon class="text-4xl px-4" icon="healthicons:ui-user-profile"></iconify-icon>
       {/if }
