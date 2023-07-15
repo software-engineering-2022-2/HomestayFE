@@ -23,9 +23,29 @@
         }
     })
 
-    // onMount(() => {
-    //     getUserDetail();
-    // });
+    async function getUserDetail() {
+        // Do token verification
+        let userDetail: UserDetail
+        if (get(tokens).token !== ""){
+            try {
+                userDetail = await userAPI.getUserDetail(get(userDetailStore).username);
+            } catch (error){
+                if (error instanceof UnauthorizedError){
+                    // alert(error.message)
+                }
+                if (error instanceof NotFoundError){
+                    // alert(error.message)
+                }
+                reloadStore.set(true); 
+                return;
+            }
+            userDetailStore.set(userDetail);
+        }
+    }
+
+    onMount(() => {
+        getUserDetail();
+    });
 </script>
   
 

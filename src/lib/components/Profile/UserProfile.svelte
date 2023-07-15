@@ -9,8 +9,6 @@
 	import ChangePasswordModal from './ChangePasswordModal.svelte';
 	import { BACKEND_MEDIA_URL } from '$lib/api/api';
 	import { UnauthorizedError, FieldsError, NotFoundError} from '$lib/api/exception';
-	import { onMount } from 'svelte';
-	import { tokens } from '$lib/api/headers';
 
 	$: if (browser && $userDetailStore.username === '') {
 		goto('/');
@@ -23,30 +21,9 @@
 		last_name: ""
 	};
 
-	async function getUserDetail() {
-        // Do token verification
-        let userDetail: UserDetail
-        if (get(tokens).token !== ""){
-            try {
-                userDetail = await userAPI.getUserDetail(get(userDetailStore).username);
-            } catch (error){
-                if (error instanceof UnauthorizedError){
-                    // alert(error.message)
-                }
-                if (error instanceof NotFoundError){
-                    // alert(error.message)
-                }
-                reloadStore.set(true); 
-                return;
-            }
-            userDetailStore.set(userDetail);
-        }
-    }
-
-	onMount(async () => {
-		await getUserDetail();
+	$: if (isEditing){
 		formUserDetail = Object.assign({}, get(userDetailStore));
-	})
+	}
 
 	async function updateProfile() {
 		formUserDetail.avatar = undefined
