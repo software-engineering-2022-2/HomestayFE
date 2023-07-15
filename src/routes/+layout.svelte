@@ -14,27 +14,6 @@
 	import type { UserDetail } from "$lib/types/types";
 	import { NotFoundError, UnauthorizedError } from "$lib/api/exception";
 
-    async function getUserDetail() {
-        // Do token verification
-        let userDetail: UserDetail
-        if (get(tokens).token !== ""){
-            try {
-                userDetail = await userAPI.getUserDetail(get(userDetailStore).username);
-            } catch (error){
-                if (error instanceof UnauthorizedError){
-                    // alert(error.message)
-                }
-                if (error instanceof NotFoundError){
-                    // alert(error.message)
-                }
-                reloadStore.set(true); 
-                return;
-            }
-            userDetailStore.set(userDetail);
-        }
-    }
-
-
     // Reload when value is set to true
     reloadStore.subscribe((value) => {
         if (browser && value){
@@ -44,9 +23,9 @@
         }
     })
 
-    onMount(() => {
-        getUserDetail();
-    });
+    // onMount(() => {
+    //     getUserDetail();
+    // });
 </script>
   
 

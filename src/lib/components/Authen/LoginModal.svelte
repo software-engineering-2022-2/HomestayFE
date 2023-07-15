@@ -27,21 +27,10 @@ async function handleSubmit() {
     tokens.set(tokenPair)
     localStorage.setItem('username', email);
 
-    // Do Get User Profile
-    let userDetail: UserDetail
-    try {
-        userDetail = await userAPI.getUserDetail(email);
-    } catch(error){
-        if (error instanceof UnauthorizedError){
-            alert(error.message)
-        }
-        if (error instanceof NotFoundError){
-            alert(error.message)
-        }
-        return;
-    }
-    userDetailStore.set(userDetail);
-
+    userDetailStore.update(value => {
+        value.username = email
+        return value
+    })
     // Dispatch the "close" event to close the modal
     dispatch('close');
 }

@@ -120,15 +120,15 @@ class UserAPI {
 
         const userDetail: UserDetail = {
             username: response.data.username,
-            firstName: response.data.first_name,
-            lastName: response.data.last_name,
-            phoneNumber: response.data.phone_number,
+            first_name: response.data.first_name,
+            last_name: response.data.last_name,
+            phone_number: response.data.phone_number,
             avatar: response.data.avatar,
             city: response.data.city,
             district: response.data.district,
             email: response.data.email,
-            streetName: response.data.street_name,
-            streetNumber: response.data.street_number
+            street_name: response.data.street_name,
+            street_number: response.data.street_number
         };
         return userDetail;
     }
@@ -161,15 +161,15 @@ class UserAPI {
 
         const newUserDetail: UserDetail = {
             username: response.data.username,
-            firstName: response.data.first_name,
-            lastName: response.data.last_name,
-            phoneNumber: response.data.phone_number,
+            first_name: response.data.first_name,
+            last_name: response.data.last_name,
+            phone_number: response.data.phone_number,
             avatar: response.data.avatar,
             city: response.data.city,
             district: response.data.district,
             email: response.data.email,
-            streetName: response.data.street_name,
-            streetNumber: response.data.street_number
+            street_name: response.data.street_name,
+            street_number: response.data.street_number
         };
         return newUserDetail;
     }

@@ -7,8 +7,8 @@ import { browser } from '$app/environment';
 
 const userDetail: UserDetail = {
     username: "",
-    firstName: "",
-    lastName: ""
+    first_name: "",
+    last_name: ""
 }
 
 const userDetailStore = writable(userDetail);
@@ -16,8 +16,8 @@ const userDetailStore = writable(userDetail);
 if (browser){
     userDetailStore.set({
         username: localStorage.getItem('username') || "",
-        firstName: "",
-        lastName: ""
+        first_name: "",
+        last_name: ""
     })
 }
 
@@ -30,8 +30,8 @@ userDetailStore.subscribe((value) => {
 export function clearUserDetailStore(){
     userDetailStore.set({
         username: "",
-        firstName: "",
-        lastName: ""
+        first_name: "",
+        last_name: ""
     })
 }
 
