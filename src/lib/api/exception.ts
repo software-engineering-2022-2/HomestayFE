@@ -1,4 +1,4 @@
-import type { UpdateProfileErrorResponse } from "$lib/types/types";
+
 
 export class NetworkError extends Error {
     constructor(msg: string) {
@@ -16,6 +16,14 @@ export class UnauthorizedError extends Error {
     }
 }
 
+export class NotFoundError extends Error {
+    constructor(msg: string) {
+        super(msg);
+        // Set the prototype explicitly.
+        Object.setPrototypeOf(this, NotFoundError.prototype);
+    }
+}
+
 export class TokenError extends Error {
     constructor(msg: string) {
         super(msg);
@@ -25,9 +33,9 @@ export class TokenError extends Error {
 }
 
 export class FieldsError extends Error {
-    errorFields: UpdateProfileErrorResponse;
+    errorFields: Object;
 
-    constructor(msg: string, errorFields: UpdateProfileErrorResponse) {
+    constructor(msg: string, errorFields:  Object) {
         super(msg);
         this.errorFields = errorFields
         // Set the prototype explicitly.
@@ -36,14 +44,8 @@ export class FieldsError extends Error {
 
     getMessage(){
         const myArray = [];
-        if (this.errorFields.username){
-            myArray.push(...this.errorFields.username)
-        }
-        if (this.errorFields.phone_number){
-            myArray.push(...this.errorFields.phone_number)
-        }
-        if (this.errorFields.email){
-            myArray.push(...this.errorFields.email)
+        for (const [key, value] of Object.entries(this.errorFields)){
+            myArray.push(...value)
         }
         return myArray.join("\n")
     }

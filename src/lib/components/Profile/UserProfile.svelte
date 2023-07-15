@@ -8,6 +8,7 @@
 	import { reloadStore } from '$lib/stores/reload';
 	import ChangePasswordModal from './ChangePasswordModal.svelte';
 	import { BACKEND_MEDIA_URL } from '$lib/api/api';
+	import { UnauthorizedError, FieldsError} from '$lib/api/exception';
 
 	$: if (browser && $userDetailStore.username === '') {
 		goto('/');
@@ -22,24 +23,39 @@
 
 	async function updateProfile() {
 		formUserDetail.avatar = undefined
-		const newUserDetail = await userAPI.updateUserDetail($userDetailStore.username, formUserDetail);
-		if (newUserDetail !== null) {
-			userDetailStore.set(newUserDetail);
-		} else {
+		let newUserDetail: UserDetail
+		try {
+			newUserDetail = await userAPI.updateUserDetail($userDetailStore.username, formUserDetail);
+		} catch (error) {
+			if (error instanceof UnauthorizedError){
+				alert(error.message)
+			}
+			if (error instanceof FieldsError){
+				alert(error.getMessage())
+			}
 			reloadStore.set(true);
-		}
+			return;
+		}	
+		userDetailStore.set(newUserDetail);
 		isEditing = false;
 	}
 
 	async function handleChangePassword(event: { detail: { password: string; newPassword: string } }){
 		const { password, newPassword } = event.detail;
-		const result = await userAPI.updatePassword($userDetailStore.username, password, newPassword);
-		if (result){
-			alert('Change password success!');
-		} else {
-			alert('Change password failed!');
+		try {
+			await userAPI.updatePassword($userDetailStore.username, password, newPassword);
+		} catch (error){
+			if (error instanceof UnauthorizedError){
+				alert(error.message)
+			}
+			if (error instanceof FieldsError){
+				alert(error.getMessage())
+			}
+			return;
+		} finally {
+			isPasswordEditing = false;
 		}
-		isPasswordEditing = false;
+		alert('Change password success!')
 	}
 
 	async function openFileDialog() {
@@ -53,16 +69,23 @@
 
 	async function updateAvatar() {
 		if (files && files[0]){
-			const avatar = await userAPI.updateAvatar($userDetailStore.username, files[0]);
-			if (avatar){
-				userDetailStore.update(storeValue => {
-					storeValue.avatar = avatar;
-					return storeValue;
-				});
-				alert("Upload Image Success");
-			} else {
-				alert("Upload Image Failed");
+			let avatar: string
+			try {
+				avatar = await userAPI.updateAvatar($userDetailStore.username, files[0]);
+			} catch (error){
+				if (error instanceof UnauthorizedError){
+					alert(error.message)
+				}
+				if (error instanceof FieldsError) {
+					alert(error.getMessage())
+				}
+				return;
 			}
+			userDetailStore.update(storeValue => {
+				storeValue.avatar = avatar;
+				return storeValue;
+			});
+			alert("Upload Image Success");
 		}
 	}
 </script>

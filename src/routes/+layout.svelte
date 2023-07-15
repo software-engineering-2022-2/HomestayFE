@@ -11,16 +11,26 @@
 	import { onMount } from "svelte";
     import { browser } from "$app/environment";
     import { reloadStore } from "$lib/stores/reload";
+	import type { UserDetail } from "$lib/types/types";
+	import { NotFoundError, UnauthorizedError } from "$lib/api/exception";
 
     async function getUserDetail() {
         // Do token verification
+        let userDetail: UserDetail
         if (get(tokens).token !== ""){
-            let userDetail = await userAPI.getUserDetail(get(userDetailStore).username);
-            if (userDetail !== null){
-                userDetailStore.set(userDetail);
-            } else {
+            try {
+                userDetail = await userAPI.getUserDetail(get(userDetailStore).username);
+            } catch (error){
+                if (error instanceof UnauthorizedError){
+                    // alert(error.message)
+                }
+                if (error instanceof NotFoundError){
+                    // alert(error.message)
+                }
                 reloadStore.set(true); 
+                return;
             }
+            userDetailStore.set(userDetail);
         }
     }
 

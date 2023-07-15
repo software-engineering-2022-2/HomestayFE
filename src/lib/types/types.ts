@@ -39,12 +39,6 @@ interface TokenPair{
     refreshToken: string
 }
 
-export interface UpdateProfileErrorResponse {
-    username?: string[];
-    phone_number?: string[];
-    email?: string[];
-}
-
 export interface UserDetail{
     username: string,
     firstName: string,
