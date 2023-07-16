@@ -50,14 +50,15 @@ export const homestayInfo = writable<HomestayInfo>({
     name: "",
     managerID: "",
     description: "",
-    stars: 0,
     numReviews: 0,
     address: "",
     price: 0,
     imageLink: "",
     max_num_adults: 0,
     max_num_children: 0,
-    pricing_config: pricingConfig
+    pricing_config: pricingConfig,
+    avg_rating: 0,
+    reviews: []
 });
 
 export const managerInfo = writable<ManagerInfo>({

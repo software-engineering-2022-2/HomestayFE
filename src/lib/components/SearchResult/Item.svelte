@@ -49,6 +49,6 @@
 		</div>
 		<div class="text-[#777] text-[1.125rem]">Stay with {hostName} · SuperHost</div>
 		<div class="text-[#777] text-[1.125rem]">Jun 20 - 25</div>
-		<div><span class="font-bold">${price}</span> night</div>
+		<div><span class="font-bold">{price} VND</span> night</div>
 	</div>
 </button>

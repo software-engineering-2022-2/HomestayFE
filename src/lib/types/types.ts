@@ -1,7 +1,15 @@
+
 enum StarType{
     FULL = 'full',
     HALF = 'half',
     NONE = 'none'
+}
+
+interface Review {
+    username: string,
+    stars: number,
+    date: string,
+    content: string
 }
 
 interface HomestayInfo {
@@ -9,14 +17,15 @@ interface HomestayInfo {
     managerID: string
     name: string
     description: string
-    stars?: number
     numReviews?: number
     address: string
     price: number
     imageLink: string
-    max_num_children: number,
-    max_num_adults: number,
+    max_num_children: number
+    max_num_adults: number
     pricing_config: IPricingConfig
+    avg_rating?: number,
+    reviews?: Review[]
 }
 
 interface ManagerInfo {
@@ -74,13 +83,6 @@ interface ReserveBookingInfo{
 interface BookingPeriod{
     from: string,
     to: string
-}
-
-interface Review {
-    username: string,
-    stars: number,
-    date: string,
-    content: string
 }
 
 interface TokenPair{
