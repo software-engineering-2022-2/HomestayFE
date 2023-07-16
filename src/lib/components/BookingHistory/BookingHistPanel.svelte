@@ -1,112 +1,100 @@
 <script lang="ts">
-  import ReviewModal from "./ReviewModal.svelte";
+  import { bookingHistStore } from "$lib/stores/stores";
+  import { userDetailStore } from "$lib/stores/stores";
+  import { bookingAPI } from "$lib/api/api";
+	import ReviewModal from "./ReviewModal.svelte";
 
-  // Define the booking object interface
-  interface Booking {
-    id: number;
-    checkIn: Date;
-    checkOut: Date;
-    totalPrice: number;
+  let showReviewPanel = false;
+  let currentBookingID: number = -1;
+
+  function toggleReview(bookingID: number) {
+    currentBookingID = bookingID;
+    showReviewPanel = !showReviewPanel;
   }
 
-  interface Rating {
-    id: number;
-    rating: number;
-    comment?: string;
-  }
-
-  const ratings: Rating[] = [];
-
-  // Define the list of past bookings
-  const pastBookings: Booking[] = [
-    {
-      id: 1111,
-      checkIn: new Date(2022, 5, 1),
-      checkOut: new Date(2022, 5, 7),
-      totalPrice: 500,
-    },
-    {
-      id: 1112,
-      checkIn: new Date(2022, 3, 15),
-      checkOut: new Date(2022, 3, 22),
-      totalPrice: 700,
-    },
-    {
-      id: 1113,
-      checkIn: new Date(2021, 10, 1),
-      checkOut: new Date(2021, 10, 8),
-      totalPrice: 600,
-    },
-  ];
-
-  let selectedBooking: Booking | null = null;
-
-  function rateBooking(booking: Booking) {
-    selectedBooking = booking;
-  }
-
-  // Define a function to handle the submit event from the review modal
-  function handleSubmit(event: { detail: { rating: number; review?: string } }) {
+  async function cancelBooking(bookingID: number) {
     try {
-      // Get the rating and review from the event detail
-      const { rating, review } = event.detail;
-
-      // Push a new rating object to the ratings array
-      ratings.push({
-        id: selectedBooking!.id,
-        rating,
-        comment: review,
-      });
-
-      // Show a confirmation message to the user
-      alert('Thank you for your rating and review!');
-
-      // Reset the selected booking to null
-      selectedBooking = null;
+      if (confirm("Are you sure you want to cancel this booking?")) {
+        let res = await bookingAPI.cancelBooking($userDetailStore.username, bookingID);
+        alert("Booking cancelled successfully.");
+        location.reload();
+      }
     } catch (error) {
-      console.error('Error submitting rating:', error);
-      alert('An error occurred while submitting your rating. Please try again later.');
+      console.error(error);
+      alert("Failed to cancel booking.");
     }
   }
 
-  function handleCloseModal(event: { type: string }) {
-    if (event.type === 'cancel') {
-      selectedBooking = null;
+  async function submitReview(event: { detail: { rating: number; review: string } }) {
+    try {
+      const { rating, review } = event.detail;
+      await bookingAPI.reviewBooking($userDetailStore.username, currentBookingID, review, rating);
+      alert("Review submitted successfully.");
+      location.reload();
+    } catch (error) {
+      console.error(error);
+      alert("Failed to submit booking.");
     }
   }
+
+  function showReview(comment: string | undefined, rating: number | undefined) {
+      alert("Comment: " + comment + "\nRating: " + rating);
+  }
+
 </script>
 
 <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
   <div class="bg-white shadow overflow-hidden sm:rounded-md">
     <div class="px-4 py-5 border-b border-gray-200 flex justify-center">
-      <h3 class="text-xl leading-6 text-gray-900">Booking History</h3>
+      <h3 class="text-xl leading-6 text-gray-800">Booking History</h3>
     </div>
     <ul class="divide-y divide-gray-200">
-      {#each pastBookings as booking}
-        <li class="px-4 py-5 sm:px-6">
-          <div class="flex items-center justify-between">
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center">
-                <h4 class="text-lg font-medium leading-6 text-gray-900">#{booking.id}</h4>
-                <span class="ml-3 text-md font-medium text-gray-500">{booking.checkIn.toLocaleDateString()} - {booking.checkOut.toLocaleDateString()}</span>
+      {#if $bookingHistStore}
+        {#each $bookingHistStore as booking}
+          <li class="px-4 py-5 sm:px-6">
+            <div class="flex items-center justify-between">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center">
+                  <h4 class="text-lg font-medium leading-6 text-gray-900">#{booking.id}</h4>
+                  <span class="ml-3 text-md font-medium text-gray-500">{booking.checkin_date} → {booking.checkout_date}</span>
+                </div>
+                <div class="mt-1 text-md text-gray-500">
+                  <span class="font-medium text-gray-700">Total: </span>
+                  <span class="font-medium text-blue-500">{booking.total_price.toLocaleString('en-US', { maximumFractionDigits: 0 })} VND</span>
+                </div>
               </div>
-              <div class="mt-1 text-md text-gray-500">
-                <span class="font-medium text-gray-700">Total: </span>
-                <span class="font-medium text-green-500">${booking.totalPrice.toFixed(2)}</span>
-              </div>
+              {#if booking.status === "Pending"}
+                <button on:click={() => cancelBooking(booking.id)} class="ml-4 text-gray-500 border-gray-500 border-2 font-medium py-1 px-4 rounded">
+                  Cancel
+                </button>
+                <div class="ml-4 text-orange-500 underline text-lg py-1 px-4">
+                  {booking.status}
+                </div>
+              {:else if booking.status === "cancelled"}
+                <div class="ml-4 text-gray-500 border-gray-500 underline text-lg py-1 px-4">
+                  Cancelled
+                </div>
+              {:else if booking.status === "completed"}
+                {#if !booking.rating}
+                  <button on:click={() => toggleReview(booking.id)} class="ml-4 text-green-600 border-green-600 border-2 font-medium py-1 px-4 rounded">
+                    Review
+                  </button>
+                {:else}
+                  <button on:click={() => showReview(booking.comment, booking.rating)} class="ml-4 text-gray-400 border-gray-400 border-2 font-medium py-1 px-4 rounded">
+                    Reviewed
+                  </button>
+                {/if}
+                <div class="ml-4 text-blue-500 border-blue-500 underline text-lg py-1 px-4">
+                  Completed
+                </div>
+                {#if showReviewPanel}
+                  <ReviewModal on:cancel={()=> toggleReview(-1)} on:submit={submitReview}></ReviewModal>
+                {/if}
+              {/if}
             </div>
-            <button class="ml-4 bg-[#E86A33] hover:bg-[#FF8C66] text-white font-medium py-1 px-4 rounded" type="button" on:click={() => rateBooking(booking)}>
-              Rate
-            </button>
-
-            <!-- Add a conditional rendering for the review modal -->
-            {#if selectedBooking === booking}
-              <!-- Pass the handle submit function as a prop to the review modal -->
-              <ReviewModal on:submit={handleSubmit} on:cancel={handleCloseModal} />
-            {/if}
-          </div>
-        </li>
-      {/each}
+          </li>
+        {/each}
+      {/if}
     </ul>
   </div>
 </div>

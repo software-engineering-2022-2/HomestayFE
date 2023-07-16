@@ -22,14 +22,11 @@
     }
   </script>
   
-  <!-- Add a div element to cover the whole window -->
   <div class="overlay fixed inset-0 bg-black bg-opacity-50">
-    <!-- Add some style to the modal to make it centered and visible -->
-    <!-- Increase the width to 40rem -->
     <div class="modal absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 bg-white p-8 rounded-lg w-[40rem]">
       <h2 class="text-xl font-bold text-gray-800">Rate your experience</h2>
       <div class="slider mt-4 flex items-center">
-        <input type="range" min="1" max="5" bind:value={rating} class="w-50 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-[#E86A33]" />
+        <input type="range" min="1" max="5" bind:value={rating} class="w-50 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" />
         <span class="ml-4 text-lg font-medium text-gray-800">{rating}</span>
       </div>
       <div class="textarea mt-4">

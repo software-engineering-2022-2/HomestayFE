@@ -108,7 +108,9 @@ interface BookingInfo {
     checkin_date: string,
     checkout_date: string,
     status: string,
-    total_price: number
+    total_price: number,
+    comment?: string,
+    rating?: number
 }
 
 export {StarType, 

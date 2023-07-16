@@ -12,7 +12,7 @@
     <div class="text-white underline-offset-4 underline font-semibold text-3xl">OFFERS</div>
 </Center>
 
-<div class="flex flex-row gap-x-[80px] justify-center px-16 py-16">
+<div class="flex flex-row flex-wrap justify-center px-16 py-16 gap-x-16 gap-y-12">
     <Item></Item>
     <Item></Item>
     <Item></Item>

@@ -9,7 +9,7 @@
 	export let address = "Hai Ba Trung, Hanoi";
 	export let avgRating = 4.8;
 	export let price = 123;
-	export let hostName = "Long Hoang";
+	// export let hostName = "Long Hoang";
 	export let imageLink = "";
 	export let onClick = () => {}
 </script>
@@ -47,8 +47,8 @@
 			<div class="grow-0"><Star starType={StarType.FULL} /></div>
 			<div class="grow-0 text-[#E86A33]">{avgRating}</div>
 		</div>
-		<div class="text-[#777] text-[1.125rem]">Stay with {hostName} · SuperHost</div>
+		<!-- <div class="text-[#777] text-[1.125rem]">Stay with {hostName} · SuperHost</div> -->
 		<div class="text-[#777] text-[1.125rem]">Jun 20 - 25</div>
-		<div><span class="font-bold">{price} VND</span> night</div>
+		<div><span class="font-semibold">{price.toLocaleString('en-US', { maximumFractionDigits: 0 })} VND</span> night</div>
 	</div>
 </button>
