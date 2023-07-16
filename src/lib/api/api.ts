@@ -1,12 +1,12 @@
 import axios, { AxiosError } from 'axios';
 import type { AxiosResponse } from 'axios';
-import type {HomestayInfo, 
-    IService, 
-    ManagerInfo, 
-    IBookingService,
-    TokenPair, UserDetail, IPricingConfig, ReserveBookingInfo, BookingPeriod} from '$lib/types/types'
+import type {
+    HomestayInfo, IService, ManagerInfo, IBookingService,
+    TokenPair, UserDetail, IPricingConfig, ReserveBookingInfo, 
+    BookingPeriod, BookingInfo
+} from '$lib/types/types'
 import { get } from 'svelte/store';
-import { authHeader, noAuthHeader, uploadAvatarHeader } from './headers';
+import { authHeader, noAuthHeader, tokens, uploadAvatarHeader } from './headers';
 import { FieldsError, UnauthorizedError, NotFoundError, SimpleError } from './exception';
 import { extractUrl, formatDateForBooking } from '$lib/types/utils';
 import { apiCalling } from '$lib/stores/stores';
@@ -490,8 +490,80 @@ class BookingAPI{
         const bookingPeriods = response.data as BookingPeriod[];
         return bookingPeriods;
     }
-}
 
+    async getBookingHistory(username: string): Promise<BookingInfo[]> {
+        let response: AxiosResponse;
+        try {
+            response = await axios.get(`${BOOKING_API}${username}/`,
+                get(authHeader));
+            const data = response.data;
+            const bookingInfoList: BookingInfo[] = data.map((booking: any) => {
+                return {
+                    id: booking.id,
+                    checkin_date: booking.checkin_date,
+                    checkout_date: booking.checkout_date,
+                    status: booking.status,
+                    total_price: booking.total_price,
+                    comment: booking.comment,
+                    rating: booking.rating
+                };
+            });
+            return bookingInfoList;
+        } catch (err) {
+            if (err instanceof AxiosError) {
+                response = err.response as AxiosResponse;
+                console.log(response.data.detail);
+            } else {
+                throw new Error("Something went wrong");
+            }
+            return [];
+        }
+    }
+
+    async cancelBooking(username: string, bookingID: number): Promise<void> {
+        let response: AxiosResponse;
+        try {
+            response = await axios.put(`${BOOKING_API}${username}/${bookingID}/`,
+                {
+                    status: "cancelled"
+                },
+                get(authHeader)
+            );
+            console.log(response.status);
+        } catch (err) {
+            if (err instanceof AxiosError) {
+                response = err.response as AxiosResponse;
+                console.log(response.data.detail);
+            } else {
+                throw new Error("Something went wrong");
+            }
+        }
+    }
+
+    async reviewBooking(username: string, 
+                        bookingID: number,
+                        comment: string,
+                        rating: number): Promise<void> {
+        let response: AxiosResponse;
+        try {
+            response = await axios.put(`${BOOKING_API}${username}/${bookingID}/`,
+                {
+                    comment,
+                    rating
+                },
+                get(authHeader)
+            );
+            console.log(response.status);
+        } catch (err) {
+            if (err instanceof AxiosError) {
+                response = err.response as AxiosResponse;
+                console.log(response.data.detail);
+            } else {
+                throw new Error("Something went wrong");
+            }
+        }
+    }
+}
 
 export const authAPI = new AuthAPI();
 export const userAPI = new UserAPI();

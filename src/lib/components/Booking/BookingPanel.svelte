@@ -215,7 +215,7 @@
 									bind:checked={service.checked}
 								/>
 								<span class="ml-2 text-gray-700">{service.service_type.name}</span>
-								<span class="ml-2 text-orange-500">${service.price}</span>
+								<span class="ml-2 text-orange-500">{service.price.toLocaleString('en-US', { maximumFractionDigits: 0 })} VND</span>
 							</label>
 						{/if}
 					{/each}
@@ -234,7 +234,7 @@
 			</div>
 			<div class="text-gray-700 text-md font-bold mb-2 px-3">
 				<!-- call API here -->
-				${totalPrice}
+				{totalPrice.toLocaleString('en-US', { maximumFractionDigits: 0 })} VND
 			</div>
 		</div>
 		<div class="-mx-3 md:flex mb-6">
@@ -245,7 +245,7 @@
 			</div>
 			<div class="text-[#E86A33] text-md font-bold mb-2 px-3">
 				<!-- call API here -->
-				${depositAmount}
+				{depositAmount.toLocaleString('en-US', { maximumFractionDigits: 0 })} VND
 			</div>
 		</div>
 		<div class="flex items-center justify-between">

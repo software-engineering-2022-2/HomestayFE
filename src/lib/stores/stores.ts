@@ -1,6 +1,6 @@
 import { writable } from "svelte/store";
 
-import type { HomestayInfo, IPricingConfig, ManagerInfo, UserDetail, ReserveBookingInfo } from "$lib/types/types";
+import type {HomestayInfo, IPricingConfig, ManagerInfo, UserDetail, ReserveBookingInfo, BookingInfo } from "$lib/types/types";
 
 import { browser } from '$app/environment';
 
@@ -75,3 +75,5 @@ export const reserveBookingInfo = writable({
     num_adults: 0,
     num_children: 0
 } as ReserveBookingInfo)
+
+export const bookingHistStore = writable<BookingInfo[]>();

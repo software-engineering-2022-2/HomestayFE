@@ -7,7 +7,7 @@
 	import { userAPI } from '$lib/api/api';
 	import { reloadStore } from '$lib/stores/reload';
 	import ChangePasswordModal from './ChangePasswordModal.svelte';
-	import { BACKEND_MEDIA_URL } from '$lib/api/api';
+	import { extractUrl } from '$lib/types/utils';
 	import { UnauthorizedError, FieldsError, NotFoundError} from '$lib/api/exception';
 
 	$: if (browser && $userDetailStore.username === '') {
@@ -101,7 +101,7 @@
 	<div class="overflow-clip rounded-full h-[10rem] w-[8.7rem] border-2 border-gray-500">
 		<div class="relative flex flex-col items-center">
 			{#if $userDetailStore.avatar}
-				<div><img class="h-[10rem] w-[8.7rem] object-cover" src={`${BACKEND_MEDIA_URL}/${$userDetailStore.avatar}`} alt=""/></div>
+				<div><img class="h-[10rem] w-[8.7rem] object-cover" src={`${extractUrl($userDetailStore.avatar)}`} alt=""/></div>
 			{:else}
 				<iconify-icon class="text-[10rem] rounded-full" icon="healthicons:ui-user-profile" />
 			{/if}

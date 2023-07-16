@@ -103,6 +103,16 @@ export interface UserDetail{
     email?: string,
 }
 
+interface BookingInfo {
+    id: number,
+    checkin_date: string,
+    checkout_date: string,
+    status: string,
+    total_price: number,
+    comment?: string,
+    rating?: number
+}
+
 export {StarType, 
     type HomestayInfo, 
     type ManagerInfo,
@@ -114,4 +124,6 @@ export {StarType,
     type IBookingService,
     type IPricingConfig,
     type ReserveBookingInfo,
-    type BookingPeriod};
+    type BookingPeriod,
+    type BookingInfo
+};
