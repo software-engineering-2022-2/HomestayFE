@@ -1,10 +1,14 @@
 import axios, { AxiosError } from 'axios';
 import type { AxiosResponse } from 'axios';
-import type {HomestayInfo, IService, ManagerInfo, TokenPair, UserDetail, IPricingConfig} from '$lib/types/types'
+import type {HomestayInfo, 
+    IService, 
+    ManagerInfo, 
+    IBookingService,
+    TokenPair, UserDetail, IPricingConfig, ReserveBookingInfo} from '$lib/types/types'
 import { get } from 'svelte/store';
 import { authHeader, noAuthHeader, uploadAvatarHeader } from './headers';
-import { FieldsError, UnauthorizedError, NotFoundError } from './exception';
-import { extractUrl } from '$lib/types/utils';
+import { FieldsError, UnauthorizedError, NotFoundError, SimpleError } from './exception';
+import { extractUrl, formatDateForBooking } from '$lib/types/utils';
 
 
 const BACKEND_BASE_URL = 'http://127.0.0.1:8000'
@@ -14,6 +18,7 @@ const TOKEN_API = `${BACKEND_BASE_URL}/api/token/`
 const USER_API = `${BACKEND_BASE_URL}/api/users/`
 const HOMESTAY_API = `${BACKEND_BASE_URL}/api/homestays/`
 const MANAGER_PROFILE_API = `${USER_API}manager_profile/`
+const BOOKING_API = `${BACKEND_BASE_URL}/api/bookings/`
 
 
 class AuthAPI {
@@ -377,23 +382,47 @@ class ServiceAPI {
     }
 }
 
-// class BookingAPI{
-//     async reserveHomestay(homestayID: string, bookingPeriod: BookingPe): Promise<IService[]> {
-//         let response: AxiosResponse
-//         try {
-//             response = await axios.get(`${HOMESTAY_API}${homestayID}/services/`,
-//                 get(noAuthHeader));
-//         } catch (err) {
-//             if (err instanceof AxiosError){
-//                 response = err.response as AxiosResponse
-//             } else {
-//                 throw Error("Nothing")
-//             }  
-//         }
-//         const homestayServices = response.data as IService[]
-//         return homestayServices;
-//     }
-// }
+class BookingAPI{
+    async reserveHomestay(homestayID: string, 
+            username: string,
+            bookingInfo: ReserveBookingInfo, 
+            services: IBookingService[]): Promise<void> {
+        let response: AxiosResponse
+        const servicesIdList = services.filter((value) => value.availability == true && value.checked)
+            .map((service) => {
+                return { id: service.id }
+            });
+        bookingInfo.checkin_date = formatDateForBooking(bookingInfo.checkin_date)
+        bookingInfo.checkout_date = formatDateForBooking(bookingInfo.checkout_date)
+        try {
+            response = await axios.post(`${BOOKING_API}${username}/`,
+                {
+                    homestay: homestayID,
+                    services: servicesIdList,
+                    ...bookingInfo,
+                },
+                get(authHeader));
+        } catch (err) {
+            if (err instanceof AxiosError){
+                response = err.response as AxiosResponse
+            } else {
+                throw Error("Nothing")
+            }  
+        }
+
+        if (response.status == 400){
+            console.log(response.data);
+            throw new SimpleError(response.data as string)
+        }
+        
+        if (response.status == 401){
+            console.log(response.data);
+            throw new UnauthorizedError("Token is invalid or expired")
+        }
+
+
+    }
+}
 
 
 export const authAPI = new AuthAPI();
@@ -401,5 +430,5 @@ export const userAPI = new UserAPI();
 export const homestayAPI = new HomestayAPI();
 export const managerAPI = new ManagerAPI();
 export const serviceAPI = new ServiceAPI();
-// export const bookingAPI = new BookingAPI();
+export const bookingAPI = new BookingAPI();
 

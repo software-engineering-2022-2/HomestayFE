@@ -6,13 +6,13 @@
 	import 'flatpickr/dist/flatpickr.css';
 	import 'flatpickr/dist/themes/material_green.css';
 	import { goto } from '$app/navigation';
-	import { bookingPeriod } from '$lib/stores/stores';
+	import { reserveBookingInfo } from '$lib/stores/stores';
 
 	async function goToBooking(){
 		goto(`/homestay/${$homestayInfo.id}/booking`)
 	}
 
-	const flatpickrOptions = {};
+	const flatpickrOptions = {dateFormat: "Y-m-d", altInput: true, altFormat: "Y-m-d"};
 </script>
 
 <div
@@ -34,7 +34,7 @@
 		<div class="grid grid-cols-2 rounded-xl border-2 border-[#555555] justify-items-center">
 			<div class="flex pl-3 py-3 flex-col w-full border-r border-r-[#555555]">
 				<div class="font-bold text-md font-lato">CHECK-IN</div>
-				<Flatpickr options={flatpickrOptions} bind:value={$bookingPeriod.checkin_date} element="#booking_checkin">
+				<Flatpickr options={flatpickrOptions} bind:value={$reserveBookingInfo.checkin_date} element="#booking_checkin">
 					<div class="flatpickr" id="booking_checkin">
 						<input type="text" class="w-full" data-input />
 					</div>
@@ -42,7 +42,7 @@
 			</div>
 			<div class="flex pl-3 py-3 flex-col w-full border-l border-l-[#555555]">
 				<div class="font-bold text-md font-lato">CHECK-OUT</div>
-				<Flatpickr options={flatpickrOptions} bind:value={$bookingPeriod.checkout_date} element="#booking_checkout">
+				<Flatpickr options={flatpickrOptions} bind:value={$reserveBookingInfo.checkout_date} element="#booking_checkout">
 					<div class="flatpickr" id="booking_checkout">
 						<input type="text" class="w-full" data-input />
 					</div>
