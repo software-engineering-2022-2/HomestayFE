@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import type { AxiosResponse } from 'axios';
-import type {HomestayInfo, IService, ManagerInfo, TokenPair, UserDetail} from '$lib/types/types'
+import type {HomestayInfo, IService, ManagerInfo, TokenPair, UserDetail, IPricingConfig} from '$lib/types/types'
 import { get } from 'svelte/store';
 import { authHeader, noAuthHeader, uploadAvatarHeader } from './headers';
 import { FieldsError, UnauthorizedError, NotFoundError } from './exception';
@@ -257,7 +257,10 @@ class HomestayAPI {
             description: response.data.description,
             address: response.data.district + ", " + response.data.city,
             price: response.data.price,
-            imageLink: extractUrl(response.data.image)
+            max_num_adults: response.data.max_num_adults,
+            max_num_children: response.data.max_num_children,
+            imageLink: extractUrl(response.data.image),
+            pricing_config: response.data.pricing_config as IPricingConfig
         }
         return homestayInfo;
     }
@@ -284,7 +287,10 @@ class HomestayAPI {
                 description: homestayRecord.description as string,
                 address: homestayRecord.district + ", " + homestayRecord.city,
                 price: homestayRecord.price as number,
-                imageLink: extractUrl(homestayRecord.image as string)
+                max_num_adults: response.data.max_num_adults,
+                max_num_children: response.data.max_num_children,
+                imageLink: extractUrl(homestayRecord.image as string),
+                pricing_config: response.data.pricing_config as IPricingConfig
             }
             return homestay;
         });
@@ -318,7 +324,10 @@ class HomestayAPI {
                 description: homestayRecord.description as string,
                 address: homestayRecord.district + ", " + homestayRecord.city,
                 price: homestayRecord.price as number,
-                imageLink: extractUrl(homestayRecord.image as string)
+                max_num_adults: response.data.max_num_adults,
+                max_num_children: response.data.max_num_children,
+                imageLink: extractUrl(homestayRecord.image as string),
+                pricing_config: response.data.pricing_config as IPricingConfig
             }
             return homestay;
         });
@@ -368,9 +377,29 @@ class ServiceAPI {
     }
 }
 
+// class BookingAPI{
+//     async reserveHomestay(homestayID: string, bookingPeriod: BookingPe): Promise<IService[]> {
+//         let response: AxiosResponse
+//         try {
+//             response = await axios.get(`${HOMESTAY_API}${homestayID}/services/`,
+//                 get(noAuthHeader));
+//         } catch (err) {
+//             if (err instanceof AxiosError){
+//                 response = err.response as AxiosResponse
+//             } else {
+//                 throw Error("Nothing")
+//             }  
+//         }
+//         const homestayServices = response.data as IService[]
+//         return homestayServices;
+//     }
+// }
+
+
 export const authAPI = new AuthAPI();
 export const userAPI = new UserAPI();
 export const homestayAPI = new HomestayAPI();
 export const managerAPI = new ManagerAPI();
 export const serviceAPI = new ServiceAPI();
+// export const bookingAPI = new BookingAPI();
 

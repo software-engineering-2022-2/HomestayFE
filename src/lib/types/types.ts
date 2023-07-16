@@ -14,6 +14,9 @@ interface HomestayInfo {
     address: string
     price: number
     imageLink: string
+    max_num_children: number,
+    max_num_adults: number,
+    pricing_config: IPricingConfig
 }
 
 interface ManagerInfo {
@@ -36,10 +39,36 @@ interface IService {
     service_type: IServiceType
 }
 
+interface IBookingService {
+    id: number,
+    price: number,
+    description: string,
+    availability: boolean,
+    service_type_id: number,
+    service_type: IServiceType,
+    checked: boolean
+}
+
 interface PricingConfig {
     depositPercentage: number,
     freeCancelationDays: number,
     cancelationRefund: number
+}
+
+interface IPricingConfig {
+    id: number,
+    name: string,
+    deposit_percentage: number,
+    cancellation_refund_percentage: number,
+    free_cancellation_days: number,
+    discount: number
+}
+
+interface ReserveBookingInfo{
+    checkin_date: string,
+    checkout_date: string,
+    num_adults: string,
+    num_children: 1
 }
 
 interface Review {
@@ -74,4 +103,7 @@ export {StarType,
     type Review, 
     type TokenPair,
     type IService,
-    type IServiceType};
+    type IServiceType,
+    type IBookingService,
+    type IPricingConfig,
+    type ReserveBookingInfo};
