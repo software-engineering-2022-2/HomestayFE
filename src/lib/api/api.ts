@@ -4,7 +4,7 @@ import type {HomestayInfo,
     IService, 
     ManagerInfo, 
     IBookingService,
-    TokenPair, UserDetail, IPricingConfig, ReserveBookingInfo} from '$lib/types/types'
+    TokenPair, UserDetail, IPricingConfig, ReserveBookingInfo, BookingPeriod} from '$lib/types/types'
 import { get } from 'svelte/store';
 import { authHeader, noAuthHeader, uploadAvatarHeader } from './headers';
 import { FieldsError, UnauthorizedError, NotFoundError, SimpleError } from './exception';
@@ -460,6 +460,26 @@ class BookingAPI{
             console.log(response.data);
             throw new UnauthorizedError("Token is invalid or expired")
         }
+    }
+
+    async getHomestayBookedDates(homestayID: string): Promise<BookingPeriod[]> {
+        let response: AxiosResponse
+        apiCalling.set(true)
+        try {
+            response = await axios.get(`${BOOKING_API}booked_dates/${homestayID}/`,
+                get(noAuthHeader));
+        } catch (err) {
+            if (err instanceof AxiosError){
+                response = err.response as AxiosResponse
+            } else {
+                throw Error("Nothing")
+            }  
+        } finally {
+            apiCalling.set(false)
+        }
+
+        const bookingPeriods = response.data as BookingPeriod[];
+        return bookingPeriods;
     }
 }
 

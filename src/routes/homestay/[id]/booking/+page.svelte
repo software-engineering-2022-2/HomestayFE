@@ -21,6 +21,7 @@
     setContext("homestayServices", data.serviceInfo)
     setContext("homestayInfo", data.homestayInfo);
     setContext("managerInfo", data.managerInfo);
+    setContext("homestayBookedDates", data.bookedDates)
 </script>
 
 <BookingPage/>

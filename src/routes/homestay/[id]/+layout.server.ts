@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit'
-import { homestayAPI, managerAPI, serviceAPI } from "$lib/api/api";
+import { bookingAPI, homestayAPI, managerAPI, serviceAPI } from "$lib/api/api";
 import type { LayoutServerLoad } from './$types';
 
 export const load = (async ({ params }) => {
@@ -18,15 +18,22 @@ export const load = (async ({ params }) => {
         const servicesRes = await serviceAPI.getHomestayServices(homestayInfoRes.id);
         return servicesRes
     }
+
+    async function findHomestayBookedDates(){
+        const bookedDatesRes = await bookingAPI.getHomestayBookedDates(homestayInfoRes.id);
+        return bookedDatesRes
+    }
     
-    const [managerInfoRes, servicesRes] = await Promise.all([
+    const [managerInfoRes, servicesRes, bookedDatesRes] = await Promise.all([
         findManagerInfo(),
         findHomestayServices(),
+        findHomestayBookedDates()
       ]);
 
     return {
         homestayInfo: homestayInfoRes,
         managerInfo: managerInfoRes,
-        serviceInfo: servicesRes
+        serviceInfo: servicesRes,
+        bookedDates: bookedDatesRes
     }
 }) satisfies LayoutServerLoad;
