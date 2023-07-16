@@ -11,6 +11,13 @@
 	async function goToBooking(){
 		goto(`/homestay/${$homestayInfo.id}/booking`)
 	}
+	async function clearDates(){
+		reserveBookingInfo.update((value) => {
+			value.checkin_date = ''
+			value.checkout_date = ''
+			return value
+		})
+	}
 
 	const flatpickrOptions = {dateFormat: "Y-m-d", altInput: true, altFormat: "Y-m-d"};
 </script>
@@ -52,7 +59,7 @@
 	</div>
 	
 	<div class="flex flex-row justify-end items-center space-x-5 mt-7">
-		<button class="text-[#555555] text-xl underline underline-offset-4">Clear dates</button>
+		<button on:click={clearDates} class="text-[#555555] text-xl underline underline-offset-4">Clear dates</button>
 		<button on:click={goToBooking} class="text-xl py-2 px-10 rounded-xl bg-[#41644A] font-bold text-white">Reserve</button>
 	</div>
 </div>

@@ -66,6 +66,7 @@ export const managerInfo = writable<ManagerInfo>({
     avatarLink: ""
 });
 
+export const apiCalling = writable(false)
 
 export const reserveBookingInfo = writable({
     checkin_date: "",

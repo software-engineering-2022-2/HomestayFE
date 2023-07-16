@@ -9,7 +9,7 @@ import { get } from 'svelte/store';
 import { authHeader, noAuthHeader, uploadAvatarHeader } from './headers';
 import { FieldsError, UnauthorizedError, NotFoundError, SimpleError } from './exception';
 import { extractUrl, formatDateForBooking } from '$lib/types/utils';
-
+import { apiCalling } from '$lib/stores/stores';
 
 const BACKEND_BASE_URL = 'http://127.0.0.1:8000'
 export const BACKEND_MEDIA_URL = 'http://localhost:8000/media'
@@ -25,6 +25,7 @@ class AuthAPI {
 
     async userLogin(username: string, password: string): Promise<TokenPair> {
         let response: AxiosResponse
+        apiCalling.set(true)
         try {
             response = await axios.post(TOKEN_API, {
                 username: username,
@@ -36,6 +37,8 @@ class AuthAPI {
             } else {
                 throw Error("Nothing")
             }  
+        } finally {
+            apiCalling.set(false)
         }
         console.log(response)
         if (response.status == 401){
@@ -47,34 +50,40 @@ class AuthAPI {
             token: response.data.access,
             refreshToken: response.data.refresh
         };
+        apiCalling.set(false)
         return tokens;
     }
 
     async userRegister(username: string, password: string): Promise<void> {
         let response: AxiosResponse
+        apiCalling.set(true)
         try {
             response = await axios.post(USER_API, {
             username: username,
             password: password
             }, get(noAuthHeader));
         } catch (err) {
+            apiCalling.set(false)
             if (err instanceof AxiosError){
                 response = err.response as AxiosResponse
             } else {
                 throw Error("Nothing")
             }  
+        } finally {
+            apiCalling.set(false)
         }
-        console.log(response)
 
         if (response.status == 400){
             console.log(response.data);
             const fieldsError = response.data as object
             throw new FieldsError("Bad Request", fieldsError)
         }
+        apiCalling.set(false)
     }
 
     async refreshToken(refreshToken: string): Promise<TokenPair>{
         let response: AxiosResponse
+        apiCalling.set(true)
         try {
             response = await axios.post(TOKEN_API, {
                 "refresh": refreshToken
@@ -85,6 +94,8 @@ class AuthAPI {
             } else {
                 throw Error("Nothing")
             }  
+        } finally {
+            apiCalling.set(false)
         }
 
         if (response.status == 401){
@@ -104,6 +115,7 @@ class UserAPI {
 
     async getUserDetail(username: string): Promise<UserDetail> {
         let response: AxiosResponse
+        apiCalling.set(true)
         try {
             response = await axios.get(`${USER_API}${username}/`, get(authHeader));
         } catch (err) {
@@ -112,6 +124,8 @@ class UserAPI {
             } else {
                 throw Error("Nothing")
             }  
+        } finally {
+            apiCalling.set(false)
         }
         
 
@@ -142,6 +156,7 @@ class UserAPI {
 
     async updateUserDetail(username: string, userDetail: UserDetail){
         let response: AxiosResponse
+        apiCalling.set(true)
         try {
             response = await axios.put(
                 `${USER_API}${username}/`,
@@ -153,6 +168,8 @@ class UserAPI {
             } else {
                 throw Error("Nothing")
             }  
+        } finally {
+            apiCalling.set(false)
         }
 
         if (response.status == 401){
@@ -183,6 +200,7 @@ class UserAPI {
 
     async updatePassword(username: string, password: string, newPassword: string): Promise<void>{
         let response: AxiosResponse
+        apiCalling.set(true)
         try {
             response = await axios.put(
                 `${USER_API}${username}/password/`,
@@ -198,6 +216,8 @@ class UserAPI {
             } else {
                 throw Error("Nothing")
             }  
+        } finally {
+            apiCalling.set(false)
         }
         
         if (response.status == 401){
@@ -214,6 +234,7 @@ class UserAPI {
     async updateAvatar(username: string, image: File): Promise<string>{
         const formData = new FormData();
         formData.append('image', image);
+        apiCalling.set(true)
         let response: AxiosResponse
         try {
             response = await axios.put(
@@ -226,6 +247,8 @@ class UserAPI {
             } else {
                 throw Error("Nothing")
             }  
+        } finally {
+            apiCalling.set(false)
         }
         
         if (response.status == 401){
@@ -244,6 +267,7 @@ class UserAPI {
 class HomestayAPI {
     async getHomestayInfo(homestayID: string): Promise<HomestayInfo> {
         let response: AxiosResponse
+        apiCalling.set(true)
         try {
             response = await axios.get(`${HOMESTAY_API}${homestayID}/`,
                 get(noAuthHeader));
@@ -253,6 +277,8 @@ class HomestayAPI {
             } else {
                 throw Error("Nothing")
             }  
+        } finally {
+            apiCalling.set(false)
         }
     
         const homestayInfo: HomestayInfo = {
@@ -272,6 +298,7 @@ class HomestayAPI {
 
     async getAllHomestayInfo(): Promise<HomestayInfo[]> {
         let response: AxiosResponse
+        apiCalling.set(true)
         try {
             response = await axios.get(`${HOMESTAY_API}`,
                 get(noAuthHeader));
@@ -281,6 +308,8 @@ class HomestayAPI {
             } else {
                 throw Error("Nothing")
             }  
+        } finally {
+            apiCalling.set(false)
         }
     
         const data = response.data as Array<Record<string, string | number>>;
@@ -305,6 +334,7 @@ class HomestayAPI {
 
     async getAllHomestayInfoByCondition(searchParams: URLSearchParams): Promise<HomestayInfo[]> {
         let response: AxiosResponse
+        apiCalling.set(true)
         try {
             response = await axios.get(`${HOMESTAY_API}`,
             {
@@ -318,6 +348,8 @@ class HomestayAPI {
             } else {
                 throw Error("Nothing")
             }  
+        } finally {
+            apiCalling.set(false)
         }
     
         const data = response.data as Array<Record<string, string | number>>;
@@ -344,6 +376,7 @@ class HomestayAPI {
 class ManagerAPI {
     async getManagerInfo(managerID: string): Promise<ManagerInfo> {
         let response: AxiosResponse
+        apiCalling.set(true)
         try {
             response = await axios.get(`${MANAGER_PROFILE_API}${managerID}/`,
                 get(noAuthHeader));
@@ -353,6 +386,8 @@ class ManagerAPI {
             } else {
                 throw Error("Nothing")
             }  
+        } finally {
+            apiCalling.set(false)
         }
 
         const managerInfo: ManagerInfo = {
@@ -367,6 +402,7 @@ class ManagerAPI {
 class ServiceAPI {
     async getHomestayServices(homestayID: string): Promise<IService[]> {
         let response: AxiosResponse
+        apiCalling.set(true)
         try {
             response = await axios.get(`${HOMESTAY_API}${homestayID}/services/`,
                 get(noAuthHeader));
@@ -376,6 +412,8 @@ class ServiceAPI {
             } else {
                 throw Error("Nothing")
             }  
+        } finally {
+            apiCalling.set(false)
         }
         const homestayServices = response.data as IService[]
         return homestayServices;
@@ -388,6 +426,7 @@ class BookingAPI{
             bookingInfo: ReserveBookingInfo, 
             services: IBookingService[]): Promise<void> {
         let response: AxiosResponse
+        apiCalling.set(true)
         const servicesIdList = services.filter((value) => value.availability == true && value.checked)
             .map((service) => {
                 return { id: service.id }
@@ -408,6 +447,8 @@ class BookingAPI{
             } else {
                 throw Error("Nothing")
             }  
+        } finally {
+            apiCalling.set(false)
         }
 
         if (response.status == 400){
@@ -419,8 +460,6 @@ class BookingAPI{
             console.log(response.data);
             throw new UnauthorizedError("Token is invalid or expired")
         }
-
-
     }
 }
 
