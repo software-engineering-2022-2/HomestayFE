@@ -5,13 +5,14 @@
 
 	import 'flatpickr/dist/flatpickr.css';
 	import 'flatpickr/dist/themes/material_green.css';
+	import { goto } from '$app/navigation';
+	import { bookingPeriod } from '$lib/stores/stores';
 
-	let checkinDate: Date;
-	let checkoutDate: Date;
+	async function goToBooking(){
+		goto(`/homestay/${$homestayInfo.id}/booking`)
+	}
 
-	$: checkinDateString =  checkinDate?checkinDate.toLocaleDateString(): "Add Date";
-	$: checkoutdateString = checkoutDate?checkoutDate.toLocaleDateString(): "Add Date";
-	const flatpickrOptions = { inline: true, static: true, wrap: true };
+	const flatpickrOptions = {};
 </script>
 
 <div
@@ -33,30 +34,25 @@
 		<div class="grid grid-cols-2 rounded-xl border-2 border-[#555555] justify-items-center">
 			<div class="flex pl-3 py-3 flex-col w-full border-r border-r-[#555555]">
 				<div class="font-bold text-md font-lato">CHECK-IN</div>
-				<div class="text-[#555555] text-xl">{checkinDateString}</div>
+				<Flatpickr options={flatpickrOptions} bind:value={$bookingPeriod.checkin_date} element="#booking_checkin">
+					<div class="flatpickr" id="booking_checkin">
+						<input type="text" class="w-full" data-input />
+					</div>
+				</Flatpickr>
 			</div>
 			<div class="flex pl-3 py-3 flex-col w-full border-l border-l-[#555555]">
 				<div class="font-bold text-md font-lato">CHECK-OUT</div>
-				<div class="text-[#555555] text-xl">{checkoutdateString}</div>
+				<Flatpickr options={flatpickrOptions} bind:value={$bookingPeriod.checkout_date} element="#booking_checkout">
+					<div class="flatpickr" id="booking_checkout">
+						<input type="text" class="w-full" data-input />
+					</div>
+				</Flatpickr>
 			</div>
 		</div>
-	</div>
-
-	<div class="flex flex-row justify-center space-x-5 mt-4">
-		<Flatpickr options={flatpickrOptions} bind:value={checkinDate} element="#checkin">
-			<div class="flatpickr hidden" id="checkin">
-				<input class="hidden" type="text" data-input />
-			</div>
-		</Flatpickr>
-		<Flatpickr options={flatpickrOptions} bind:value={checkoutDate} element="#checkout">
-			<div class="flatpickr hidden" id="checkout">
-				<input class="hidden" type="text" data-input />
-			</div>
-		</Flatpickr>
 	</div>
 	
 	<div class="flex flex-row justify-end items-center space-x-5 mt-7">
 		<button class="text-[#555555] text-xl underline underline-offset-4">Clear dates</button>
-		<button class="text-xl py-2 px-10 rounded-xl bg-[#41644A] font-bold text-white">Reserve</button>
+		<button on:click={goToBooking} class="text-xl py-2 px-10 rounded-xl bg-[#41644A] font-bold text-white">Reserve</button>
 	</div>
 </div>

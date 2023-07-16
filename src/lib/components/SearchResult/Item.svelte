@@ -11,11 +11,12 @@
 	export let price = 123;
 	export let hostName = "Long Hoang";
 	export let imageLink = "";
-
+	export let onClick = () => {}
 </script>
 
-<div
-	class="flex flex-col space-y-[0.75rem] min-h-[23.75rem] min-w-[17.5rem] rounded-xl overflow-hidden relative"
+<button
+	on:click={onClick}
+	class="flex cursor-pointer text-start flex-col space-y-[0.75rem] min-h-[23.75rem] min-w-[17.5rem] rounded-xl overflow-hidden relative"
 >
 	<Carousel let:loaded let:currentPageIndex let:pagesCount let:showPage arrows={false}>
 		<div slot="dots" class="w-full absolute top-[13rem] flex flex-row justify-between items-baseline px-3">
@@ -50,4 +51,4 @@
 		<div class="text-[#777] text-[1.125rem]">Jun 20 - 25</div>
 		<div><span class="font-bold">${price}</span> night</div>
 	</div>
-</div>
+</button>
