@@ -5,8 +5,12 @@
 	import Item from "$lib/components/SearchResult/Item.svelte";
 	import SearchBar from "$lib/components/LandingPage/SearchBar.svelte";
 	import Header from "$lib/components/NavBar/Header.svelte";
+	import { goto } from "$app/navigation";
     
     export let data;
+	function goToHomestayDetail(id: string){
+		goto(`homestay/${id}`)
+	}
 </script>
 
 <Header></Header>
@@ -18,9 +22,7 @@
 <Center>
 	<div class="grid grid-cols-4 gap-x-8 gap-y-8 mx-8" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
         {#each data.info as { id, name, description, address, price, imageLink}}
-        <a href="homestay/{id}">
-            <Item {address} {price} {imageLink}></Item>
-        </a>
+            <Item onClick={()=> goToHomestayDetail(id)} {address} {price} {imageLink}></Item>
         {/each}
     </div>
 </Center>
