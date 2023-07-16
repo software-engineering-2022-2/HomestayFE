@@ -67,8 +67,8 @@ interface IPricingConfig {
 interface ReserveBookingInfo{
     checkin_date: string,
     checkout_date: string,
-    num_adults: string,
-    num_children: 1
+    num_adults: number,
+    num_children: number
 }
 
 interface Review {

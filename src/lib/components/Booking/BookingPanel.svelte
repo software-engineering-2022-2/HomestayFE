@@ -2,19 +2,23 @@
 	import type { HomestayInfo, IService, IBookingService } from '$lib/types/types';
 	import MoreInfo from './MoreInfo.svelte';
 	import { getContext } from 'svelte';
-
+	import { userDetailStore } from '$lib/stores/stores';
+	import { get } from 'svelte/store';
 	const homestayInfo: HomestayInfo = getContext('homestayInfo');
 	const homestayServices: IService[] = getContext('homestayServices');
 	const bookingServices: IBookingService[] = homestayServices.map((service) => ({
 		...service,
 		checked: false
 		}));
-	import { bookingPeriod } from '$lib/stores/stores';
+	import { reserveBookingInfo } from '$lib/stores/stores';
 	import Flatpickr from 'svelte-flatpickr';
 	import 'flatpickr/dist/flatpickr.css';
 	import 'flatpickr/dist/themes/material_green.css';
 	import { clamp } from '$lib/types/utils';
-	const flatpickrOptions = {};
+	import { bookingAPI } from '$lib/api/api';
+	import { SimpleError, UnauthorizedError } from '$lib/api/exception';
+	import { goto } from '$app/navigation';
+	const flatpickrOptions = {dateFormat: "Y-m-d", altInput: true, altFormat: "Y-m-d"};
 	function getDaysDiff(checkinTime: string, checkoutTime: string){
 		try {
 			if (checkinTime == '' || checkoutTime == '') return 0;
@@ -37,10 +41,44 @@
 		}
 		return totalServicePrice
 	}
-	$: periodDays = getDaysDiff($bookingPeriod.checkin_date, $bookingPeriod.checkout_date)
+	$: periodDays = getDaysDiff($reserveBookingInfo.checkin_date, $reserveBookingInfo.checkout_date)
 	$: servicesPrice = getSericesPrice(bookingServices)
 	$: totalPrice = Math.round(periodDays * homestayInfo.price + servicesPrice)
 	$: depositAmount = Math.round(totalPrice * homestayInfo.pricing_config.deposit_percentage)
+
+	function validateInformation(){
+		if (!$reserveBookingInfo.checkin_date || !$reserveBookingInfo.checkout_date) return false;
+		const startDate = new Date($reserveBookingInfo.checkin_date);
+		const endDate = new Date($reserveBookingInfo.checkout_date);
+		if (startDate >= endDate) return false;
+		if ($reserveBookingInfo.num_adults <= 0) return false;
+		return true;
+	}
+
+	async function reserveHomestay(){
+		if (!validateInformation()){
+			alert("Validate information Failed");
+			return;
+		}
+		console.log(get(reserveBookingInfo))
+
+		try {
+			await bookingAPI.reserveHomestay(homestayInfo.id, 
+				$userDetailStore.username, get(reserveBookingInfo), bookingServices);
+		} catch (error) {
+			if (error instanceof UnauthorizedError) {
+				alert(error)
+				// TODO: goto where?
+				goto('/')
+				return;
+			}
+			if (error instanceof SimpleError){
+				alert(error)
+				return;
+			}
+		}
+		alert("Booking success!")
+	}
 </script>
 
 <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
@@ -72,7 +110,7 @@
 				</label>
 				<Flatpickr
 					options={flatpickrOptions}
-					bind:value={$bookingPeriod.checkin_date}
+					bind:value={$reserveBookingInfo.checkin_date}
 					element="#checkin"
 				>
 					<div class="flatpickr" id="checkin">
@@ -80,7 +118,7 @@
 							class="appearance-none block w-full bg-gray-200 text-gray-700 border-2 border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
 							id="grid-checkin-date"
 							type="text"
-							bind:value={$bookingPeriod.checkin_date}
+							
 							placeholder="Check-in date"
                             data-input
 						/>
@@ -96,7 +134,7 @@
 				</label>
 				<Flatpickr
 					options={flatpickrOptions}
-					bind:value={$bookingPeriod.checkout_date}
+					bind:value={$reserveBookingInfo.checkout_date}
 					element="#checkout"
 				>
 					<div class="flatpickr" id="checkout">
@@ -104,7 +142,7 @@
 							class="appearance-none block w-full bg-gray-200 text-gray-700 border-2 border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
 							id="grid-checkout-date"
 							type="text"
-							bind:value={$bookingPeriod.checkout_date}
+							
 							placeholder="Check-out date"
                             data-input
 						/>
@@ -127,6 +165,7 @@
 					placeholder="0"
 					max={homestayInfo.max_num_adults}
 					min={0}
+					bind:value={$reserveBookingInfo.num_adults}
 				/>
 			</div>
 			<div class="md:w-1/2 px-3">
@@ -143,6 +182,7 @@
 					placeholder="0"
 					max={homestayInfo.max_num_children}
 					min={0}
+					bind:value={$reserveBookingInfo.num_children}
 				/>
 			</div>
 		</div>
@@ -203,6 +243,7 @@
 			<button
 				class="bg-[#E86A33] hover:bg-[#FF8C66] text-white font-medium py-2 px-4 rounded"
 				type="button"
+				on:click={reserveHomestay}
 			>
 				Order
 			</button>

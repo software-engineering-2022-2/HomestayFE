@@ -66,12 +66,10 @@ export const managerInfo = writable<ManagerInfo>({
     avatarLink: ""
 });
 
-// interface IBookingPeriod {
-//     checkinTime: Date,
-//     checkoutTime: Date
-// }
 
-export const bookingPeriod = writable({
+export const reserveBookingInfo = writable({
     checkin_date: "",
-    checkout_date: ""
+    checkout_date: "",
+    num_adults: 0,
+    num_children: 0
 } as ReserveBookingInfo)

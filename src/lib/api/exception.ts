@@ -32,10 +32,18 @@ export class TokenError extends Error {
     }
 }
 
-export class FieldsError extends Error {
-    errorFields: Object;
+export class SimpleError extends Error {
+    constructor(msg: string) {
+        super(msg);
+        // Set the prototype explicitly.
+        Object.setPrototypeOf(this, SimpleError.prototype);
+    }
+}
 
-    constructor(msg: string, errorFields:  Object) {
+export class FieldsError extends Error {
+    errorFields: object;
+
+    constructor(msg: string, errorFields: object) {
         super(msg);
         this.errorFields = errorFields
         // Set the prototype explicitly.
