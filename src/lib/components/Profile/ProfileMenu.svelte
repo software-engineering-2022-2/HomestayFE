@@ -42,8 +42,12 @@
   
     function logout() {
       showDropdown = false;
-      reloadStore.set(true)
-    }
+      const confirmed = confirm("Are you sure you want to log out?");
+      if (confirmed) {
+          reloadStore.set(true);
+          goto(`/`);
+      }
+    } 
 
     function bookingHist() {
       goto(`/booking-history`);

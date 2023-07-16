@@ -23,7 +23,7 @@
 		class="flex flex-row pb-3 border-b-[#777777] border-b-[1.8px] text-[#E86A33] font-lato font-bold text-2xl after:content-['night'] after:text-black after:font-normal after:ml-2"
 	>
 		<!-- ${dollarPerNight.toString()} -->
-		${$homestayInfo.price}
+		{$homestayInfo.price} VND
 	</div>
 
 	<div class="grid grid-cols-2 py-3" style="max-width: 600px;">
