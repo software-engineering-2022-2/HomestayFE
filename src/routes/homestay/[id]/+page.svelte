@@ -9,6 +9,7 @@
     homestayInfo.set(data.homestayInfo);
     managerInfo.set(data.managerInfo);
     setContext("homestayServices", data.serviceInfo)
+    setContext("homestayBookedDates", data.bookedDates)
 
 </script>
 

@@ -1,52 +1,59 @@
 <script lang="ts">
-	import type { HomestayInfo, IService, IBookingService } from '$lib/types/types';
+	import type { HomestayInfo, IService, IBookingService, BookingPeriod } from '$lib/types/types';
 	import MoreInfo from './MoreInfo.svelte';
 	import { getContext } from 'svelte';
 	import { userDetailStore } from '$lib/stores/stores';
 	import { get } from 'svelte/store';
-	const homestayInfo: HomestayInfo = getContext('homestayInfo');
-	const homestayServices: IService[] = getContext('homestayServices');
-	const bookingServices: IBookingService[] = homestayServices.map((service) => ({
-		...service,
-		checked: false
-		}));
 	import { reserveBookingInfo } from '$lib/stores/stores';
 	import Flatpickr from 'svelte-flatpickr';
 	import 'flatpickr/dist/flatpickr.css';
 	import 'flatpickr/dist/themes/material_green.css';
-	import { clamp } from '$lib/types/utils';
+	import { clamp, getTomomorowOfDate } from '$lib/types/utils';
 	import { bookingAPI } from '$lib/api/api';
 	import { SimpleError, UnauthorizedError } from '$lib/api/exception';
 	import { goto } from '$app/navigation';
-	const flatpickrOptions = {dateFormat: "Y-m-d", altInput: true, altFormat: "Y-m-d"};
-	function getDaysDiff(checkinTime: string, checkoutTime: string){
-		try {
-			if (checkinTime == '' || checkoutTime == '') return 0;
-			const startDate = new Date(checkinTime);
-			const endDate = new Date(checkoutTime);
-			const timeDiff = endDate.getTime() - startDate.getTime();
-			// Convert milliseconds to days
-			const daysDiff = Math.round(timeDiff / (1000 * 60 * 60 * 24));
-			return clamp(daysDiff, 0, 999)
-		} catch (err){
-			return 0
-		}
-	}
-	function getSericesPrice(bookingServices: IBookingService[]){
-		let totalServicePrice = 0
-		for (let bookingService of bookingServices){
-			if (bookingService.checked){
-				totalServicePrice += bookingService.price
-			}
-		}
-		return totalServicePrice
-	}
-	$: periodDays = getDaysDiff($reserveBookingInfo.checkin_date, $reserveBookingInfo.checkout_date)
-	$: servicesPrice = getSericesPrice(bookingServices)
-	$: totalPrice = Math.round(periodDays * homestayInfo.price + servicesPrice)
-	$: depositAmount = Math.round(totalPrice * homestayInfo.pricing_config.deposit_percentage)
+	import {
+		formatDate,
+		findFarthestPossibleDate,
+		getDaysDiff,
+		getSericesPrice
+	} from '$lib/types/utils';
 
-	function validateInformation(){
+	const homestayInfo: HomestayInfo = getContext('homestayInfo');
+	const homestayServices: IService[] = getContext('homestayServices');
+	const bookingPeriods = getContext('homestayBookedDates') as BookingPeriod[];
+	const bookingServices: IBookingService[] = homestayServices.map((service) => ({
+		...service,
+		checked: false
+	}));
+
+	let tomorrow = new Date();
+	tomorrow.setDate(tomorrow.getDate() + 1);
+
+	$: tomorrowCheckinDate = getTomomorowOfDate(new Date($reserveBookingInfo.checkin_date));
+	$: minDatePossible = formatDate(tomorrowCheckinDate);
+	$: maxDatePossible = findFarthestPossibleDate($reserveBookingInfo.checkin_date, bookingPeriods);
+
+	$: flatpickrOptionsCheckin = {
+		minDate: formatDate(tomorrow),
+		dateFormat: 'Y-m-d',
+		altInput: true,
+		altFormat: 'Y-m-d',
+		disable: bookingPeriods
+	};
+	$: flatpickrOptionsCheckout = {
+		minDate: minDatePossible,
+		maxDate: maxDatePossible,
+		dateFormat: 'Y-m-d',
+		altInput: true,
+		altFormat: 'Y-m-d'
+	};
+	$: periodDays = getDaysDiff($reserveBookingInfo.checkin_date, $reserveBookingInfo.checkout_date);
+	$: servicesPrice = getSericesPrice(bookingServices);
+	$: totalPrice = Math.round(periodDays * homestayInfo.price + servicesPrice);
+	$: depositAmount = Math.round(totalPrice * homestayInfo.pricing_config.deposit_percentage);
+
+	function validateInformation() {
 		if (!$reserveBookingInfo.checkin_date || !$reserveBookingInfo.checkout_date) return false;
 		const startDate = new Date($reserveBookingInfo.checkin_date);
 		const endDate = new Date($reserveBookingInfo.checkout_date);
@@ -55,29 +62,33 @@
 		return true;
 	}
 
-	async function reserveHomestay(){
-		if (!validateInformation()){
-			alert("Validate information Failed");
+	async function reserveHomestay() {
+		if (!validateInformation()) {
+			alert('Validate information Failed');
 			return;
 		}
-		console.log(get(reserveBookingInfo))
+		console.log(get(reserveBookingInfo));
 
 		try {
-			await bookingAPI.reserveHomestay(homestayInfo.id, 
-				$userDetailStore.username, get(reserveBookingInfo), bookingServices);
+			await bookingAPI.reserveHomestay(
+				homestayInfo.id,
+				$userDetailStore.username,
+				get(reserveBookingInfo),
+				bookingServices
+			);
 		} catch (error) {
 			if (error instanceof UnauthorizedError) {
-				alert(error)
+				alert(error);
 				// TODO: goto where?
-				goto('/')
+				goto('/');
 				return;
 			}
-			if (error instanceof SimpleError){
-				alert(error)
+			if (error instanceof SimpleError) {
+				alert(error);
 				return;
 			}
 		}
-		alert("Booking success!")
+		alert('Booking success!');
 	}
 </script>
 
@@ -109,7 +120,7 @@
 					Check-in date
 				</label>
 				<Flatpickr
-					options={flatpickrOptions}
+					options={flatpickrOptionsCheckin}
 					bind:value={$reserveBookingInfo.checkin_date}
 					element="#checkin"
 				>
@@ -118,9 +129,8 @@
 							class="appearance-none block w-full bg-gray-200 text-gray-700 border-2 border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
 							id="grid-checkin-date"
 							type="text"
-							
 							placeholder="Check-in date"
-                            data-input
+							data-input
 						/>
 					</div>
 				</Flatpickr>
@@ -133,7 +143,7 @@
 					Check-out date
 				</label>
 				<Flatpickr
-					options={flatpickrOptions}
+					options={flatpickrOptionsCheckout}
 					bind:value={$reserveBookingInfo.checkout_date}
 					element="#checkout"
 				>
@@ -142,9 +152,8 @@
 							class="appearance-none block w-full bg-gray-200 text-gray-700 border-2 border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
 							id="grid-checkout-date"
 							type="text"
-							
 							placeholder="Check-out date"
-                            data-input
+							data-input
 						/>
 					</div>
 				</Flatpickr>
@@ -236,7 +245,7 @@
 			</div>
 			<div class="text-[#E86A33] text-md font-bold mb-2 px-3">
 				<!-- call API here -->
-				${depositAmount} 
+				${depositAmount}
 			</div>
 		</div>
 		<div class="flex items-center justify-between">
