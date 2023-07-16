@@ -50,7 +50,7 @@
     } 
 
     function bookingHist() {
-      goto(`/booking-history`);
+      goto(`/booking-history/${get(userDetailStore).username}`);
     }
 
   </script>

@@ -4,7 +4,7 @@ import type {HomestayInfo,
     IService, 
     ManagerInfo, 
     IBookingService,
-    TokenPair, UserDetail, IPricingConfig, ReserveBookingInfo, BookingPeriod} from '$lib/types/types'
+    TokenPair, UserDetail, IPricingConfig, ReserveBookingInfo, BookingPeriod, BookingInfo} from '$lib/types/types'
 import { get } from 'svelte/store';
 import { authHeader, noAuthHeader, uploadAvatarHeader } from './headers';
 import { FieldsError, UnauthorizedError, NotFoundError, SimpleError } from './exception';
@@ -489,6 +489,32 @@ class BookingAPI{
 
         const bookingPeriods = response.data as BookingPeriod[];
         return bookingPeriods;
+    }
+
+    async getBookingHistory(username: string): Promise<BookingInfo[]> {
+        let response: AxiosResponse;
+        try {
+            response = await axios.get(`${BOOKING_API}${username}/`,
+                get(authHeader));
+            const data = response.data;
+            const bookingInfoList: BookingInfo[] = data.map((booking: any) => {
+                return {
+                    id: booking.id,
+                    checkin_date: booking.checkin_date,
+                    checkout_date: booking.checkout_date,
+                    status: booking.status,
+                    total_price: booking.total_price,
+                };
+            });
+            return bookingInfoList;
+        } catch (err) {
+            if (err instanceof AxiosError) {
+                response = err.response as AxiosResponse;
+            } else {
+                throw new Error("Something went wrong");
+            }
+            return [];
+        }
     }
 }
 
