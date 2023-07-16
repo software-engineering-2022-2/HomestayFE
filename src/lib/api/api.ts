@@ -254,7 +254,6 @@ class HomestayAPI {
                 throw Error("Nothing")
             }  
         }
-    
         const homestayInfo: HomestayInfo = {
             id: response.data.id,
             name: response.data.name,
@@ -265,8 +264,18 @@ class HomestayAPI {
             max_num_adults: response.data.max_num_adults,
             max_num_children: response.data.max_num_children,
             imageLink: extractUrl(response.data.image),
-            pricing_config: response.data.pricing_config as IPricingConfig
-        }
+            pricing_config: response.data.pricing_config as IPricingConfig,
+            avg_rating: response.data.avg_rating,
+            reviews: response.data.reviews.map((review: any) => {
+                return {
+                    username: `${review.user.first_name} ${review.user.last_name}`,
+                    stars: review.rating,
+                    date: review.review_timestamp,
+                    content: review.comment
+                };
+            }),
+            numReviews: response.data.reviews.length
+        };
         return homestayInfo;
     }
 

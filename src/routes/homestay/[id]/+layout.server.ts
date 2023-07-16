@@ -6,6 +6,7 @@ export const load = (async ({ params }) => {
 
     async function findHomestayInfo(){
         const homestayInfoRes = await homestayAPI.getHomestayInfo(params.id);
+        // console.log(homestayInfoRes);
         return homestayInfoRes
     }
 

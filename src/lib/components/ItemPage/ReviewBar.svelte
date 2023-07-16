@@ -1,20 +1,14 @@
 <script lang="ts">
     import { StarType } from "$lib/types/types";
     import Star from "../Star.svelte";
-    import type { HomestayInfo } from "$lib/types/types";
 
-    const homestayInfo: HomestayInfo = {
-        name: "Homestay Name",
-        stars: 4.9,
-        numReviews: 11,
-        address: "Hai Ba Trung, Ha Noi, Vietnam"
-    }
+    import { homestayInfo } from "$lib/stores/stores";
 </script>
 
 <div class="flex flex-row items-center justify-start space-x-2">
     <Star starType={StarType.FULL} className="text-2xl"></Star>
-    <div class="text-2xl font-[700] font-lato text-[#E86A33]">{homestayInfo.stars}</div>
+    <div class="text-2xl font-[500] font-lato text-[#E86A33]">{$homestayInfo.avg_rating}</div>
     <div class="text-2xl">·</div>
-    <div class="text-2xl font-[500]">{homestayInfo.numReviews} reviews</div>
+    <div class="text-2xl font-[500]">{$homestayInfo.numReviews} reviews</div>
     <div></div>
 </div>
