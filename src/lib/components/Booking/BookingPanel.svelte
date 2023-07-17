@@ -18,6 +18,7 @@
 		getDaysDiff,
 		getSericesPrice
 	} from '$lib/types/utils';
+	import { reloadStore } from '$lib/stores/reload';
 
 	const homestayInfo: HomestayInfo = getContext('homestayInfo');
 	const homestayServices: IService[] = getContext('homestayServices');
@@ -81,6 +82,7 @@
 				alert(error);
 				// TODO: goto where?
 				goto('/');
+				reloadStore.set(true)
 				return;
 			}
 			if (error instanceof SimpleError) {
