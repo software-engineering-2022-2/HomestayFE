@@ -493,6 +493,7 @@ class BookingAPI{
 
     async getBookingHistory(username: string): Promise<BookingInfo[]> {
         let response: AxiosResponse;
+        apiCalling.set(true);
         try {
             response = await axios.get(`${BOOKING_API}${username}/`,
                 get(authHeader));
@@ -517,11 +518,14 @@ class BookingAPI{
                 throw new Error("Something went wrong");
             }
             return [];
+        } finally {
+            apiCalling.set(false)
         }
     }
 
     async cancelBooking(username: string, bookingID: number): Promise<void> {
         let response: AxiosResponse;
+        apiCalling.set(true);
         try {
             response = await axios.put(`${BOOKING_API}${username}/${bookingID}/`,
                 {
@@ -537,6 +541,8 @@ class BookingAPI{
             } else {
                 throw new Error("Something went wrong");
             }
+        } finally {
+            apiCalling.set(false)
         }
     }
 
@@ -545,6 +551,7 @@ class BookingAPI{
                         comment: string,
                         rating: number): Promise<void> {
         let response: AxiosResponse;
+        apiCalling.set(true);
         try {
             response = await axios.put(`${BOOKING_API}${username}/${bookingID}/`,
                 {
@@ -561,6 +568,8 @@ class BookingAPI{
             } else {
                 throw new Error("Something went wrong");
             }
+        } finally {
+            apiCalling.set(false)
         }
     }
 }

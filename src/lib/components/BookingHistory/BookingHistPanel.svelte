@@ -49,7 +49,7 @@
       <h3 class="text-xl leading-6 text-gray-800">Booking History</h3>
     </div>
     <ul class="divide-y divide-gray-200">
-      {#if $bookingHistStore}
+      {#if $bookingHistStore && $bookingHistStore.length > 0}
         {#each $bookingHistStore as booking}
           <li class="px-4 py-5 sm:px-6">
             <div class="flex items-center justify-between">
@@ -94,6 +94,10 @@
             </div>
           </li>
         {/each}
+      {:else}
+        <div class="px-4 py-5 sm:px-6">
+          <p class="text-lg text-gray-500 text-center">There are currently no past bookings. Book your first stay <a class="underline text-blue-500" href="/">here</a>!</p>
+        </div>
       {/if}
     </ul>
   </div>

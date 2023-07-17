@@ -5,7 +5,7 @@ import type { PageServerLoad } from './$types';
 
 export const load = (async ({ params, url }) => {
     let info: HomestayInfo[]
-    if (url.searchParams.has('name') ||  url.searchParams.has('location')){
+    if (url.searchParams.has('name') ||  url.searchParams.has('city')){
         try {
             info = await homestayAPI.getAllHomestayInfoByCondition(url.searchParams);
         } catch (err){
