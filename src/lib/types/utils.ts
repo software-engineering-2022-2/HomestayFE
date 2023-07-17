@@ -14,6 +14,31 @@ function extractUrl(inputString: string) {
 	}
 }
 
+function extractDate(dateString: string) {
+	const date = new Date(dateString);
+	if (dateString.length != 0) {
+		const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+					"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+		const day = date.getDate();
+		const month = months[date.getMonth()];
+		const year = date.getFullYear();
+		return `${month} ${day} ${year}`;
+	} else {	
+		return `None`;
+	}
+}
+
+export function calculateDaysBetween(startDateStr: string, endDateStr: string): number {
+	if (startDateStr.length !== 0 && endDateStr.length !== 0) {
+	  const startDate = new Date(startDateStr);
+	  const endDate = new Date(endDateStr);
+	  const millisecondsPerDay = 24 * 60 * 60 * 1000;
+	  const daysBetween = Math.round(Math.abs((endDate.getTime() - startDate.getTime()) / millisecondsPerDay));
+	  return daysBetween;
+	}
+	return 0;
+}
+
 function formatDateForBooking(dateStr: string) {
 	const date = new Date(dateStr);
 	const year = date.getFullYear();
@@ -81,5 +106,6 @@ export {
 	getTomomorowOfDate,
 	findFarthestPossibleDate,
 	getSericesPrice,
-	getDaysDiff
+	getDaysDiff,
+	extractDate
 };

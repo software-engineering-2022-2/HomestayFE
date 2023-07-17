@@ -22,7 +22,7 @@
     }
   </script>
   
-  <div class="overlay fixed inset-0 bg-black bg-opacity-50">
+  <div class="overlay fixed inset-0 bg-gray-500 bg-opacity-20">
     <div class="modal absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 bg-white p-8 rounded-lg w-[40rem]">
       <h2 class="text-xl font-bold text-gray-800">Rate your experience</h2>
       <div class="slider mt-4 flex items-center">

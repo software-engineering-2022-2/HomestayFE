@@ -63,18 +63,24 @@
                   <span class="font-medium text-blue-500">{booking.total_price.toLocaleString('en-US', { maximumFractionDigits: 0 })} VND</span>
                 </div>
               </div>
-              {#if booking.status === "Pending"}
-                <button on:click={() => cancelBooking(booking.id)} class="ml-4 text-gray-500 border-gray-500 border-2 font-medium py-1 px-4 rounded">
-                  Cancel
-                </button>
-                <div class="ml-4 text-orange-500 underline text-lg py-1 px-4">
-                  {booking.status}
+              {#if booking.status.toLocaleLowerCase() === "pending"}
+              <div class="ml-4 text-orange-500 underline text-lg py-1 px-4">
+                Pending
+              </div>
+              <button on:click={() => cancelBooking(booking.id)} class="ml-4 text-gray-500 border-gray-500 border-2 font-medium py-1 px-4 rounded">
+                Cancel
+              </button>
+              {:else if booking.status.toLowerCase() === "cancelled"}
+              <div class="ml-4 text-gray-500 border-gray-500 underline text-lg py-1 px-4">
+                Cancelled
+              </div>
+              {:else if booking.status.toLowerCase() === "completed"}
+                <div class="ml-4 text-blue-500 border-blue-500 underline text-lg py-1 px-4">
+                  Completed
                 </div>
-              {:else if booking.status === "cancelled"}
-                <div class="ml-4 text-gray-500 border-gray-500 underline text-lg py-1 px-4">
-                  Cancelled
-                </div>
-              {:else if booking.status === "completed"}
+                {#if showReviewPanel}
+                  <ReviewModal on:cancel={()=> toggleReview(-1)} on:submit={submitReview}></ReviewModal>
+                {/if}
                 {#if !booking.rating}
                   <button on:click={() => toggleReview(booking.id)} class="ml-4 text-green-600 border-green-600 border-2 font-medium py-1 px-4 rounded">
                     Review
@@ -84,19 +90,13 @@
                     Reviewed
                   </button>
                 {/if}
-                <div class="ml-4 text-blue-500 border-blue-500 underline text-lg py-1 px-4">
-                  Completed
-                </div>
-                {#if showReviewPanel}
-                  <ReviewModal on:cancel={()=> toggleReview(-1)} on:submit={submitReview}></ReviewModal>
-                {/if}
               {/if}
             </div>
           </li>
         {/each}
       {:else}
         <div class="px-4 py-5 sm:px-6">
-          <p class="text-lg text-gray-500 text-center">There are currently no past bookings. Book your first stay <a class="underline text-blue-500" href="/">here</a>!</p>
+          <p class="text-lg text-gray-500 text-center">There are currently no past bookings. Book your first stay <a class="underline text-blue-500" href="/homestay">here</a>!</p>
         </div>
       {/if}
     </ul>

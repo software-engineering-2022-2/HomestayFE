@@ -89,6 +89,7 @@
 			}
 		}
 		alert('Booking success!');
+		goto(`/booking-history/${$userDetailStore.username}`);
 	}
 </script>
 

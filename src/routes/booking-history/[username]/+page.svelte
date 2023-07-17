@@ -7,6 +7,7 @@
 	onMount(async () => {
 	  try {
 		let bookingHist = await bookingAPI.getBookingHistory($userDetailStore.username);
+		console.log(bookingHist);
 		bookingHistStore.set(bookingHist);
 	  } catch (err) {
 		console.error(err);
