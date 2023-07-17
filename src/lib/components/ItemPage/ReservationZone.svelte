@@ -9,7 +9,7 @@
 	import { reserveBookingInfo } from '$lib/stores/stores';
 	import { getContext } from 'svelte';
 	import type { BookingPeriod } from '$lib/types/types';
-	import { getTomomorowOfDate, formatDate, findFarthestPossibleDate, extractDate, calculateDaysBetween } from '$lib/types/utils';
+	import { getTomomorowOfDate, formatDate, findFarthestPossibleDate, extractDate, getDaysDiff } from '$lib/types/utils';
 
 	const bookingPeriods = getContext('homestayBookedDates') as BookingPeriod[];
 
@@ -60,7 +60,7 @@
 
 	<div class="grid grid-cols-2 py-3" style="max-width: 600px;">
 		<div class="flex flex-col">
-			<div class="font-lato text-xl">{calculateDaysBetween($reserveBookingInfo.checkin_date, $reserveBookingInfo.checkout_date)} nights</div>
+			<div class="font-lato text-xl">{getDaysDiff($reserveBookingInfo.checkin_date, $reserveBookingInfo.checkout_date)} nights</div>
 			<div class="text-[#555555] text-xl">{extractDate($reserveBookingInfo.checkin_date)} → {extractDate($reserveBookingInfo.checkout_date)}</div>
 		</div>
 		<div class="grid grid-cols-2 rounded-xl border-2 border-[#555555] justify-items-center">
