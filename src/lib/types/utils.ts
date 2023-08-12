@@ -1,4 +1,5 @@
 import type { BookingPeriod, IBookingService } from './types';
+import { goto } from '$app/navigation';
 
 const clamp = (num: number, min: number, max: number) => {
 	return Math.min(Math.max(num, min), max);
@@ -86,6 +87,30 @@ function getSericesPrice(bookingServices: IBookingService[]) {
 		}
 	}
 	return totalServicePrice;
+}
+
+export function goToManagerBookingRequests(username: string) {
+	if (username == '') {
+		alert("Logged-in duration has expired. Please log in again");
+	} else {
+		goto(`/manager/${username}/booking-requests`)
+	}
+}
+
+export function goToManagerHomestaysDetails(username: string) {
+	if (username == '') {
+		alert("Logged-in duration has expired. Please log in again");
+	} else {
+		goto(`/manager/${username}/homestays-details`)
+	}
+}
+
+export function goToManagerAnalytics(username: string) {
+	if (username == '') {
+		alert("Logged-in duration has expired. Please log in again");
+	} else {
+		goto(`/manager/${username}/analytics`)
+	}
 }
 
 export {

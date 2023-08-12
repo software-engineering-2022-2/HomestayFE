@@ -1,39 +1,41 @@
 <script lang="ts">
-import { createEventDispatcher } from 'svelte';
-import { authAPI, userAPI } from '$lib/api/api';
-import { tokens } from '$lib/api/headers';
-import { userDetailStore } from '$lib/stores/stores';
-import { NotFoundError, UnauthorizedError } from '$lib/api/exception';
-import type { TokenPair, UserDetail } from '$lib/types/types';
+    import { createEventDispatcher } from 'svelte';
+    import { authAPI, userAPI } from '$lib/api/api';
+    import { tokens } from '$lib/api/headers';
+    import { userDetailStore } from '$lib/stores/stores';
+    import { NotFoundError, UnauthorizedError } from '$lib/api/exception';
+    import type { TokenPair, UserDetail } from '$lib/types/types';
 
-const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher();
 
-let email = '';
-let password = '';
+    let email = '';
+    let password = '';
 
-async function handleSubmit() {
-    // Do Login
-    let tokenPair: TokenPair
-    try{
-        tokenPair = await authAPI.userLogin(email, password);
-    } catch(error){
-        if (error instanceof UnauthorizedError){
-            alert(error.message);
+    async function handleSubmit() {
+        // Do Login
+        let tokenPair: TokenPair
+        try{
+            tokenPair = await authAPI.userLogin(email, password);
+        } catch(error){
+            if (error instanceof UnauthorizedError){
+                alert(error.message);
+            }
+            return;
         }
-        return;
-    }
-    console.log(tokenPair)
-    // Add tokens to store
-    tokens.set(tokenPair)
-    localStorage.setItem('username', email);
+        console.log(tokenPair);
+        // Add tokens to store
+        tokens.set(tokenPair);
+        localStorage.setItem('username', email);
 
-    userDetailStore.update(value => {
-        value.username = email
-        return value
-    })
-    // Dispatch the "close" event to close the modal
-    dispatch('close');
-}
+        userDetailStore.update(value => {
+            value.username = email
+            return value
+        })
+        console.log($userDetailStore.username);
+
+        // Dispatch the "close" event to close the modal
+        dispatch('close');
+    }
 </script>
 
 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
