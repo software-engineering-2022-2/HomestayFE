@@ -113,6 +113,30 @@ class AuthAPI {
 
 class UserAPI {
 
+    async getAllUsers(query: string): Promise<UserDetail[]> {
+        let response: AxiosResponse
+        apiCalling.set(true)
+        try {
+            response = await axios.get(`${USER_API}?query=${query}`, get(authHeader));
+        } catch (err) {
+            if (err instanceof AxiosError){
+                response = err.response as AxiosResponse
+            } else {
+                throw Error("Nothing")
+            }  
+        } finally {
+            apiCalling.set(false)
+        }
+
+        if (response.status == 401){
+            console.log(response.data);
+            throw new UnauthorizedError("Token is invalid or expired")
+        }
+
+        const userDetails: UserDetail[] = response.data as UserDetail[]
+        return userDetails;
+    }
+
     async getUserDetail(username: string): Promise<UserDetail> {
         let response: AxiosResponse
         apiCalling.set(true)
@@ -239,6 +263,27 @@ class UserAPI {
             throw new FieldsError("Bad Request", fieldsError)
         }
         return response.data.avatar;
+    }
+
+    async deteleUser(username: string): Promise<void> {
+        let response: AxiosResponse
+        apiCalling.set(true)
+        try {
+            response = await axios.delete(`${USER_API}${username}/`, get(authHeader));
+        } catch (err) {
+            if (err instanceof AxiosError){
+                response = err.response as AxiosResponse
+            } else {
+                throw Error("Nothing")
+            }  
+        } finally {
+            apiCalling.set(false)
+        }
+        
+        if (response.status == 401){
+            console.log(response.data);
+            throw new UnauthorizedError("User not found or token expired")
+        }
     }
 }
 

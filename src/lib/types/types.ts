@@ -101,7 +101,8 @@ export interface UserDetail{
     city?: string,
     avatar?: string,
     email?: string,
-    is_superuser: boolean
+    is_superuser: boolean,
+    deleted_at?: Date
 }
 
 interface BookingInfo {
