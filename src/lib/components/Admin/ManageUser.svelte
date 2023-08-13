@@ -5,6 +5,7 @@
 	import { FieldsError, UnauthorizedError } from '$lib/api/exception';
 	import { reloadStore } from '$lib/stores/reload';
 	import type { UserDetail } from '$lib/types/types';
+	import CreateUser from './CreateUser.svelte';
 	import UpdateUser from './UpdateUser.svelte';
 
 	let queryString = '';
@@ -13,6 +14,7 @@
 
 	let editing = false;
 	let editingUserDetail: UserDetail | null = null;
+	let isCreatingUser = false;
 
 	async function findUsers() {
 		try {
@@ -43,24 +45,25 @@
 
 	function turnOnEditing(userDetail: UserDetail) {
 		editingUserDetail = userDetail;
+		console.log(editingUserDetail)
 		editing = true;
 	}
 
-	async function handleUpdateProfile(event: { detail: { userDetail: UserDetail} }){
+	async function handleUpdateProfile(event: { detail: { userDetail: UserDetail } }) {
 		const userDetail = event.detail.userDetail;
-		userDetail.avatar = undefined
+		userDetail.avatar = undefined;
 		try {
 			await userAPI.updateUserDetail(userDetail.username, userDetail);
 		} catch (error) {
-			if (error instanceof UnauthorizedError){
-				alert(error.message)
+			if (error instanceof UnauthorizedError) {
+				alert(error.message);
 				reloadStore.set(true);
 			}
-			if (error instanceof FieldsError){
-				alert(error.getMessage())
+			if (error instanceof FieldsError) {
+				alert(error.getMessage());
 			}
 			return;
-		}	
+		}
 		editing = false;
 	}
 </script>
@@ -92,6 +95,11 @@
 					</div>
 				</li>
 			{/each}
+			<li class="px-4 py-5 sm:px-6">
+				<div class="flex flex-row justify-end">
+					<button on:click={() => isCreatingUser = true}><iconify-icon class="text-3xl text-green-500" icon="gridicons:add" /></button>
+				</div>
+			</li>
 		</ul>
 	</div>
 </div>
@@ -102,4 +110,8 @@
 		on:cancel={() => (editing = false)}
 		userDetail={editingUserDetail}
 	/>
+{/if}
+
+{#if isCreatingUser}
+	<CreateUser on:submit={() => (isCreatingUser = false)} on:cancel={() => (isCreatingUser = false)} />
 {/if}

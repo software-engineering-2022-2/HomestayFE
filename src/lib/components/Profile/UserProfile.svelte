@@ -19,7 +19,8 @@
 		username: "",
 		first_name: "",
 		last_name: "",
-		is_superuser: false
+		is_superuser: false,
+		is_staff: false
 	};
 
 	$: if (isEditing){

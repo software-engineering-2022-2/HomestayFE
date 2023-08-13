@@ -60,6 +60,15 @@
 					bind:value={userDetail.email}
 				/>
 			</div>
+			<div>
+				<div class="text-xl">Is Homestay Manager</div>
+				<input
+					class="value_input h-[15px] w-[15px]"
+					type="checkbox"
+					bind:checked={userDetail.is_staff}
+					disabled
+				/>
+			</div>
 		</div>
 		<div class="grid grid-cols-2 self-start w-full gap-3">
 			<div>

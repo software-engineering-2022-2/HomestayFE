@@ -102,6 +102,7 @@ export interface UserDetail{
     avatar?: string,
     email?: string,
     is_superuser: boolean,
+    is_staff: boolean,
     deleted_at?: Date
 }
 

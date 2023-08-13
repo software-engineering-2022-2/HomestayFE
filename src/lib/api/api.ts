@@ -54,13 +54,14 @@ class AuthAPI {
         return tokens;
     }
 
-    async userRegister(username: string, password: string): Promise<void> {
+    async userRegister(username: string, password: string, is_staff: boolean): Promise<void> {
         let response: AxiosResponse
         apiCalling.set(true)
         try {
             response = await axios.post(USER_API, {
             username: username,
-            password: password
+            password: password,
+            is_staff: is_staff,
             }, get(noAuthHeader));
         } catch (err) {
             apiCalling.set(false)

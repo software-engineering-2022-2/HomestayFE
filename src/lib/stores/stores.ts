@@ -8,7 +8,8 @@ const userDetail: UserDetail = {
     username: "",
     first_name: "",
     last_name: "",
-    is_superuser: false
+    is_superuser: false,
+    is_staff: false
 }
 
 const userDetailStore = writable(userDetail);
@@ -18,7 +19,8 @@ if (browser){
         username: localStorage.getItem('username') || "",
         first_name: "",
         last_name: "",
-        is_superuser: false
+        is_superuser: false,
+        is_staff: false
     })
 }
 
@@ -33,7 +35,8 @@ export function clearUserDetailStore(){
         username: "",
         first_name: "",
         last_name: "",
-        is_superuser: false
+        is_superuser: false,
+        is_staff: false
     })
 }
 

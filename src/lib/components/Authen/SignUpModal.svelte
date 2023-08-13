@@ -17,7 +17,7 @@
     }
 
     try {
-      await authAPI.userRegister(email, password);
+      await authAPI.userRegister(email, password, false);
     } catch (error){
       if (error instanceof FieldsError){
         alert(error.getMessage())
