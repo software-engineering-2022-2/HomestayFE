@@ -2,13 +2,17 @@
 	import { goto } from '$app/navigation';
 	export const ssr = false;
 	import { userAPI } from '$lib/api/api';
-	import { UnauthorizedError } from '$lib/api/exception';
+	import { FieldsError, UnauthorizedError } from '$lib/api/exception';
 	import { reloadStore } from '$lib/stores/reload';
 	import type { UserDetail } from '$lib/types/types';
+	import UpdateUser from './UpdateUser.svelte';
 
 	let queryString = '';
 
 	let usersList: UserDetail[] = [];
+
+	let editing = false;
+	let editingUserDetail: UserDetail | null = null;
 
 	async function findUsers() {
 		try {
@@ -32,9 +36,32 @@
 			}
 			return;
 		}
-		alert(`Delete userr ${username} success!`);
+		alert(`Delete user ${username} success!`);
 		// Filter from list display
 		usersList = usersList.filter((value) => value.username != username);
+	}
+
+	function turnOnEditing(userDetail: UserDetail) {
+		editingUserDetail = userDetail;
+		editing = true;
+	}
+
+	async function handleUpdateProfile(event: { detail: { userDetail: UserDetail} }){
+		const userDetail = event.detail.userDetail;
+		userDetail.avatar = undefined
+		try {
+			await userAPI.updateUserDetail(userDetail.username, userDetail);
+		} catch (error) {
+			if (error instanceof UnauthorizedError){
+				alert(error.message)
+				reloadStore.set(true);
+			}
+			if (error instanceof FieldsError){
+				alert(error.getMessage())
+			}
+			return;
+		}	
+		editing = false;
 	}
 </script>
 
@@ -54,9 +81,12 @@
 			{#each usersList as userDetail}
 				<li class="px-4 py-5 sm:px-6">
 					<div class="flex flex-row justify-between">
-						<div>{userDetail.username}</div>
-						<div>{userDetail.email}</div>
-						<button on:click={() => deleteUser(userDetail.username)}>
+						<div class="basis-1/4">{userDetail.username}</div>
+						<div class="basis-1/4">{userDetail.email}</div>
+						<button class="basis-1/4" on:click={() => turnOnEditing(userDetail)}
+							><iconify-icon icon="mingcute:edit-line" /></button
+						>
+						<button class="basis-1/4" on:click={() => deleteUser(userDetail.username)}>
 							<iconify-icon class="text-red-600 text-2xl" icon="ic:baseline-delete" /></button
 						>
 					</div>
@@ -65,3 +95,11 @@
 		</ul>
 	</div>
 </div>
+
+{#if editing && editingUserDetail}
+	<UpdateUser
+		on:submit={handleUpdateProfile}
+		on:cancel={() => (editing = false)}
+		userDetail={editingUserDetail}
+	/>
+{/if}
