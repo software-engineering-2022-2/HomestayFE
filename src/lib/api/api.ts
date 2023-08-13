@@ -139,18 +139,7 @@ class UserAPI {
             throw new NotFoundError("User not found")
         }
 
-        const userDetail: UserDetail = {
-            username: response.data.username,
-            first_name: response.data.first_name,
-            last_name: response.data.last_name,
-            phone_number: response.data.phone_number,
-            avatar: response.data.avatar,
-            city: response.data.city,
-            district: response.data.district,
-            email: response.data.email,
-            street_name: response.data.street_name,
-            street_number: response.data.street_number
-        };
+        const userDetail: UserDetail = response.data as UserDetail
         return userDetail;
     }
 
@@ -183,18 +172,7 @@ class UserAPI {
             throw new FieldsError("Bad Request", fieldsError)
         }
 
-        const newUserDetail: UserDetail = {
-            username: response.data.username,
-            first_name: response.data.first_name,
-            last_name: response.data.last_name,
-            phone_number: response.data.phone_number,
-            avatar: response.data.avatar,
-            city: response.data.city,
-            district: response.data.district,
-            email: response.data.email,
-            street_name: response.data.street_name,
-            street_number: response.data.street_number
-        };
+        const newUserDetail: UserDetail = response.data as UserDetail
         return newUserDetail;
     }
 

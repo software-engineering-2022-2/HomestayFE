@@ -7,7 +7,8 @@ import { browser } from '$app/environment';
 const userDetail: UserDetail = {
     username: "",
     first_name: "",
-    last_name: ""
+    last_name: "",
+    is_superuser: false
 }
 
 const userDetailStore = writable(userDetail);
@@ -16,7 +17,8 @@ if (browser){
     userDetailStore.set({
         username: localStorage.getItem('username') || "",
         first_name: "",
-        last_name: ""
+        last_name: "",
+        is_superuser: false
     })
 }
 
@@ -30,7 +32,8 @@ export function clearUserDetailStore(){
     userDetailStore.set({
         username: "",
         first_name: "",
-        last_name: ""
+        last_name: "",
+        is_superuser: false
     })
 }
 
