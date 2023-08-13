@@ -80,8 +80,6 @@
 		} catch (error) {
 			if (error instanceof UnauthorizedError) {
 				alert(error);
-				// TODO: goto where?
-				goto('/');
 				reloadStore.set(true)
 				return;
 			}

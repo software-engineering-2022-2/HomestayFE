@@ -1,6 +1,6 @@
 <script lang="ts">
+	export const ssr = false;
 	import { goto } from '$app/navigation';
-	import { browser } from '$app/environment';
 	import { userDetailStore } from '$lib/stores/stores';
 	import type { UserDetail } from '$lib/types/types';
 	import { get } from 'svelte/store';
@@ -10,7 +10,7 @@
 	import { extractUrl } from '$lib/types/utils';
 	import { UnauthorizedError, FieldsError, NotFoundError} from '$lib/api/exception';
 
-	$: if (browser && $userDetailStore.username === '') {
+	$: if ($userDetailStore.username === '') {
 		goto('/');
 	}
 	let isEditing = false;
@@ -18,7 +18,8 @@
 	let formUserDetail: UserDetail = {
 		username: "",
 		first_name: "",
-		last_name: ""
+		last_name: "",
+		is_superuser: false
 	};
 
 	$: if (isEditing){
