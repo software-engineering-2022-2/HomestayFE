@@ -22,15 +22,14 @@ async function handleSubmit() {
         }
         return;
     }
-    console.log(tokenPair)
-    // Add tokens to store
-    tokens.set(tokenPair)
     localStorage.setItem('username', email);
 
     userDetailStore.update(value => {
         value.username = email
         return value
     })
+    // Add tokens to store
+    tokens.set(tokenPair)
     // Dispatch the "close" event to close the modal
     dispatch('close');
 }

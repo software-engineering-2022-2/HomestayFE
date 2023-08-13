@@ -1,11 +1,64 @@
 <script lang="ts">
+	// Client side rendering
+	export const ssr = false;
 	import AuthenMenu from '../Authen/AuthenMenu.svelte';
 	import ProfileMenu from '../Profile/ProfileMenu.svelte';
 
-	import { userDetailStore } from '$lib/stores/stores';
+	import { userDetailStore, clearUserDetailStore } from "$lib/stores/stores";
+    import { clearTokens } from "$lib/api/headers";
+
+	import { onMount } from "svelte";
+	import { get } from 'svelte/store';
+	import { tokens } from '$lib/api/headers';
+	import { userAPI } from '$lib/api/api';
+
+	import { reloadStore } from "$lib/stores/reload";
+	import { apiCalling } from '$lib/stores/stores';
+	import type { UserDetail } from "$lib/types/types";
+	import { NotFoundError, UnauthorizedError } from "$lib/api/exception";
+
+	async function getUserDetail() {
+        // Do token verification
+        let userDetail: UserDetail
+        if (get(tokens).token !== ""){
+            try {
+                userDetail = await userAPI.getUserDetail(get(userDetailStore).username);
+            } catch (error){
+                if (error instanceof UnauthorizedError){
+                    // alert(error.message)
+                }
+                if (error instanceof NotFoundError){
+                    // alert(error.message)
+                }
+                reloadStore.set(true); 
+                return;
+            }
+            userDetailStore.set(userDetail);
+        }
+    }
+
+	onMount(()=>{
+		getUserDetail();
+	})
+
+	// Reload when value is set to true
+    reloadStore.subscribe((value) => {
+        if (value){
+            clearTokens();
+            clearUserDetailStore();
+            reloadStore.set(false);
+        }
+    })
+
+	tokens.subscribe((value) => {
+		if (value.token == "") return;
+		getUserDetail();
+	})
+
 
 	$: isAuthenicated = $userDetailStore.username !== '';
-    import { apiCalling } from '$lib/stores/stores';
+
+    
 </script>
 
 <div>
@@ -28,4 +81,7 @@
 			<ProfileMenu />
 		{/if}
 	</div>
+	{#if $userDetailStore.is_superuser}
+		<div>Admin</div>
+	{/if}
 </div>
