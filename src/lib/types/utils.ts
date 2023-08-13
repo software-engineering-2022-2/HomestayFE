@@ -56,7 +56,8 @@ function findFarthestPossibleDate(checkin_date: string, bookingPeriods: BookingP
 	const specifiedDate = new Date(checkin_date);
 	const dates = bookingPeriods
 		.map((obj) => new Date(obj.from))
-		.filter((date) => date > specifiedDate); // Filter out dates smaller than the specified date
+		.filter((date) => date > specifiedDate)
+		.sort((a: Date, b: Date) => a.getTime() - b.getTime()); // Filter out dates smaller than the specified date
 	if (dates.length == 0) return '';
 	else {
 		const date = dates[0];
