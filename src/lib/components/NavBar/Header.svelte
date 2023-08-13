@@ -94,7 +94,7 @@
 					on:click={() => goto("/admin/user")}
 					>User</button
 				>
-				<button class={$page.url.pathname == '/admin/homestay' ? buttonActiveClass : buttonClass}
+				<button class={$page.url.pathname.startsWith('/admin/homestay') ? buttonActiveClass : buttonClass}
 					on:click={() => goto("/admin/homestay")}
 					>Homestay</button
 				>

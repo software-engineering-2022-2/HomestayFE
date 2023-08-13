@@ -28,6 +28,12 @@ interface HomestayInfo {
     reviews?: Review[]
 }
 
+interface IHomestayPage {
+    current_page: number,
+    max_page: number,
+    data: HomestayInfo[]
+}
+
 interface ManagerInfo {
     name: string
     avatarLink: string
@@ -128,5 +134,6 @@ export {StarType,
     type IPricingConfig,
     type ReserveBookingInfo,
     type BookingPeriod,
-    type BookingInfo
+    type BookingInfo,
+    type IHomestayPage
 };

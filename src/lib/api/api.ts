@@ -10,6 +10,7 @@ import { authHeader, noAuthHeader, tokens, uploadAvatarHeader } from './headers'
 import { FieldsError, UnauthorizedError, NotFoundError, SimpleError } from './exception';
 import { extractUrl, formatDateForBooking } from '$lib/types/utils';
 import { apiCalling } from '$lib/stores/stores';
+import type { IHomestayPage } from '$lib/types/types';
 
 const BACKEND_BASE_URL = 'http://127.0.0.1:8000'
 export const BACKEND_MEDIA_URL = 'http://localhost:8000/media'
@@ -329,11 +330,11 @@ class HomestayAPI {
         return homestayInfo;
     }
 
-    async getAllHomestayInfo(): Promise<HomestayInfo[]> {
+    async getAllHomestayInfo(page?: number): Promise<IHomestayPage> {
         let response: AxiosResponse
         apiCalling.set(true)
         try {
-            response = await axios.get(`${HOMESTAY_API}`,
+            response = await axios.get(`${HOMESTAY_API}?page=${page || 0}`,
                 get(noAuthHeader));
         } catch (err) {
             if (err instanceof AxiosError){
@@ -345,7 +346,7 @@ class HomestayAPI {
             apiCalling.set(false)
         }
     
-        const data = response.data as Array<Record<string, string | number>>;
+        const data = response.data.data as Array<Record<string, string | number>>;
         const homestays: HomestayInfo[] = data.map((homestayRecord: Record<string, string | number>) => {
             const homestay: HomestayInfo = {
                 id: homestayRecord.id as string,
@@ -361,11 +362,15 @@ class HomestayAPI {
             }
             return homestay;
         });
-
-        return homestays;
+        const homestayPage: IHomestayPage = {
+            current_page: response.data.current_page,
+            max_page: response.data.max_page,
+            data: homestays
+        }
+        return homestayPage;
     }
 
-    async getAllHomestayInfoByCondition(searchParams: URLSearchParams): Promise<HomestayInfo[]> {
+    async getAllHomestayInfoByCondition(searchParams: URLSearchParams): Promise<IHomestayPage> {
         let response: AxiosResponse
         apiCalling.set(true)
         try {
@@ -385,7 +390,7 @@ class HomestayAPI {
             apiCalling.set(false)
         }
     
-        const data = response.data as Array<Record<string, string | number>>;
+        const data = response.data.data as Array<Record<string, string | number>>;
         const homestays: HomestayInfo[] = data.map((homestayRecord: Record<string, string | number>) => {
             const homestay: HomestayInfo = {
                 id: homestayRecord.id as string,
@@ -402,7 +407,13 @@ class HomestayAPI {
             return homestay;
         });
 
-        return homestays;
+        const homestayPage: IHomestayPage = {
+            current_page: response.data.current_page,
+            max_page: response.data.max_page,
+            data: homestays
+        }
+
+        return homestayPage;
     }
 }
 
