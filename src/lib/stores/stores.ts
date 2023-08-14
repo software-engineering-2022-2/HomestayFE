@@ -5,18 +5,22 @@ import type {HomestayInfo, IPricingConfig, ManagerInfo, UserDetail, ReserveBooki
 import { browser } from '$app/environment';
 
 const userDetail: UserDetail = {
+    id: "",
     username: "",
     first_name: "",
-    last_name: ""
+    last_name: "",
+    is_manager: false
 }
 
 const userDetailStore = writable(userDetail);
 
 if (browser){
     userDetailStore.set({
+        id: localStorage.getItem('id') || "",
         username: localStorage.getItem('username') || "",
         first_name: "",
-        last_name: ""
+        last_name: "",
+        is_manager: Boolean(localStorage.getItem('is_manager')) || false
     })
 }
 
@@ -28,9 +32,11 @@ userDetailStore.subscribe((value) => {
 
 export function clearUserDetailStore(){
     userDetailStore.set({
+        id: "",
         username: "",
         first_name: "",
-        last_name: ""
+        last_name: "",
+        is_manager: false
     })
 }
 
@@ -58,7 +64,8 @@ export const homestayInfo = writable<HomestayInfo>({
     max_num_children: 0,
     pricing_config: pricingConfig,
     avg_rating: 0,
-    reviews: []
+    reviews: [],
+    available: false
 });
 
 export const managerInfo = writable<ManagerInfo>({
@@ -77,3 +84,4 @@ export const reserveBookingInfo = writable({
 } as ReserveBookingInfo)
 
 export const bookingHistStore = writable<BookingInfo[]>();
+export const homestayListStore = writable<HomestayInfo[]>();

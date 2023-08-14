@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import type { AxiosResponse } from 'axios';
+import type { AxiosInstance, AxiosResponse } from 'axios';
 import type {
     HomestayInfo, IService, ManagerInfo, IBookingService,
     TokenPair, UserDetail, IPricingConfig, ReserveBookingInfo, 
@@ -140,6 +140,7 @@ class UserAPI {
         }
 
         const userDetail: UserDetail = {
+            id: response.data.id,
             username: response.data.username,
             first_name: response.data.first_name,
             last_name: response.data.last_name,
@@ -149,7 +150,8 @@ class UserAPI {
             district: response.data.district,
             email: response.data.email,
             street_name: response.data.street_name,
-            street_number: response.data.street_number
+            street_number: response.data.street_number,
+            is_manager: response.data.is_staff,
         };
         return userDetail;
     }
@@ -184,6 +186,7 @@ class UserAPI {
         }
 
         const newUserDetail: UserDetail = {
+            id: response.data.id,
             username: response.data.username,
             first_name: response.data.first_name,
             last_name: response.data.last_name,
@@ -193,7 +196,8 @@ class UserAPI {
             district: response.data.district,
             email: response.data.email,
             street_name: response.data.street_name,
-            street_number: response.data.street_number
+            street_number: response.data.street_number,
+            is_manager: response.data.is_staff
         };
         return newUserDetail;
     }
@@ -330,8 +334,8 @@ class HomestayAPI {
                 description: homestayRecord.description as string,
                 address: homestayRecord.district + ", " + homestayRecord.city,
                 price: homestayRecord.price as number,
-                max_num_adults: response.data.max_num_adults,
-                max_num_children: response.data.max_num_children,
+                max_num_adults: homestayRecord.max_num_adults as number,
+                max_num_children: homestayRecord.max_num_children as number,
                 imageLink: extractUrl(homestayRecord.image as string),
                 pricing_config: response.data.pricing_config as IPricingConfig
             }
@@ -370,8 +374,8 @@ class HomestayAPI {
                 description: homestayRecord.description as string,
                 address: homestayRecord.district + ", " + homestayRecord.city,
                 price: homestayRecord.price as number,
-                max_num_adults: response.data.max_num_adults,
-                max_num_children: response.data.max_num_children,
+                max_num_adults: homestayRecord.max_num_adults as number,
+                max_num_children: homestayRecord.max_num_children as number,
                 imageLink: extractUrl(homestayRecord.image as string),
                 pricing_config: response.data.pricing_config as IPricingConfig
             }
@@ -405,6 +409,47 @@ class ManagerAPI {
             numHomestays: response.data.number_of_homestays
         }
         return managerInfo;
+    }
+
+    async getAllHomestaysOwned(managerID: string): Promise<HomestayInfo[]> {
+        let response: AxiosResponse
+        apiCalling.set(true)
+        try {
+            response = await axios.get(`${HOMESTAY_API}`,
+            {
+                ...get(authHeader),
+                params: {manager: managerID}
+            }
+            );
+        } catch (err) {
+            if (err instanceof AxiosError){
+                response = err.response as AxiosResponse
+            } else {
+                throw Error("Nothing")
+            }  
+        } finally {
+            apiCalling.set(false)
+        }
+    
+        const data = response.data as Array<Record<string, string | number| boolean>>;
+        const homestays: HomestayInfo[] = data.map((homestayRecord: Record<string, string | number | boolean>) => {
+            const homestay: HomestayInfo = {
+                id: homestayRecord.id as string,
+                managerID: homestayRecord.manager_id as string,
+                name: homestayRecord.name as string,
+                description: homestayRecord.description as string,
+                address: homestayRecord.district + ", " + homestayRecord.city,
+                price: homestayRecord.price as number,
+                max_num_adults: homestayRecord.max_num_adults as number,
+                max_num_children: homestayRecord.max_num_children as number,
+                imageLink: extractUrl(homestayRecord.image as string),
+                pricing_config: response.data.pricing_config as IPricingConfig, // error in this part
+                available: homestayRecord.availability as boolean,
+            }
+            return homestay;
+        });
+
+        return homestays;
     }
 }
 

@@ -25,7 +25,8 @@ interface HomestayInfo {
     max_num_adults: number
     pricing_config: IPricingConfig
     avg_rating?: number,
-    reviews?: Review[]
+    reviews?: Review[],
+    available?: boolean,
 }
 
 interface ManagerInfo {
@@ -91,6 +92,7 @@ interface TokenPair{
 }
 
 export interface UserDetail{
+    id: string,
     username: string,
     first_name: string,
     last_name: string,
@@ -101,6 +103,7 @@ export interface UserDetail{
     city?: string,
     avatar?: string,
     email?: string,
+    is_manager: boolean
 }
 
 interface BookingInfo {

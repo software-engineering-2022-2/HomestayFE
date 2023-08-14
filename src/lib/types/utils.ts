@@ -92,6 +92,7 @@ function getSericesPrice(bookingServices: IBookingService[]) {
 export function goToManagerBookingRequests(username: string) {
 	if (username == '') {
 		alert("Logged-in duration has expired. Please log in again");
+		goto("/manager");
 	} else {
 		goto(`/manager/${username}/booking-requests`)
 	}
@@ -100,6 +101,7 @@ export function goToManagerBookingRequests(username: string) {
 export function goToManagerHomestaysDetails(username: string) {
 	if (username == '') {
 		alert("Logged-in duration has expired. Please log in again");
+		goto("/manager");
 	} else {
 		goto(`/manager/${username}/homestays-details`)
 	}
@@ -108,6 +110,7 @@ export function goToManagerHomestaysDetails(username: string) {
 export function goToManagerAnalytics(username: string) {
 	if (username == '') {
 		alert("Logged-in duration has expired. Please log in again");
+		goto("/manager");
 	} else {
 		goto(`/manager/${username}/analytics`)
 	}

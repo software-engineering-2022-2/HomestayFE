@@ -7,9 +7,9 @@
 
 <div class="flex py-4 justify-center items-center bg-[#41644A] text-white">
     <div class="w-[56px]"/>
-    <a href="/" class="cursor-pointer text-2xl font-bold flex flex-grow justify-center items-center">
+    <div class="text-2xl font-bold flex flex-grow justify-center items-center">
         Manager Panel
-    </a>
+    </div>
     <ProfileMenu/>
 </div>
 
