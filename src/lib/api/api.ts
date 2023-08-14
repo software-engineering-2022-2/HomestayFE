@@ -355,8 +355,8 @@ class HomestayAPI {
                 description: homestayRecord.description as string,
                 address: homestayRecord.district + ", " + homestayRecord.city,
                 price: homestayRecord.price as number,
-                max_num_adults: response.data.max_num_adults,
-                max_num_children: response.data.max_num_children,
+                max_num_adults: homestayRecord.max_num_adults as number,
+                max_num_children: homestayRecord.max_num_children as number,
                 imageLink: extractUrl(homestayRecord.image as string),
                 pricing_config: response.data.pricing_config as IPricingConfig
             }
@@ -399,8 +399,8 @@ class HomestayAPI {
                 description: homestayRecord.description as string,
                 address: homestayRecord.district + ", " + homestayRecord.city,
                 price: homestayRecord.price as number,
-                max_num_adults: response.data.max_num_adults,
-                max_num_children: response.data.max_num_children,
+                max_num_adults: homestayRecord.max_num_adults as number,
+                max_num_children: homestayRecord.max_num_children as number,
                 imageLink: extractUrl(homestayRecord.image as string),
                 pricing_config: response.data.pricing_config as IPricingConfig
             }

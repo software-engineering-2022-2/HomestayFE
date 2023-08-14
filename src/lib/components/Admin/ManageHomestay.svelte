@@ -3,18 +3,27 @@
 	import { homestayAPI } from '$lib/api/api';
 	import { FieldsError, UnauthorizedError } from '$lib/api/exception';
 	import { reloadStore } from '$lib/stores/reload';
-	import type { IHomestayPage } from '$lib/types/types';
+	import type { HomestayInfo, IHomestayPage } from '$lib/types/types';
 	import { onMount } from 'svelte';
 	import Pagination from './Pagination.svelte';
+	import UpdateHomestay from './UpdateHomestay.svelte';
 
 	let queryString = '';
 	let currentPage = 0;
+
+	let editing = false;
+	let editingHomestayInfo: HomestayInfo | null = null;
 
 	let homestayPage: IHomestayPage = {
 		current_page: 0,
 		max_page: 0,
 		data: []
 	};
+
+	function turnOnEditing(homestayInfo: HomestayInfo) {
+		editingHomestayInfo = homestayInfo;
+		editing = true;
+	}
 
 	async function findHomestay(page: number) {
 		try {
@@ -74,6 +83,9 @@
 								alt="Homestay"
 							/>
 						</div>
+						<button class="basis-1/4" on:click={() => turnOnEditing(homestayDetail)}
+							><iconify-icon icon="mingcute:edit-line" /></button
+						>
 					</div>
 				</li>
 			{/each}
@@ -90,3 +102,11 @@
 		/>
 	</div>
 </div>
+
+{#if editing && editingHomestayInfo}
+	<UpdateHomestay
+		on:submit={() => editing = false}
+		on:cancel={() => editing = false}
+		homestayInfo={editingHomestayInfo}
+	/>
+{/if}
