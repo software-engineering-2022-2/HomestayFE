@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Center from '../Center.svelte';
+	import Center from "$lib/components/Center.svelte";
 
 	export let handleChangePage: (current_page: number) => void;
 	export let current_page: number;

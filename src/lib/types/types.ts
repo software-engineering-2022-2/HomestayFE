@@ -18,6 +18,8 @@ interface HomestayInfo {
     name: string
     description: string
     numReviews?: number
+    district?: string
+    city?: string
     address: string
     price: number
     imageLink: string

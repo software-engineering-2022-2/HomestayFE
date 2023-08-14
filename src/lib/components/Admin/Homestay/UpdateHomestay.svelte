@@ -1,10 +1,13 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
-	import type { HomestayInfo } from '$lib/types/types';
+	import { createEventDispatcher, onMount } from 'svelte';
+	import type { HomestayInfo, IPricingConfig } from '$lib/types/types';
+	import { getPriceConfigTooltip } from '$lib/types/utils';
 
 	const dispatch = createEventDispatcher();
 
 	export let homestayInfo: HomestayInfo;
+	export let allPriceConfig: IPricingConfig[];
+	let selectedPricingID = homestayInfo.pricing_config.id
 
 	function submit() {
 		// dispatch a custom event with the rating and review
@@ -59,30 +62,30 @@
 				/>
                 
 			</div>
-
-
-			<!-- <div>
-				<div class="text-xl">First name</div>
+			<div>
+				<div class="text-xl">District</div>
 				<input
 					class="w-full value_input border-2 rounded"
 					type="text"
-					bind:value={userDetail.first_name}
+					bind:value={homestayInfo.district}
 				/>
 			</div>
-            <div>
-				<div class="text-xl">Username</div>
-				<div class="text-lg text-gray-500">{userDetail.username}</div>
-			</div>
-
 			<div>
-				<div class="text-xl">Is Homestay Manager</div>
+				<div class="text-xl">City</div>
 				<input
-					class="value_input h-[15px] w-[15px]"
-					type="checkbox"
-					bind:checked={userDetail.is_staff}
-					disabled
+					class="w-full value_input border-2 rounded"
+					type="text"
+					bind:value={homestayInfo.city}
 				/>
-			</div> -->
+			</div>
+			<div>
+				<div class="text-xl">Pricing Config</div>
+				<select class="border-2 rounded w-full" bind:value={selectedPricingID}>
+					{#each allPriceConfig as priceConfig}
+						<option title={`${getPriceConfigTooltip(priceConfig)}`} value={priceConfig.id}>{priceConfig.name}</option>
+					{/each} 
+				</select>
+			</div>
 		</div>
 		<div class="w-full">
 			<div class="text-xl">Description</div>

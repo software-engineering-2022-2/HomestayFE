@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ManageUser from "$lib/components/Admin/ManageUser.svelte";
+	import ManageUser from "$lib/components/Admin/User/ManageUser.svelte";
 import Header from "$lib/components/NavBar/Header.svelte";
 
 

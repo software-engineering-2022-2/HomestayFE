@@ -1,12 +1,13 @@
 <script lang="ts">
 	export const ssr = false;
-	import { homestayAPI } from '$lib/api/api';
+	import { adminAPI, homestayAPI, priceConfigAPI, serviceAPI } from '$lib/api/api';
 	import { FieldsError, UnauthorizedError } from '$lib/api/exception';
 	import { reloadStore } from '$lib/stores/reload';
-	import type { HomestayInfo, IHomestayPage } from '$lib/types/types';
+	import type { HomestayInfo, IHomestayPage, IPricingConfig, IService, IServiceType } from '$lib/types/types';
 	import { onMount } from 'svelte';
 	import Pagination from './Pagination.svelte';
 	import UpdateHomestay from './UpdateHomestay.svelte';
+	import { goto } from '$app/navigation';
 
 	let queryString = '';
 	let currentPage = 0;
@@ -20,10 +21,14 @@
 		data: []
 	};
 
-	function turnOnEditing(homestayInfo: HomestayInfo) {
-		editingHomestayInfo = homestayInfo;
+	let allPriceConfig: IPricingConfig[] = [];
+
+	async function turnOnEditing(homestayInfo: HomestayInfo) {
+		const homestayInfoRes = await homestayAPI.getHomestayInfo(homestayInfo.id);
+		editingHomestayInfo = homestayInfoRes;
 		editing = true;
 	}
+
 
 	async function findHomestay(page: number) {
 		try {
@@ -49,8 +54,9 @@
 		}
 	}
 
-	onMount(() => {
+	onMount(async () => {
 		findHomestay(0);
+		allPriceConfig =  await priceConfigAPI.getAllPriceConfig()
 	});
 </script>
 
@@ -75,16 +81,23 @@
 			{#each homestayPage.data as homestayDetail}
 				<li class="px-4 py-5 sm:px-6">
 					<div class="flex flex-row justify-between">
-						<div class="basis-1/2">{homestayDetail.name}</div>
-						<div class="basis-1/2">
+						<div class="basis-1/4">{homestayDetail.name}</div>
+						<div class="basis-1/4">
 							<img
 								class="object-cover h-[50px] w-[100px]"
 								src={homestayDetail.imageLink}
 								alt="Homestay"
 							/>
 						</div>
-						<button class="basis-1/4" on:click={() => turnOnEditing(homestayDetail)}
+						<button
+							class="basis-1/4 text-2xl"
+							title="Homestay Info"
+							on:click={() => turnOnEditing(homestayDetail)}
 							><iconify-icon icon="mingcute:edit-line" /></button
+						>
+						<button class="basis-1/4 text-2xl" title="Homestay Services"
+							on:click={() => goto(`/admin/homestay/${homestayDetail.id}`)}
+							><iconify-icon icon="material-symbols:room-service" /></button
 						>
 					</div>
 				</li>
@@ -105,8 +118,9 @@
 
 {#if editing && editingHomestayInfo}
 	<UpdateHomestay
-		on:submit={() => editing = false}
-		on:cancel={() => editing = false}
+		on:submit={() => (editing = false)}
+		on:cancel={() => (editing = false)}
+		{allPriceConfig}
 		homestayInfo={editingHomestayInfo}
 	/>
 {/if}

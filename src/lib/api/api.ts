@@ -3,7 +3,7 @@ import type { AxiosResponse } from 'axios';
 import type {
     HomestayInfo, IService, ManagerInfo, IBookingService,
     TokenPair, UserDetail, IPricingConfig, ReserveBookingInfo, 
-    BookingPeriod, BookingInfo
+    BookingPeriod, BookingInfo, IServiceType
 } from '$lib/types/types'
 import { get } from 'svelte/store';
 import { authHeader, noAuthHeader, tokens, uploadAvatarHeader } from './headers';
@@ -20,6 +20,8 @@ const USER_API = `${BACKEND_BASE_URL}/api/users/`
 const HOMESTAY_API = `${BACKEND_BASE_URL}/api/homestays/`
 const MANAGER_PROFILE_API = `${USER_API}manager_profile/`
 const BOOKING_API = `${BACKEND_BASE_URL}/api/bookings/`
+const PRICE_CONFIG_API = `${BACKEND_BASE_URL}/api/pricing_configs/`
+const SERVICE_TYPES_API = `${BACKEND_BASE_URL}/api/service_types/`
 
 
 class AuthAPI {
@@ -310,6 +312,8 @@ class HomestayAPI {
             name: response.data.name,
             managerID: response.data.manager_id,
             description: response.data.description,
+            district: response.data.district,
+            city: response.data.city,
             address: response.data.district + ", " + response.data.city,
             price: response.data.price,
             max_num_adults: response.data.max_num_adults,
@@ -397,6 +401,8 @@ class HomestayAPI {
                 managerID: homestayRecord.manager_id as string,
                 name: homestayRecord.name as string,
                 description: homestayRecord.description as string,
+                district: homestayRecord.district as string,
+                city: homestayRecord.city as string,
                 address: homestayRecord.district + ", " + homestayRecord.city,
                 price: homestayRecord.price as number,
                 max_num_adults: homestayRecord.max_num_adults as number,
@@ -609,10 +615,68 @@ class BookingAPI{
     }
 }
 
+class PriceConfigAPI{
+    
+    async getAllPriceConfig(): Promise<IPricingConfig[]> {
+        let response: AxiosResponse
+        apiCalling.set(true)
+        try {
+            response = await axios.get(`${PRICE_CONFIG_API}`,
+                get(noAuthHeader));
+        } catch (err) {
+            if (err instanceof AxiosError){
+                response = err.response as AxiosResponse
+            } else {
+                throw Error("Nothing")
+            }  
+        } finally {
+            apiCalling.set(false)
+        }
+        
+        const allPriceConfigs = response.data as  IPricingConfig[]
+        return allPriceConfigs;
+    }
+}
+
+class AdminAPI{
+    
+    async getAllServiceTypes(): Promise<IServiceType[]> {
+        let response: AxiosResponse
+        apiCalling.set(true)
+        try {
+            response = await axios.get(`${SERVICE_TYPES_API}`,
+                get(authHeader));
+        } catch (err) {
+            if (err instanceof AxiosError){
+                response = err.response as AxiosResponse
+            } else {
+                throw Error("Nothing")
+            }  
+        } finally {
+            apiCalling.set(false)
+        }
+
+        if (response.status == 400){
+            console.log(response.data);
+            throw new SimpleError(response.data as string)
+        }
+        
+        if (response.status == 401){
+            console.log(response.data);
+            throw new UnauthorizedError("Token is invalid or expired or not allowed")
+        }
+        
+        const allServiceTypes = response.data as  IServiceType[]
+        return allServiceTypes;
+    }
+}
+
 export const authAPI = new AuthAPI();
 export const userAPI = new UserAPI();
 export const homestayAPI = new HomestayAPI();
 export const managerAPI = new ManagerAPI();
 export const serviceAPI = new ServiceAPI();
 export const bookingAPI = new BookingAPI();
+export const priceConfigAPI = new PriceConfigAPI();
+export const adminAPI = new AdminAPI();
 

@@ -1,4 +1,4 @@
-import type { BookingPeriod, IBookingService } from './types';
+import type { BookingPeriod, IBookingService, IPricingConfig } from './types';
 
 const clamp = (num: number, min: number, max: number) => {
 	return Math.min(Math.max(num, min), max);
@@ -89,6 +89,10 @@ function getSericesPrice(bookingServices: IBookingService[]) {
 	return totalServicePrice;
 }
 
+function getPriceConfigTooltip(pricingConfig: IPricingConfig){
+	return `Free Cancellation Days: ${pricingConfig.free_cancellation_days} days \nDiscount: ${pricingConfig.discount} \nDeposit Percentage: ${pricingConfig.deposit_percentage} \nCancellation Refund Percentage: ${pricingConfig.cancellation_refund_percentage} \n`
+}
+
 export {
 	clamp,
 	extractUrl,
@@ -98,5 +102,6 @@ export {
 	findFarthestPossibleDate,
 	getSericesPrice,
 	getDaysDiff,
-	extractDate
+	extractDate,
+	getPriceConfigTooltip
 };
