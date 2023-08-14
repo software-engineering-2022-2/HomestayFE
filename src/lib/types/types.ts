@@ -20,6 +20,10 @@ interface HomestayInfo {
     numReviews?: number
     district?: string
     city?: string
+    street_name?: string
+    street_number?: string
+    allow_pet?: boolean
+    availability?: boolean
     address: string
     price: number
     imageLink: string

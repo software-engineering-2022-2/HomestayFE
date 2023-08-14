@@ -6,8 +6,8 @@ import type {
     BookingPeriod, BookingInfo, IServiceType
 } from '$lib/types/types'
 import { get } from 'svelte/store';
-import { authHeader, noAuthHeader, tokens, uploadAvatarHeader } from './headers';
-import { FieldsError, UnauthorizedError, NotFoundError, SimpleError } from './exception';
+import { authHeader, noAuthHeader, uploadAvatarHeader } from './headers';
+import { FieldsError, UnauthorizedError, NotFoundError, SimpleError, NetworkError } from './exception';
 import { extractUrl, formatDateForBooking } from '$lib/types/utils';
 import { apiCalling } from '$lib/stores/stores';
 import type { IHomestayPage } from '$lib/types/types';
@@ -314,6 +314,10 @@ class HomestayAPI {
             description: response.data.description,
             district: response.data.district,
             city: response.data.city,
+            street_number: response.data.street_number,
+            street_name: response.data.street_name,
+            allow_pet: response.data.allow_pet,
+            availability: response.data.availability,
             address: response.data.district + ", " + response.data.city,
             price: response.data.price,
             max_num_adults: response.data.max_num_adults,
@@ -357,6 +361,12 @@ class HomestayAPI {
                 managerID: homestayRecord.manager_id as string,
                 name: homestayRecord.name as string,
                 description: homestayRecord.description as string,
+                district: response.data.district,
+                city: response.data.city,
+                street_number: response.data.street_number,
+                street_name: response.data.street_name,
+                allow_pet: response.data.allow_pet,
+                availability: response.data.availability,
                 address: homestayRecord.district + ", " + homestayRecord.city,
                 price: homestayRecord.price as number,
                 max_num_adults: homestayRecord.max_num_adults as number,
@@ -401,8 +411,12 @@ class HomestayAPI {
                 managerID: homestayRecord.manager_id as string,
                 name: homestayRecord.name as string,
                 description: homestayRecord.description as string,
-                district: homestayRecord.district as string,
-                city: homestayRecord.city as string,
+                district: response.data.district,
+                city: response.data.city,
+                street_number: response.data.street_number,
+                street_name: response.data.street_name,
+                allow_pet: response.data.allow_pet,
+                availability: response.data.availability,
                 address: homestayRecord.district + ", " + homestayRecord.city,
                 price: homestayRecord.price as number,
                 max_num_adults: homestayRecord.max_num_adults as number,
@@ -420,6 +434,90 @@ class HomestayAPI {
         }
 
         return homestayPage;
+    }
+
+    async updateHomestayInfo(homestayInfo: HomestayInfo){
+        let response: AxiosResponse
+
+        const infoToSend = {
+            id: homestayInfo.id,
+            name: homestayInfo.name,
+            price: homestayInfo.price,
+            description: homestayInfo.description,
+            max_num_adults: homestayInfo.max_num_adults,
+            max_num_children: homestayInfo.max_num_children,
+            district: homestayInfo.district,
+            city: homestayInfo.city,
+            manager_id: homestayInfo.managerID,
+            pricing_config_id: homestayInfo.pricing_config.id,
+            allow_pet: homestayInfo.allow_pet,
+            availability: homestayInfo.availability,
+            street_name: homestayInfo.street_name,
+            street_number: homestayInfo.street_number
+        }
+
+        apiCalling.set(true)
+        try {
+            response = await axios.put(
+                `${HOMESTAY_API}${homestayInfo.id}/`,
+                infoToSend,
+                get(authHeader));
+        } catch (err) {
+            if (err instanceof AxiosError){
+                response = err.response as AxiosResponse
+            } else {
+                throw Error("Nothing")
+            }  
+        } finally {
+            apiCalling.set(false)
+        }
+
+        if (response.status == 401){
+            console.log(response.data);
+            throw new UnauthorizedError("Token is invalid or expired")
+        }
+
+        if (response.status == 400){
+            console.log(response.data);
+            const fieldsError = response.data as object
+            throw new FieldsError("Bad Request", fieldsError)
+        }
+
+        if (response.status == 500){
+            throw new NetworkError("Token is invalid or expired")
+        }
+
+    }
+
+    async updateHomestayBackground(homestayID: string, image: File){
+        const formData = new FormData();
+        formData.append('image', image);
+        apiCalling.set(true)
+        let response: AxiosResponse
+        try {
+            response = await axios.put(
+                `${HOMESTAY_API}${homestayID}/image/`,
+                formData,
+                get(uploadAvatarHeader));
+        } catch (err) {
+            if (err instanceof AxiosError){
+                response = err.response as AxiosResponse
+            } else {
+                throw Error("Nothing")
+            }  
+        } finally {
+            apiCalling.set(false)
+        }
+        
+        if (response.status == 401){
+            console.log(response.data);
+            throw new UnauthorizedError("Token is invalid or expired")
+        }
+        if (response.status == 400){
+            const fieldsError = response.data as object
+            throw new FieldsError("Bad Request", fieldsError)
+        }
+        return extractUrl(response.data.image);
     }
 }
 

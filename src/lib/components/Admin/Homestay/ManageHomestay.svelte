@@ -1,14 +1,19 @@
 <script lang="ts">
 	export const ssr = false;
 	import { adminAPI, homestayAPI, priceConfigAPI, serviceAPI } from '$lib/api/api';
-	import { FieldsError, UnauthorizedError } from '$lib/api/exception';
+	import { FieldsError, NetworkError, UnauthorizedError } from '$lib/api/exception';
 	import { reloadStore } from '$lib/stores/reload';
-	import type { HomestayInfo, IHomestayPage, IPricingConfig, IService, IServiceType } from '$lib/types/types';
+	import type {
+		HomestayInfo,
+		IHomestayPage,
+		IPricingConfig,
+		IService,
+		IServiceType
+	} from '$lib/types/types';
 	import { onMount } from 'svelte';
 	import Pagination from './Pagination.svelte';
 	import UpdateHomestay from './UpdateHomestay.svelte';
 	import { goto } from '$app/navigation';
-
 	let queryString = '';
 	let currentPage = 0;
 
@@ -20,6 +25,9 @@
 		max_page: 0,
 		data: []
 	};
+	let files: FileList
+
+	$: console.log(files)
 
 	let allPriceConfig: IPricingConfig[] = [];
 
@@ -28,7 +36,6 @@
 		editingHomestayInfo = homestayInfoRes;
 		editing = true;
 	}
-
 
 	async function findHomestay(page: number) {
 		try {
@@ -54,9 +61,60 @@
 		}
 	}
 
+	async function handleUpdateHomestay(event: { detail: { homestayInfo: HomestayInfo } }) {
+		const homestayDetail = event.detail.homestayInfo;
+		try {
+			await homestayAPI.updateHomestayInfo(homestayDetail);
+		} catch (error) {
+			if (error instanceof UnauthorizedError) {
+				alert(error.message);
+				reloadStore.set(true);
+			}
+			if (error instanceof FieldsError) {
+				alert(error.getMessage());
+			}
+			if (error instanceof NetworkError) {
+				alert(error.message);
+				reloadStore.set(true);
+			}
+			return;
+		}
+		alert(`Update homestay ${homestayDetail.id} success!`);
+		editing = false;
+		//Reload
+		findHomestay(currentPage);
+	}
+
+	async function openFileDialog() {
+		const fileInput = document.getElementById('bg-upload');
+		if (fileInput){
+			fileInput.click();
+		}
+	}
+
+	async function updateHSBG(homestayInfo: HomestayInfo) {
+		if (files && files[0]){
+			let bgImage: string
+			try {
+				bgImage = await homestayAPI.updateHomestayBackground(homestayInfo.id, files[0])
+			} catch (error){
+				if (error instanceof UnauthorizedError){
+					alert(error.message)
+				}
+				if (error instanceof FieldsError) {
+					alert(error.getMessage())
+				}
+				return;
+			}
+			alert(`Upload Background for Homestay ${homestayInfo.id} Success`);
+			//Reload
+			findHomestay(currentPage);
+		}
+	}
+
 	onMount(async () => {
 		findHomestay(0);
-		allPriceConfig =  await priceConfigAPI.getAllPriceConfig()
+		allPriceConfig = await priceConfigAPI.getAllPriceConfig();
 	});
 </script>
 
@@ -90,12 +148,19 @@
 							/>
 						</div>
 						<button
-							class="basis-1/4 text-2xl"
+							class="basis-1/5 text-2xl"
 							title="Homestay Info"
 							on:click={() => turnOnEditing(homestayDetail)}
 							><iconify-icon icon="mingcute:edit-line" /></button
 						>
-						<button class="basis-1/4 text-2xl" title="Homestay Services"
+						<input bind:files={files} accept="image/*" id="bg-upload" style="display: none;" type="file" on:change={() => updateHSBG(homestayDetail)}>
+						<button class="basis-1/5 text-2xl" title="Homestay Image"
+							on:click={openFileDialog}
+							><iconify-icon icon="ph:image" /></button
+						>
+						<button
+							class="basis-1/5 text-2xl"
+							title="Homestay Services"
 							on:click={() => goto(`/admin/homestay/${homestayDetail.id}`)}
 							><iconify-icon icon="material-symbols:room-service" /></button
 						>
@@ -118,7 +183,7 @@
 
 {#if editing && editingHomestayInfo}
 	<UpdateHomestay
-		on:submit={() => (editing = false)}
+		on:submit={handleUpdateHomestay}
 		on:cancel={() => (editing = false)}
 		{allPriceConfig}
 		homestayInfo={editingHomestayInfo}
