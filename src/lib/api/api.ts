@@ -566,6 +566,51 @@ class ServiceAPI {
         const homestayServices = response.data as IService[]
         return homestayServices;
     }
+
+    async updateServiceDetail(serviceDetail: IService, homestayID: string) {
+        let response: AxiosResponse
+
+        const infoToSend = {
+            price: serviceDetail.price,
+            description: serviceDetail.description,
+            availability: serviceDetail.availability,
+            service_type_id: serviceDetail.service_type_id,
+            homestay_id: homestayID
+        }
+
+        apiCalling.set(true)
+        try {
+            response = await axios.put(
+                `${HOMESTAY_API}services/${serviceDetail.id}/`,
+                infoToSend,
+                get(authHeader));
+        } catch (err) {
+            if (err instanceof AxiosError){
+                response = err.response as AxiosResponse
+            } else {
+                throw Error("Nothing")
+            }  
+        } finally {
+            apiCalling.set(false)
+        }
+
+        console.log(response)
+
+        if (response.status == 401){
+            console.log(response.data);
+            throw new UnauthorizedError("Token is invalid or expired")
+        }
+
+        if (response.status == 400){
+            console.log(response.data);
+            const fieldsError = response.data as object
+            throw new FieldsError("Bad Request", fieldsError)
+        }
+
+        if (response.status == 500){
+            throw new NetworkError("Token is invalid or expired")
+        }
+    }
 }
 
 class BookingAPI{

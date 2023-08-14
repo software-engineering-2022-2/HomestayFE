@@ -27,8 +27,6 @@
 	};
 	let files: FileList
 
-	$: console.log(files)
-
 	let allPriceConfig: IPricingConfig[] = [];
 
 	async function turnOnEditing(homestayInfo: HomestayInfo) {

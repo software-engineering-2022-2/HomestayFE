@@ -7,6 +7,7 @@
 
 	import { getContext } from 'svelte';
 	import UpdateHomestayService from './UpdateHomestayService.svelte';
+	import { FieldsError, NetworkError, UnauthorizedError } from '$lib/api/exception';
 
 	const homestayId = getContext('homestay_id') as string;
 
@@ -19,6 +20,30 @@
 	function turnOnEditing(homestayService: IService) {
 		editingHomestayService = homestayService;
 		editing = true;
+	}
+	
+	async function updateHomestayService(event: { detail: { serviceDetail: IService } }) {
+		const serviceDetail = event.detail.serviceDetail;
+		try {
+			await serviceAPI.updateServiceDetail(serviceDetail, homestayId)
+		} catch (error) {
+			if (error instanceof UnauthorizedError) {
+				alert(error.message);
+				reloadStore.set(true);
+			}
+			if (error instanceof FieldsError) {
+				alert(error.getMessage());
+			}
+			if (error instanceof NetworkError) {
+				alert(error.message);
+				reloadStore.set(true);
+			}
+			return;
+		}
+		alert(`Update service ${serviceDetail.id} (${serviceDetail.service_type.name}) success!`);
+		editing = false;
+		//Reload
+		homestayServices = [...homestayServices];
 	}
 
 	onMount(async () => {
@@ -70,7 +95,7 @@
 {#if editing && editingHomestayService}
 	<UpdateHomestayService
 		serviceDetail={editingHomestayService}
-		on:submit={() => (editing = false)}
+		on:submit={updateHomestayService}
 		on:cancel={() => (editing = false)}
 	/>
 {/if}
