@@ -5,4 +5,7 @@ import Header from "$lib/components/NavBar/Header.svelte";
 
 </script>
 
-<ManageUser></ManageUser>
+<div class="relative bg-homestay-bg bg-no-repeat bg-cover bg-opacity-50 min-h-screen min-w-full">
+    <Header/>
+	<slot/>
+</div>
