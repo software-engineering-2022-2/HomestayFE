@@ -3,7 +3,7 @@ import type { AxiosResponse } from 'axios';
 import type {
     HomestayInfo, IService, ManagerInfo, IBookingService,
     TokenPair, UserDetail, IPricingConfig, ReserveBookingInfo, 
-    BookingPeriod, BookingInfo, IServiceType, ICreateHomestay
+    BookingPeriod, BookingInfo, IServiceType, ICreateHomestay, PricingConfig
 } from '$lib/types/types'
 import { get } from 'svelte/store';
 import { authHeader, noAuthHeader, uploadAvatarHeader } from './headers';
@@ -534,7 +534,7 @@ class HomestayAPI {
         }
 
         if (response.status == 500){
-            throw new NetworkError("Token is invalid or expired")
+            throw new NetworkError("Server Error")
         }
 
     }
@@ -568,7 +568,7 @@ class HomestayAPI {
         }
 
         if (response.status == 500){
-            throw new NetworkError("Token is invalid or expired")
+            throw new NetworkError("Server Error")
         }
 
         const homestayInfo: HomestayInfo = {
@@ -718,7 +718,7 @@ class ServiceAPI {
         }
 
         if (response.status == 500){
-            throw new NetworkError("Token is invalid or expired")
+            throw new NetworkError("Server Error")
         }
     }
 
@@ -761,7 +761,7 @@ class ServiceAPI {
         }
 
         if (response.status == 500){
-            throw new NetworkError("Token is invalid or expired")
+            throw new NetworkError("Server Error")
         }
 
         const newService: IService = response.data as IService
@@ -934,6 +934,42 @@ class PriceConfigAPI{
         
         const allPriceConfigs = response.data as  IPricingConfig[]
         return allPriceConfigs;
+    }
+
+    async updatePricingConfig(pricingConfig: IPricingConfig){
+        let response: AxiosResponse
+        apiCalling.set(true)
+        try {
+            response = await axios.put(`${PRICE_CONFIG_API}${pricingConfig.id}/`,
+                pricingConfig,
+                get(authHeader));
+        } catch (err) {
+            if (err instanceof AxiosError){
+                response = err.response as AxiosResponse
+            } else {
+                throw Error("Nothing")
+            }  
+        } finally {
+            apiCalling.set(false)
+        }
+
+        if (response.status == 401){
+            console.log(response.data);
+            throw new UnauthorizedError("Token is invalid or expired")
+        }
+
+        if (response.status == 400){
+            console.log(response.data);
+            const fieldsError = response.data as object
+            throw new FieldsError("Bad Request", fieldsError)
+        }
+
+        if (response.status == 500){
+            throw new NetworkError("Server Error")
+        }
+
+        const newPricingConfig: IPricingConfig = response.data as IPricingConfig
+        return newPricingConfig
     }
 }
 
