@@ -17,16 +17,16 @@ interface HomestayInfo {
     managerID: string
     name: string
     description: string
-    numReviews?: number
     address: string
     price: number
     imageLink: string
     max_num_children: number
     max_num_adults: number
-    pricing_config: IPricingConfig | number,
-    avg_rating?: number,
-    reviews?: Review[],
-    available?: boolean,
+    pricing_config: IPricingConfig | number
+    numReviews?: number
+    avg_rating?: number
+    reviews?: Review[]
+    available?: boolean
 }
 
 interface ManagerInfo {

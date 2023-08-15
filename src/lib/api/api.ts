@@ -417,7 +417,7 @@ class ManagerAPI {
         try {
             response = await axios.get(`${HOMESTAY_API}`,
             {
-                ...get(authHeader),
+                ...get(noAuthHeader),
                 params: {manager: managerID}
             }
             );
@@ -425,13 +425,14 @@ class ManagerAPI {
             if (err instanceof AxiosError){
                 response = err.response as AxiosResponse
             } else {
-                throw Error("Nothing")
+                throw Error("Something went wrong")
             }  
         } finally {
             apiCalling.set(false)
         }
+        console.log(response.data.data);
     
-        const data = response.data as Array<Record<string, string | number| boolean>>;
+        const data = response.data.data as Array<Record<string, string | number| boolean>>;
         const homestays: HomestayInfo[] = data.map((homestayRecord: Record<string, string | number | boolean>) => {
             const homestay: HomestayInfo = {
                 id: homestayRecord.id as string,

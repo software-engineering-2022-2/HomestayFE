@@ -8,8 +8,8 @@
     onMount(async () => {
         try {
             let homestays = await managerAPI.getAllHomestaysOwned($userDetailStore.id);
+            console.log(homestays);
             homestayListStore.set(homestays);
-            console.log($homestayListStore);
         } catch (err) {
             console.error(err);
         }
