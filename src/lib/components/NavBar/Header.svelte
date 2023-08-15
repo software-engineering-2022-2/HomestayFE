@@ -10,7 +10,7 @@
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
 	import { tokens } from '$lib/api/headers';
-	import { userAPI } from '$lib/api/api';
+	import { authAPI, userAPI } from '$lib/api/api';
 	import { page } from '$app/stores';
 
 	import { reloadStore } from '$lib/stores/reload';
@@ -57,6 +57,17 @@
 		if (value.token == '') return;
 		getUserDetail();
 	});
+
+	setTimeout(async () => {
+		if (get(tokens).refreshToken === '') return;
+		try {
+			const newTokens = await authAPI.refreshToken(get(tokens).refreshToken)
+			tokens.set(newTokens)
+		} catch (error) {
+			alert("Error when trying to refresh token")
+			reloadStore.set(true)
+		}
+	}, 60000)
 
 	$: isAuthenicated = $userDetailStore.username !== '';
 	$: headerName = $userDetailStore.is_superuser ? 'CalmStay Admin' : 'CalmStay';

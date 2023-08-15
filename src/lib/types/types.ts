@@ -34,6 +34,22 @@ interface HomestayInfo {
     reviews?: Review[]
 }
 
+interface ICreateHomestay {
+    name: string
+    price: number
+    description: string
+    max_num_children: number
+    max_num_adults: number
+    allow_pet: boolean
+    availability: boolean
+    district: string
+    city: string
+    street_name: string
+    street_number: string
+    manager_id: string
+    pricing_config_id: number
+}
+
 interface IHomestayPage {
     current_page: number,
     max_page: number,
@@ -103,6 +119,7 @@ interface TokenPair{
 }
 
 export interface UserDetail{
+    id?: string,
     username: string,
     first_name: string,
     last_name: string,
@@ -141,5 +158,6 @@ export {StarType,
     type ReserveBookingInfo,
     type BookingPeriod,
     type BookingInfo,
-    type IHomestayPage
+    type IHomestayPage,
+    type ICreateHomestay
 };

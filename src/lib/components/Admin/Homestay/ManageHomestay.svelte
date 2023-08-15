@@ -5,6 +5,7 @@
 	import { reloadStore } from '$lib/stores/reload';
 	import type {
 		HomestayInfo,
+		ICreateHomestay,
 		IHomestayPage,
 		IPricingConfig,
 		IService,
@@ -14,18 +15,20 @@
 	import Pagination from './Pagination.svelte';
 	import UpdateHomestay from './UpdateHomestay.svelte';
 	import { goto } from '$app/navigation';
+	import CreateHomestay from './CreateHomestay.svelte';
 	let queryString = '';
 	let currentPage = 0;
 
 	let editing = false;
 	let editingHomestayInfo: HomestayInfo | null = null;
+	let isCreatingHomestay = false;
 
 	let homestayPage: IHomestayPage = {
 		current_page: 0,
 		max_page: 0,
 		data: []
 	};
-	let files: FileList
+	let files: FileList;
 
 	let allPriceConfig: IPricingConfig[] = [];
 
@@ -56,7 +59,7 @@
 				max_page: 0,
 				data: []
 			};
-		}
+		}		
 	}
 
 	async function handleUpdateHomestay(event: { detail: { homestayInfo: HomestayInfo } }) {
@@ -83,24 +86,66 @@
 		findHomestay(currentPage);
 	}
 
-	async function openFileDialog() {
-		const fileInput = document.getElementById('bg-upload');
-		if (fileInput){
+	async function createNewHomestay(event: {
+		detail: { homestayCreateInfo: ICreateHomestay; bgImage: File };
+	}) {
+		const homestayCreateDetail = event.detail.homestayCreateInfo;
+		const image = event.detail.bgImage;
+		let newHomestayInfo: HomestayInfo;
+		// Create homestay
+		try {
+			newHomestayInfo = await homestayAPI.createNewHomestay(homestayCreateDetail);
+		} catch (error) {
+			if (error instanceof UnauthorizedError) {
+				alert(error.message);
+				reloadStore.set(true);
+			}
+			if (error instanceof FieldsError) {
+				alert(error.getMessage());
+			}
+			if (error instanceof NetworkError) {
+				alert(error.message);
+				reloadStore.set(true);
+			}
+			return;
+		}
+		console.log("Created homestay")
+		// Add avatar for homestay
+		try {
+			await homestayAPI.updateHomestayBackground(newHomestayInfo.id, image);
+		} catch (error) {
+			if (error instanceof UnauthorizedError) {
+				alert(error.message);
+			}
+			if (error instanceof FieldsError) {
+				alert(error.getMessage());
+			}
+			return;
+		}
+
+		isCreatingHomestay = false;
+		alert(`Create homestay ${homestayCreateDetail.name} success!`);
+		findHomestay(currentPage);
+	}
+
+	async function openFileDialog(homestayID: string) {
+		const fileInput = document.getElementById(`bg-upload-${homestayID}`);
+		if (fileInput) {
 			fileInput.click();
 		}
 	}
 
 	async function updateHSBG(homestayInfo: HomestayInfo) {
-		if (files && files[0]){
-			let bgImage: string
+		if (files && files[0]) {
+			let bgImage: string;
 			try {
-				bgImage = await homestayAPI.updateHomestayBackground(homestayInfo.id, files[0])
-			} catch (error){
-				if (error instanceof UnauthorizedError){
-					alert(error.message)
+				bgImage = await homestayAPI.updateHomestayBackground(homestayInfo.id, files[0]);
+			} catch (error) {
+				if (error instanceof UnauthorizedError) {
+					alert(error.message);
 				}
 				if (error instanceof FieldsError) {
-					alert(error.getMessage())
+					alert(error.getMessage());
 				}
 				return;
 			}
@@ -151,9 +196,18 @@
 							on:click={() => turnOnEditing(homestayDetail)}
 							><iconify-icon icon="mingcute:edit-line" /></button
 						>
-						<input bind:files={files} accept="image/*" id="bg-upload" style="display: none;" type="file" on:change={() => updateHSBG(homestayDetail)}>
-						<button class="basis-1/5 text-2xl" title="Homestay Image"
-							on:click={openFileDialog}
+						<input
+							bind:files
+							accept="image/*"
+							id={`bg-upload-${homestayDetail.id}`}
+							style="display: none;"
+							type="file"
+							on:change={() => updateHSBG(homestayDetail)}
+						/>
+						<button
+							class="basis-1/5 text-2xl"
+							title="Homestay Image"
+							on:click={() => openFileDialog(homestayDetail.id)}
 							><iconify-icon icon="ph:image" /></button
 						>
 						<button
@@ -167,7 +221,9 @@
 			{/each}
 			<li class="px-4 py-5 sm:px-6">
 				<div class="flex flex-row justify-end">
-					<button><iconify-icon class="text-3xl text-green-500" icon="gridicons:add" /></button>
+					<button on:click={() => (isCreatingHomestay = true)}
+						><iconify-icon class="text-3xl text-green-500" icon="gridicons:add" /></button
+					>
 				</div>
 			</li>
 		</ul>
@@ -185,5 +241,13 @@
 		on:cancel={() => (editing = false)}
 		{allPriceConfig}
 		homestayInfo={editingHomestayInfo}
+	/>
+{/if}
+
+{#if isCreatingHomestay}
+	<CreateHomestay
+		on:submit={createNewHomestay}
+		on:cancel={() => (isCreatingHomestay = false)}
+		{allPriceConfig}
 	/>
 {/if}

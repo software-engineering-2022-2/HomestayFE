@@ -3,7 +3,7 @@ import type { AxiosResponse } from 'axios';
 import type {
     HomestayInfo, IService, ManagerInfo, IBookingService,
     TokenPair, UserDetail, IPricingConfig, ReserveBookingInfo, 
-    BookingPeriod, BookingInfo, IServiceType
+    BookingPeriod, BookingInfo, IServiceType, ICreateHomestay
 } from '$lib/types/types'
 import { get } from 'svelte/store';
 import { authHeader, noAuthHeader, uploadAvatarHeader } from './headers';
@@ -15,8 +15,9 @@ import type { IHomestayPage } from '$lib/types/types';
 const BACKEND_BASE_URL = 'http://127.0.0.1:8000'
 export const BACKEND_MEDIA_URL = 'http://localhost:8000/media'
 const TOKEN_API = `${BACKEND_BASE_URL}/api/token/`
-// const TOKEN_REFRESH_API = `${BACKEND_BASE_URL}/api/token/refresh/`
+const TOKEN_REFRESH_API = `${BACKEND_BASE_URL}/api/token/refresh/`
 const USER_API = `${BACKEND_BASE_URL}/api/users/`
+const MANAGER_API = `${BACKEND_BASE_URL}/api/managers/`
 const HOMESTAY_API = `${BACKEND_BASE_URL}/api/homestays/`
 const MANAGER_PROFILE_API = `${USER_API}manager_profile/`
 const BOOKING_API = `${BACKEND_BASE_URL}/api/bookings/`
@@ -89,7 +90,7 @@ class AuthAPI {
         let response: AxiosResponse
         apiCalling.set(true)
         try {
-            response = await axios.post(TOKEN_API, {
+            response = await axios.post(TOKEN_REFRESH_API, {
                 "refresh": refreshToken
             }, get(noAuthHeader));
         } catch (err) {
@@ -134,6 +135,29 @@ class UserAPI {
 
         if (response.status == 401){
             console.log(response.data);
+            throw new UnauthorizedError("Token is invalid or expired")
+        }
+
+        const userDetails: UserDetail[] = response.data as UserDetail[]
+        return userDetails;
+    }
+
+    async getAllManagers(query: string): Promise<UserDetail[]> {
+        let response: AxiosResponse
+        apiCalling.set(true)
+        try {
+            response = await axios.get(`${MANAGER_API}?query=${query}`, get(authHeader));
+        } catch (err) {
+            if (err instanceof AxiosError){
+                response = err.response as AxiosResponse
+            } else {
+                throw Error("Nothing")
+            }  
+        } finally {
+            apiCalling.set(false)
+        }
+
+        if (response.status == 401){
             throw new UnauthorizedError("Token is invalid or expired")
         }
 
@@ -487,6 +511,66 @@ class HomestayAPI {
             throw new NetworkError("Token is invalid or expired")
         }
 
+    }
+
+    async createNewHomestay(homestayCreateInfo: ICreateHomestay){
+        let response: AxiosResponse
+
+        apiCalling.set(true)
+        try {
+            response = await axios.post(
+                `${HOMESTAY_API}`,
+                homestayCreateInfo,
+                get(authHeader));
+        } catch (err) {
+            if (err instanceof AxiosError){
+                response = err.response as AxiosResponse
+            } else {
+                throw Error("Nothing")
+            }  
+        } finally {
+            apiCalling.set(false)
+        }
+
+        if (response.status == 401){
+            throw new UnauthorizedError("Token is invalid or expired")
+        }
+
+        if (response.status == 400){
+            const fieldsError = response.data as object
+            throw new FieldsError("Bad Request", fieldsError)
+        }
+
+        if (response.status == 500){
+            throw new NetworkError("Token is invalid or expired")
+        }
+
+        const homestayInfo: HomestayInfo = {
+            id: response.data.id,
+            name: response.data.name,
+            managerID: response.data.manager_id,
+            description: response.data.description,
+            district: response.data.district,
+            city: response.data.city,
+            street_number: response.data.street_number,
+            street_name: response.data.street_name,
+            allow_pet: response.data.allow_pet,
+            availability: response.data.availability,
+            address: response.data.district + ", " + response.data.city,
+            price: response.data.price,
+            max_num_adults: response.data.max_num_adults,
+            max_num_children: response.data.max_num_children,
+            imageLink: extractUrl(response.data.image),
+            pricing_config: {
+                id: response.data.pricing_config_id,
+                cancellation_refund_percentage: 0,
+                deposit_percentage: 0,
+                discount: 0,
+                free_cancellation_days: 0,
+                name: ""
+            }
+        };
+        return homestayInfo;
     }
 
     async updateHomestayBackground(homestayID: string, image: File){
