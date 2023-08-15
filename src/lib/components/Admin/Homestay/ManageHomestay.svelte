@@ -1,6 +1,6 @@
 <script lang="ts">
 	export const ssr = false;
-	import { adminAPI, homestayAPI, priceConfigAPI, serviceAPI } from '$lib/api/api';
+	import { adminAPI, homestayAPI, priceConfigAPI, serviceAPI, userAPI } from '$lib/api/api';
 	import { FieldsError, NetworkError, UnauthorizedError } from '$lib/api/exception';
 	import { reloadStore } from '$lib/stores/reload';
 	import type {
@@ -8,8 +8,9 @@
 		ICreateHomestay,
 		IHomestayPage,
 		IPricingConfig,
-		IService,
-		IServiceType
+		ManagerInfo,
+		UserDetail
+
 	} from '$lib/types/types';
 	import { onMount } from 'svelte';
 	import Pagination from './Pagination.svelte';
@@ -21,6 +22,7 @@
 
 	let editing = false;
 	let editingHomestayInfo: HomestayInfo | null = null;
+	let editingHomstayManagerInfo: ManagerInfo | null = null;
 	let isCreatingHomestay = false;
 
 	let homestayPage: IHomestayPage = {
@@ -31,10 +33,16 @@
 	let files: FileList;
 
 	let allPriceConfig: IPricingConfig[] = [];
+	let allManagers: UserDetail[] = [];
 
 	async function turnOnEditing(homestayInfo: HomestayInfo) {
-		const homestayInfoRes = await homestayAPI.getHomestayInfo(homestayInfo.id);
+		const [homestayInfoRes, homestayManagerInfo] = await Promise.all([
+			homestayAPI.getHomestayInfo(homestayInfo.id),
+			userAPI.getManagerInfo(homestayInfo.managerID)
+		])
+		
 		editingHomestayInfo = homestayInfoRes;
+		editingHomstayManagerInfo = homestayManagerInfo;
 		editing = true;
 	}
 
@@ -157,7 +165,11 @@
 
 	onMount(async () => {
 		findHomestay(0);
-		allPriceConfig = await priceConfigAPI.getAllPriceConfig();
+		[allPriceConfig, allManagers] = await Promise.all([
+			priceConfigAPI.getAllPriceConfig(),
+			userAPI.getAllManagers('')
+		])
+		
 	});
 </script>
 
@@ -235,11 +247,13 @@
 	</div>
 </div>
 
-{#if editing && editingHomestayInfo}
+{#if editing && editingHomestayInfo && editingHomstayManagerInfo}
 	<UpdateHomestay
 		on:submit={handleUpdateHomestay}
 		on:cancel={() => (editing = false)}
 		{allPriceConfig}
+		{allManagers}
+		managerInfo={editingHomstayManagerInfo}
 		homestayInfo={editingHomestayInfo}
 	/>
 {/if}
@@ -249,5 +263,6 @@
 		on:submit={createNewHomestay}
 		on:cancel={() => (isCreatingHomestay = false)}
 		{allPriceConfig}
+		{allManagers}
 	/>
 {/if}

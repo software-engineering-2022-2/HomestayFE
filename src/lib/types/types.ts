@@ -57,7 +57,9 @@ interface IHomestayPage {
 }
 
 interface ManagerInfo {
+    id: string
     name: string
+    username: string
     avatarLink: string
     numHomestays: number
 }

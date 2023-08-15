@@ -8,13 +8,12 @@
 	const dispatch = createEventDispatcher();
 
 	export let allPriceConfig: IPricingConfig[];
-	let allManagers: UserDetail[] = [];
-	let infoLoaded = false;
+	export let allManagers: UserDetail[];
 	let query = '';
 
 	let showImage = false;
-	let image: HTMLImageElement
-	let input: HTMLInputElement
+	let image: HTMLImageElement;
+	let input: HTMLInputElement;
 
 	let homestayName = '';
 	let price: number;
@@ -22,8 +21,8 @@
 	let max_num_children: number;
 	let district = '';
 	let city = '';
-	let street_name = ''
-	let street_number = ''
+	let street_name = '';
+	let street_number = '';
 	let selectedPricingID: number;
 	let description = '';
 	let selectedManagerID: string;
@@ -35,10 +34,12 @@
 			!max_num_children ||
 			!selectedManagerID ||
 			!selectedPricingID ||
-			street_name == "" ||
-			street_number == "" ||
+			street_name == '' ||
+			street_number == '' ||
 			allManagers.length == 0 ||
-			!input || !input.files || !input.files[0]
+			!input ||
+			!input.files ||
+			!input.files[0]
 		) {
 			alert('Please include all information!');
 			return;
@@ -79,28 +80,18 @@
 		const myFile = input.files[0];
 
 		const reader = new FileReader();
-		reader.addEventListener("load", function () {
-			image.setAttribute("src", reader.result?.toString() || "");
+		reader.addEventListener('load', function () {
+			image.setAttribute('src', reader.result?.toString() || '');
 		});
-		reader.readAsDataURL(myFile);	
+		reader.readAsDataURL(myFile);
 		showImage = true;
-	}	
+	}
 
 	// Define a function to handle the cancel button click
 	function cancel() {
 		// Hide the review modal
 		dispatch('cancel');
 	}
-
-	onMount(async () => {
-		try {
-			allManagers = await userAPI.getAllManagers('');
-			infoLoaded = true;
-		} catch (error) {
-			alert('Error when get managers list');
-			reloadStore.set(true);
-		}
-	});
 </script>
 
 <div class="overlay fixed inset-0 bg-black bg-opacity-50">
@@ -112,7 +103,9 @@
 			{#if showImage}
 				<img class="object-cover h-[50px] w-[100px]" bind:this={image} src={''} alt="Homestay" />
 			{/if}
-			<button on:click={() => input.click()} class="text-2xl"><iconify-icon icon="material-symbols:upload"></iconify-icon></button>
+			<button on:click={() => input.click()} class="text-2xl"
+				><iconify-icon icon="material-symbols:upload" /></button
+			>
 			<input
 				bind:this={input}
 				accept="image/*"
@@ -121,88 +114,81 @@
 				on:change={onChange}
 			/>
 		</div>
-		
-		{#if infoLoaded == true}
-			<div class="grid grid-cols-2 self-start w-full gap-3">
-				<div>
-					<div class="text-xl">Homestay Name</div>
-					<input
-						class="w-full value_input border-2 rounded"
-						type="text"
-						bind:value={homestayName}
-					/>
-				</div>
-				<div>
-					<div class="text-xl">Price in VND</div>
-					<input
-						class="w-full value_input border-2 rounded"
-						type="number"
-						step="0.01"
-						bind:value={price}
-					/>
-				</div>
-				<div>
-					<div class="text-xl">Max Adults</div>
-					<input
-						class="w-full value_input border-2 rounded"
-						type="number"
-						bind:value={max_num_adults}
-					/>
-				</div>
-				<div>
-					<div class="text-xl">Max Children</div>
-					<input
-						class="w-full value_input border-2 rounded"
-						type="number"
-						bind:value={max_num_children}
-					/>
-				</div>
-				<div>
-					<div class="text-xl">District</div>
-					<input class="w-full value_input border-2 rounded" type="text" bind:value={district} />
-				</div>
-				<div>
-					<div class="text-xl">City</div>
-					<input class="w-full value_input border-2 rounded" type="text" bind:value={city} />
-				</div>
-				<div>
-					<div class="text-xl">Pricing Config</div>
-					<select class="border-2 rounded w-full" bind:value={selectedPricingID}>
-						{#each allPriceConfig as priceConfig}
-							<option title={`${getPriceConfigTooltip(priceConfig)}`} value={priceConfig.id}
-								>{priceConfig.name}</option
-							>
-						{/each}
-					</select>
-				</div>
-				<div>
-					<div class="text-xl">Street Name</div>
-					<input class="w-full value_input border-2 rounded" type="text" bind:value={street_name} />
-				</div>
-				<div>
-					<div class="text-xl">Street Number</div>
-					<input class="w-full value_input border-2 rounded" type="text" bind:value={street_number} />
-				</div>
 
+		<div class="grid grid-cols-2 self-start w-full gap-3">
+			<div>
+				<div class="text-xl">Homestay Name</div>
+				<input class="w-full value_input border-2 rounded" type="text" bind:value={homestayName} />
+			</div>
+			<div>
+				<div class="text-xl">Price in VND</div>
+				<input
+					class="w-full value_input border-2 rounded"
+					type="number"
+					step="0.01"
+					bind:value={price}
+				/>
+			</div>
+			<div>
+				<div class="text-xl">Max Adults</div>
+				<input
+					class="w-full value_input border-2 rounded"
+					type="number"
+					bind:value={max_num_adults}
+				/>
+			</div>
+			<div>
+				<div class="text-xl">Max Children</div>
+				<input
+					class="w-full value_input border-2 rounded"
+					type="number"
+					bind:value={max_num_children}
+				/>
+			</div>
+			<div>
+				<div class="text-xl">District</div>
+				<input class="w-full value_input border-2 rounded" type="text" bind:value={district} />
+			</div>
+			<div>
+				<div class="text-xl">City</div>
+				<input class="w-full value_input border-2 rounded" type="text" bind:value={city} />
+			</div>
+			<div>
+				<div class="text-xl">Pricing Config</div>
+				<select class="border-2 rounded w-full" bind:value={selectedPricingID}>
+					{#each allPriceConfig as priceConfig}
+						<option title={`${getPriceConfigTooltip(priceConfig)}`} value={priceConfig.id}
+							>{priceConfig.name}</option
+						>
+					{/each}
+				</select>
+			</div>
+			<div>
+				<div class="text-xl">Street Name</div>
+				<input class="w-full value_input border-2 rounded" type="text" bind:value={street_name} />
+			</div>
+			<div>
+				<div class="text-xl">Street Number</div>
+				<input class="w-full value_input border-2 rounded" type="text" bind:value={street_number} />
+			</div>
 
-				<div>
-					<div class="text-xl">Manager</div>
-					<div class="flex flex-row">
-						<input bind:value={query} class="border-2 rounded-lg" />
-						<button on:click={() => searchHomestayManagers()}>Search</button>
-					</div>
-					<select class="border-2 rounded w-full" bind:value={selectedManagerID}>
-						{#each allManagers as manager}
-							<option value={manager.id}>{manager.username}</option>
-						{/each}
-					</select>
+			<div>
+				<div class="text-xl">Manager</div>
+				<div class="flex flex-row">
+					<input bind:value={query} class=" border-green-600 border rounded-lg" />
+					<button on:click={() => searchHomestayManagers()}>Search</button>
 				</div>
+				<select class="border-2 rounded w-full" bind:value={selectedManagerID}>
+					{#each allManagers as manager}
+						<option value={manager.id}>{manager.username}</option>
+					{/each}
+				</select>
 			</div>
-			<div class="w-full">
-				<div class="text-xl">Description</div>
-				<textarea class="w-full border-2 min-h-[50px]" bind:value={description} />
-			</div>
-		{/if}
+		</div>
+		<div class="w-full">
+			<div class="text-xl">Description</div>
+			<textarea class="w-full border-2 min-h-[50px]" bind:value={description} />
+		</div>
 
 		<div class="button mt-4 flex justify-center">
 			<!-- Add a cancel button -->

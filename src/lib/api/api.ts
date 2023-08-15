@@ -195,6 +195,32 @@ class UserAPI {
         return userDetail;
     }
 
+    async getManagerInfo(managerID: string): Promise<ManagerInfo> {
+        let response: AxiosResponse
+        apiCalling.set(true)
+        try {
+            response = await axios.get(`${MANAGER_PROFILE_API}${managerID}/`,
+                get(noAuthHeader));
+        } catch (err) {
+            if (err instanceof AxiosError){
+                response = err.response as AxiosResponse
+            } else {
+                throw Error("Nothing")
+            }  
+        } finally {
+            apiCalling.set(false)
+        }
+
+        const managerInfo: ManagerInfo = {
+            id: response.data.id,
+            name: response.data.first_name + " " + response.data.last_name,
+            username: response.data.username,
+            avatarLink: extractUrl(response.data.avatar),
+            numHomestays: response.data.number_of_homestays
+        }
+        return managerInfo;
+    }
+
     async updateUserDetail(username: string, userDetail: UserDetail){
         let response: AxiosResponse
         apiCalling.set(true)
@@ -623,7 +649,9 @@ class ManagerAPI {
         }
 
         const managerInfo: ManagerInfo = {
+            id: response.data.id,
             name: response.data.first_name + " " + response.data.last_name,
+            username: response.data.username,
             avatarLink: extractUrl(response.data.avatar),
             numHomestays: response.data.number_of_homestays
         }
