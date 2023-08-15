@@ -3,7 +3,7 @@ import type { AxiosInstance, AxiosResponse } from 'axios';
 import type {
     HomestayInfo, IService, ManagerInfo, IBookingService,
     TokenPair, UserDetail, IPricingConfig, ReserveBookingInfo, 
-    BookingPeriod, BookingInfo
+    BookingPeriod, BookingInfo, HomestayAnalytics, MonthlyRating
 } from '$lib/types/types'
 import { get } from 'svelte/store';
 import { authHeader, noAuthHeader, tokens, uploadAvatarHeader } from './headers';
@@ -443,7 +443,7 @@ class ManagerAPI {
                 max_num_adults: homestayRecord.max_num_adults as number,
                 max_num_children: homestayRecord.max_num_children as number,
                 imageLink: extractUrl(homestayRecord.image as string),
-                pricing_config: response.data.pricing_config as IPricingConfig, // error in this part
+                pricing_config: homestayRecord.pricing_config_id as number,
                 available: homestayRecord.availability as boolean,
             }
             return homestay;
@@ -451,6 +451,41 @@ class ManagerAPI {
 
         return homestays;
     }
+
+    async getAnalytics(managerName: string): Promise<HomestayAnalytics[]> {
+        let response: AxiosResponse;
+        apiCalling.set(true);
+      
+        try {
+          response = await axios.get(`${BOOKING_API}${managerName}/analytics/`, get(authHeader));
+        } catch (err) {
+          if (err instanceof AxiosError) {
+            response = err.response as AxiosResponse;
+          } else {
+            throw Error("Something went wrong");
+          }
+        } finally {
+          apiCalling.set(false);
+        }
+
+        const data = response.data;
+        const homestayAnalyticsList: HomestayAnalytics[] = data.map((entry: any) => {
+            const monthlyRatings: MonthlyRating[] = Object.entries(entry.months).map(([date, values]: [string, any]) => ({
+                date,
+                num_bookings: values.bookings,
+                num_rated_bookings: values.total_rated_bookings,
+                avg_rating: parseFloat(values.average_rating),
+            }));
+    
+            return {
+                homestay_id: entry.homestay_id,
+                ratings: monthlyRatings,
+            };
+        });
+    
+        return homestayAnalyticsList;
+      }
+      
 }
 
 class ServiceAPI {
@@ -568,13 +603,13 @@ class BookingAPI{
         }
     }
 
-    async cancelBooking(username: string, bookingID: number): Promise<void> {
+    async updateBookingStatus(username: string, bookingID: number, status: string): Promise<void> {
         let response: AxiosResponse;
         apiCalling.set(true);
         try {
             response = await axios.put(`${BOOKING_API}${username}/${bookingID}/`,
                 {
-                    status: "cancelled"
+                    status
                 },
                 get(authHeader)
             );

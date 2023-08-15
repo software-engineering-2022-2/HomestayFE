@@ -1,6 +1,6 @@
 <script lang="ts">
     import { homestayListStore } from "$lib/stores/stores";
-	import type { HomestayInfo } from "$lib/types/types";
+	  import type { HomestayInfo } from "$lib/types/types";
     import HomestayModal from "./HomestayModal.svelte";
     
     let showModal = false;

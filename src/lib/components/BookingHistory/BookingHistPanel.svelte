@@ -15,7 +15,7 @@
   async function cancelBooking(bookingID: number) {
     try {
       if (confirm("Are you sure you want to cancel this booking?")) {
-        let res = await bookingAPI.cancelBooking($userDetailStore.username, bookingID);
+        let res = await bookingAPI.updateBookingStatus($userDetailStore.username, bookingID, "Cancelled");
         alert("Booking cancelled successfully.");
         location.reload();
       }

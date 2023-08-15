@@ -23,7 +23,7 @@ interface HomestayInfo {
     imageLink: string
     max_num_children: number
     max_num_adults: number
-    pricing_config: IPricingConfig
+    pricing_config: IPricingConfig | number,
     avg_rating?: number,
     reviews?: Review[],
     available?: boolean,
@@ -114,6 +114,18 @@ interface BookingInfo {
     total_price: number,
     comment?: string,
     rating?: number
+}
+
+export interface MonthlyRating {
+    date: string,
+    num_bookings: number,
+    num_rated_bookings: number,
+    avg_rating: number,
+}
+
+export interface HomestayAnalytics {
+    homestay_id: string,
+    ratings: MonthlyRating[],
 }
 
 export {StarType, 
