@@ -6,9 +6,11 @@
 	import type { IPricingConfig, PricingConfig } from '$lib/types/types';
 	import { onMount } from 'svelte';
 	import UpdatePricingConfig from './UpdatePricingConfig.svelte';
+	import CreatePricingConfig from './CreatePricingConfig.svelte';
 
 	let isEditing = false;
 	let isEditingPricingConfig: IPricingConfig | null = null;
+	let isCreating = false;
 
 	async function turnOnEditing(pricingConfig: IPricingConfig) {
 		isEditingPricingConfig = { ...pricingConfig };
@@ -17,7 +19,7 @@
 
 	async function updatePricingConfig(event: { detail: { pricingConfig: IPricingConfig } }) {
 		const pricingConfigDetail = event.detail.pricingConfig;
-		let newPricingConfig: IPricingConfig
+		let newPricingConfig: IPricingConfig;
 		try {
 			newPricingConfig = await priceConfigAPI.updatePricingConfig(pricingConfigDetail);
 		} catch (error) {
@@ -36,8 +38,32 @@
 		}
 		alert(`Update pricing config ${pricingConfigDetail.name} success`);
 		isEditing = false;
-		allPricingConfigs = []
+		allPricingConfigs = [];
 		allPricingConfigs = await priceConfigAPI.getAllPriceConfig();
+	}
+
+	async function createPricingConfig(event: { detail: { pricingConfig: IPricingConfig } }) {
+		const pricingConfigDetail = event.detail.pricingConfig;
+		let newPricingConfig: IPricingConfig;
+		try {
+			newPricingConfig = await priceConfigAPI.createPricingConfig(pricingConfigDetail);
+		} catch (error) {
+			if (error instanceof UnauthorizedError) {
+				alert(error.message);
+				reloadStore.set(true);
+			}
+			if (error instanceof FieldsError) {
+				alert(error.getMessage());
+			}
+			if (error instanceof NetworkError) {
+				alert(error.message);
+				reloadStore.set(true);
+			}
+			return;
+		}
+		alert(`Create pricing config ${pricingConfigDetail.name} success`);
+		isCreating = false;
+		allPricingConfigs = [...allPricingConfigs, newPricingConfig]
 	}
 
 	let allPricingConfigs: IPricingConfig[] = [];
@@ -82,7 +108,7 @@
 			{/each}
 			<li class="px-4 py-5 sm:px-6">
 				<div class="flex flex-row justify-end">
-					<button><iconify-icon class="text-3xl text-green-500" icon="gridicons:add" /></button>
+					<button on:click={() => isCreating = true}><iconify-icon class="text-3xl text-green-500" icon="gridicons:add" /></button>
 				</div>
 			</li>
 		</ul>
@@ -95,4 +121,8 @@
 		on:submit={updatePricingConfig}
 		on:cancel={() => (isEditing = false)}
 	/>
+{/if}
+
+{#if isCreating}
+	<CreatePricingConfig on:submit={createPricingConfig} on:cancel={() => isCreating = false}/>
 {/if}
