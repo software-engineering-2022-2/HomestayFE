@@ -1,13 +1,14 @@
 <script lang="ts">
-	import { homestayAPI, serviceAPI } from '$lib/api/api';
+	import { adminAPI, homestayAPI, serviceAPI } from '$lib/api/api';
 	import { reloadStore } from '$lib/stores/reload';
-	import type { HomestayInfo, IService } from '$lib/types/types';
+	import type { HomestayInfo, IService, IServiceType } from '$lib/types/types';
 	export const ssr = false;
 	import { onMount } from 'svelte';
 
 	import { getContext } from 'svelte';
 	import UpdateHomestayService from './UpdateHomestayService.svelte';
 	import { FieldsError, NetworkError, UnauthorizedError } from '$lib/api/exception';
+	import AddHomestayService from './AddHomestayService.svelte';
 
 	const homestayId = getContext('homestay_id') as string;
 
@@ -16,16 +17,19 @@
 
 	let editing = false;
 	let editingHomestayService: IService | null = null;
+	let isAddingService = false;
+
+	let allServiceTypes: IServiceType[] = []
 
 	function turnOnEditing(homestayService: IService) {
 		editingHomestayService = homestayService;
 		editing = true;
 	}
-	
+
 	async function updateHomestayService(event: { detail: { serviceDetail: IService } }) {
 		const serviceDetail = event.detail.serviceDetail;
 		try {
-			await serviceAPI.updateServiceDetail(serviceDetail, homestayId)
+			await serviceAPI.updateServiceDetail(serviceDetail, homestayId);
 		} catch (error) {
 			if (error instanceof UnauthorizedError) {
 				alert(error.message);
@@ -46,11 +50,37 @@
 		homestayServices = [...homestayServices];
 	}
 
+	async function createHomestayService(event: { detail: { service: IService } }){
+		const service = event.detail.service;
+		let newService: IService
+		try {
+			newService = await serviceAPI.addNewService(service, homestayId)
+		} catch (error) {
+			if (error instanceof UnauthorizedError) {
+				alert(error.message);
+				reloadStore.set(true);
+			}
+			if (error instanceof FieldsError) {
+				alert(error.getMessage());
+			}
+			if (error instanceof NetworkError) {
+				alert(error.message);
+				reloadStore.set(true);
+			}
+			return;
+		}
+		alert(`Add new service for homestay ${homestayId} complete!`)
+		homestayServices = []
+		isAddingService = false
+		homestayServices = await serviceAPI.getHomestayServices(homestayId)
+	}
+
 	onMount(async () => {
 		try {
-			[homestayInfo, homestayServices] = await Promise.all([
+			[homestayInfo, homestayServices, allServiceTypes] = await Promise.all([
 				homestayAPI.getHomestayInfo(homestayId),
-				serviceAPI.getHomestayServices(homestayId)
+				serviceAPI.getHomestayServices(homestayId),
+				adminAPI.getAllServiceTypes()
 			]);
 		} catch (error) {
 			alert('Error when loading homestay');
@@ -84,7 +114,7 @@
 				{/each}
 				<li class="px-4 py-5 sm:px-6">
 					<div class="flex flex-row justify-end">
-						<button><iconify-icon class="text-3xl text-green-500" icon="gridicons:add" /></button>
+						<button on:click={() => isAddingService = true}><iconify-icon class="text-3xl text-green-500" icon="gridicons:add" /></button>
 					</div>
 				</li>
 			</ul>
@@ -98,4 +128,8 @@
 		on:submit={updateHomestayService}
 		on:cancel={() => (editing = false)}
 	/>
+{/if}
+
+{#if isAddingService}
+	<AddHomestayService {allServiceTypes} on:submit={createHomestayService} on:cancel={() => (isAddingService = false)}/>
 {/if}
