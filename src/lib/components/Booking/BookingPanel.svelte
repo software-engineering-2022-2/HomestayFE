@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { HomestayInfo, IService, IBookingService, BookingPeriod } from '$lib/types/types';
+	import type { IService, IBookingService, BookingPeriod, IHomestayDetail } from '$lib/types/types';
 	import MoreInfo from './MoreInfo.svelte';
 	import { getContext } from 'svelte';
 	import { userDetailStore } from '$lib/stores/stores';
@@ -20,7 +20,7 @@
 	} from '$lib/types/utils';
 	import { reloadStore } from '$lib/stores/reload';
 
-	const homestayInfo: HomestayInfo = getContext('homestayInfo');
+	const homestayInfo: IHomestayDetail = getContext('homestayInfo');
 	const homestayServices: IService[] = getContext('homestayServices');
 	const bookingPeriods = getContext('homestayBookedDates') as BookingPeriod[];
 	const bookingServices: IBookingService[] = homestayServices.map((service) => ({

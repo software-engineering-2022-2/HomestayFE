@@ -6,11 +6,12 @@
 	import { StarType } from '$lib/types/types';
 	import CustomDot from './CustomDot.svelte';
 
-	export let address = "Hai Ba Trung, Hanoi";
+	export let district = "Hai Ba Trung";
+	export let city = "Hanoi"
 	export let avgRating = 4.8;
 	export let price = 123;
 	// export let hostName = "Long Hoang";
-	export let imageLink = "";
+	export let image = "";
 	export let onClick = () => {}
 </script>
 
@@ -35,7 +36,7 @@
 		{#each images as src, imageIndex (src)}
 			<div class="img-container min-w-[17.5rem] h-[16.5rem]">
 				{#if loaded.includes(imageIndex)}
-					<img class="w-full h-full object-cover" src="{imageLink}" alt="" />
+					<img class="w-full h-full object-cover" src="{image}" alt="" />
 				{/if}
 			</div>
 		{/each}
@@ -43,7 +44,7 @@
 
 	<div class="flex flex-col">
 		<div class="flex flex-row">
-			<div class="grow font-bold text-[1.125rem]">{address}</div>
+			<div class="grow font-bold text-[1.125rem]">{district + ', ' + city}</div>
 			<div class="grow-0"><Star starType={StarType.FULL} /></div>
 			<div class="grow-0 text-[#E86A33]">{avgRating}</div>
 		</div>

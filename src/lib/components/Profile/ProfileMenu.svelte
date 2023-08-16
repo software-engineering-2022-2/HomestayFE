@@ -44,7 +44,7 @@
       showDropdown = false;
       const confirmed = confirm("Are you sure you want to log out?");
       if (confirmed) {
-          reloadStore.set(true);
+        reloadStore.set(true);
       }
     } 
 

@@ -1,9 +1,9 @@
 import axios, { AxiosError } from 'axios';
 import type { AxiosResponse } from 'axios';
 import type {
-    HomestayInfo, IService, ManagerInfo, IBookingService,
+    IService, ManagerInfo, IBookingService,
     TokenPair, UserDetail, IPricingConfig, ReserveBookingInfo, 
-    BookingPeriod, BookingInfo, IServiceType, ICreateHomestay, PricingConfig
+    BookingPeriod, BookingInfo, IServiceType, ICreateHomestay, HomestayAnalytics, MonthlyRating, IHomestayDetail, IHomestaySummary
 } from '$lib/types/types'
 import { get } from 'svelte/store';
 import { authHeader, noAuthHeader, uploadAvatarHeader } from './headers';
@@ -191,7 +191,21 @@ class UserAPI {
             throw new NotFoundError("User not found")
         }
 
-        const userDetail: UserDetail = response.data as UserDetail
+        const userDetail: UserDetail = {
+            id: response.data.id,
+            username: response.data.username,
+            first_name: response.data.first_name,
+            last_name: response.data.last_name,
+            phone_number: response.data.phone_number,
+            avatar: response.data.avatar,
+            city: response.data.city,
+            district: response.data.district,
+            email: response.data.email,
+            street_name: response.data.street_name,
+            street_number: response.data.street_number,
+            is_staff: response.data.is_staff,
+            is_superuser: response.data.is_superuser
+        };
         return userDetail;
     }
 
@@ -250,7 +264,21 @@ class UserAPI {
             throw new FieldsError("Bad Request", fieldsError)
         }
 
-        const newUserDetail: UserDetail = response.data as UserDetail
+        const newUserDetail: UserDetail = {
+            id: response.data.id,
+            username: response.data.username,
+            first_name: response.data.first_name,
+            last_name: response.data.last_name,
+            phone_number: response.data.phone_number,
+            avatar: response.data.avatar,
+            city: response.data.city,
+            district: response.data.district,
+            email: response.data.email,
+            street_name: response.data.street_name,
+            street_number: response.data.street_number,
+            is_staff: response.data.is_staff,
+            is_superuser: response.data.is_superuser
+        };
         return newUserDetail;
     }
 
@@ -342,7 +370,7 @@ class UserAPI {
 }
 
 class HomestayAPI {
-    async getHomestayInfo(homestayID: string): Promise<HomestayInfo> {
+    async getHomestayInfo(homestayID: string): Promise<IHomestayDetail> {
         let response: AxiosResponse
         apiCalling.set(true)
         try {
@@ -357,10 +385,10 @@ class HomestayAPI {
         } finally {
             apiCalling.set(false)
         }
-        const homestayInfo: HomestayInfo = {
+        const homestayInfo: IHomestayDetail = {
             id: response.data.id,
             name: response.data.name,
-            managerID: response.data.manager_id,
+            manager_id: response.data.manager_id,
             description: response.data.description,
             district: response.data.district,
             city: response.data.city,
@@ -368,11 +396,10 @@ class HomestayAPI {
             street_name: response.data.street_name,
             allow_pet: response.data.allow_pet,
             availability: response.data.availability,
-            address: response.data.district + ", " + response.data.city,
             price: response.data.price,
             max_num_adults: response.data.max_num_adults,
             max_num_children: response.data.max_num_children,
-            imageLink: extractUrl(response.data.image),
+            image: extractUrl(response.data.image),
             pricing_config: response.data.pricing_config as IPricingConfig,
             avg_rating: response.data.avg_rating,
             reviews: response.data.reviews.map((review: any) => {
@@ -404,25 +431,24 @@ class HomestayAPI {
             apiCalling.set(false)
         }
     
-        const data = response.data.data as Array<Record<string, string | number>>;
-        const homestays: HomestayInfo[] = data.map((homestayRecord: Record<string, string | number>) => {
-            const homestay: HomestayInfo = {
+        const data = response.data.data as Array<Record<string, string | number | boolean>>;
+        const homestays: IHomestaySummary[] = data.map((homestayRecord: Record<string, string | number | boolean>) => {
+            const homestay: IHomestaySummary = {
                 id: homestayRecord.id as string,
-                managerID: homestayRecord.manager_id as string,
+                manager_id: homestayRecord.manager_id as string,
                 name: homestayRecord.name as string,
                 description: homestayRecord.description as string,
-                district: response.data.district,
-                city: response.data.city,
-                street_number: response.data.street_number,
-                street_name: response.data.street_name,
-                allow_pet: response.data.allow_pet,
-                availability: response.data.availability,
-                address: homestayRecord.district + ", " + homestayRecord.city,
+                district: homestayRecord.district as string,
+                city: homestayRecord.city as string,
+                street_number: homestayRecord.street_number as string,
+                street_name: homestayRecord.street_name as string,
+                allow_pet: homestayRecord.allow_pet as boolean,
+                availability: homestayRecord.availability as boolean,
                 price: homestayRecord.price as number,
                 max_num_adults: homestayRecord.max_num_adults as number,
                 max_num_children: homestayRecord.max_num_children as number,
-                imageLink: extractUrl(homestayRecord.image as string),
-                pricing_config: response.data.pricing_config as IPricingConfig
+                image: extractUrl(homestayRecord.image as string),
+                pricing_config_id: homestayRecord.pricing_config_id as number
             }
             return homestay;
         });
@@ -454,25 +480,24 @@ class HomestayAPI {
             apiCalling.set(false)
         }
     
-        const data = response.data.data as Array<Record<string, string | number>>;
-        const homestays: HomestayInfo[] = data.map((homestayRecord: Record<string, string | number>) => {
-            const homestay: HomestayInfo = {
+        const data = response.data.data as Array<Record<string, string | number | boolean>>;
+        const homestays: IHomestaySummary[] = data.map((homestayRecord: Record<string, string | number | boolean>) => {
+            const homestay: IHomestaySummary = {
                 id: homestayRecord.id as string,
-                managerID: homestayRecord.manager_id as string,
+                manager_id: homestayRecord.manager_id as string,
                 name: homestayRecord.name as string,
                 description: homestayRecord.description as string,
-                district: response.data.district,
-                city: response.data.city,
-                street_number: response.data.street_number,
-                street_name: response.data.street_name,
-                allow_pet: response.data.allow_pet,
-                availability: response.data.availability,
-                address: homestayRecord.district + ", " + homestayRecord.city,
+                district: homestayRecord.district as string,
+                city: homestayRecord.city as string,
+                street_number: homestayRecord.street_number as string,
+                street_name: homestayRecord.street_name as string,
+                allow_pet: homestayRecord.allow_pet as boolean,
+                availability: homestayRecord.availability as boolean,
                 price: homestayRecord.price as number,
                 max_num_adults: homestayRecord.max_num_adults as number,
                 max_num_children: homestayRecord.max_num_children as number,
-                imageLink: extractUrl(homestayRecord.image as string),
-                pricing_config: response.data.pricing_config as IPricingConfig
+                image: extractUrl(homestayRecord.image as string),
+                pricing_config_id: homestayRecord.pricing_config_id as number
             }
             return homestay;
         });
@@ -486,31 +511,14 @@ class HomestayAPI {
         return homestayPage;
     }
 
-    async updateHomestayInfo(homestayInfo: HomestayInfo){
+    async updateHomestayInfo(homestayInfo: IHomestaySummary){
         let response: AxiosResponse
-
-        const infoToSend = {
-            id: homestayInfo.id,
-            name: homestayInfo.name,
-            price: homestayInfo.price,
-            description: homestayInfo.description,
-            max_num_adults: homestayInfo.max_num_adults,
-            max_num_children: homestayInfo.max_num_children,
-            district: homestayInfo.district,
-            city: homestayInfo.city,
-            manager_id: homestayInfo.managerID,
-            pricing_config_id: homestayInfo.pricing_config.id,
-            allow_pet: homestayInfo.allow_pet,
-            availability: homestayInfo.availability,
-            street_name: homestayInfo.street_name,
-            street_number: homestayInfo.street_number
-        }
 
         apiCalling.set(true)
         try {
             response = await axios.put(
                 `${HOMESTAY_API}${homestayInfo.id}/`,
-                infoToSend,
+                homestayInfo,
                 get(authHeader));
         } catch (err) {
             if (err instanceof AxiosError){
@@ -571,10 +579,10 @@ class HomestayAPI {
             throw new NetworkError("Server Error")
         }
 
-        const homestayInfo: HomestayInfo = {
+        const homestayInfo: IHomestaySummary = {
             id: response.data.id,
             name: response.data.name,
-            managerID: response.data.manager_id,
+            manager_id: response.data.manager_id,
             description: response.data.description,
             district: response.data.district,
             city: response.data.city,
@@ -582,19 +590,11 @@ class HomestayAPI {
             street_name: response.data.street_name,
             allow_pet: response.data.allow_pet,
             availability: response.data.availability,
-            address: response.data.district + ", " + response.data.city,
             price: response.data.price,
             max_num_adults: response.data.max_num_adults,
             max_num_children: response.data.max_num_children,
-            imageLink: extractUrl(response.data.image),
-            pricing_config: {
-                id: response.data.pricing_config_id,
-                cancellation_refund_percentage: 0,
-                deposit_percentage: 0,
-                discount: 0,
-                free_cancellation_days: 0,
-                name: ""
-            }
+            image: extractUrl(response.data.image),
+            pricing_config_id: response.data.pricing_config_id
         };
         return homestayInfo;
     }
@@ -657,7 +657,112 @@ class ManagerAPI {
         }
         return managerInfo;
     }
+
+    async getAllHomestaysOwned(managerID: string): Promise<IHomestaySummary[]> {
+        let response: AxiosResponse
+        apiCalling.set(true)
+        try {
+            response = await axios.get(`${HOMESTAY_API}`,
+            {
+                ...get(noAuthHeader),
+                params: {manager: managerID}
+            }
+            );
+        } catch (err) {
+            if (err instanceof AxiosError){
+                response = err.response as AxiosResponse
+            } else {
+                throw Error("Something went wrong")
+            }  
+        } finally {
+            apiCalling.set(false)
+        }
+        console.log(response.data.data);
+    
+        const data = response.data.data as Array<Record<string, string | number| boolean>>;
+        const homestays: IHomestaySummary[] = data.map((homestayRecord: Record<string, string | number | boolean>) => {
+            const homestay: IHomestaySummary = {
+                id: homestayRecord.id as string,
+                manager_id: homestayRecord.manager_id as string,
+                name: homestayRecord.name as string,
+                description: homestayRecord.description as string,
+                price: homestayRecord.price as number,
+                max_num_adults: homestayRecord.max_num_adults as number,
+                max_num_children: homestayRecord.max_num_children as number,
+                image: extractUrl(homestayRecord.image as string),
+                pricing_config_id: homestayRecord.pricing_config_id as number,
+                availability: homestayRecord.availability as boolean,
+                allow_pet: homestayRecord.allow_pet as boolean,
+                city: homestayRecord.city as string,
+                avg_rating: homestayRecord.avg_rating as number,
+                district: homestayRecord.district as string,
+                street_name: homestayRecord.street_name as string,
+                street_number: homestayRecord.street_number as string
+            }
+            return homestay;
+        });
+
+        return homestays;
+    }
+
+    async getAnalytics(managerName: string): Promise<HomestayAnalytics[]> {
+        let response: AxiosResponse;
+        apiCalling.set(true);
+      
+        try {
+          response = await axios.get(`${BOOKING_API}${managerName}/analytics/`, get(authHeader));
+        } catch (err) {
+          if (err instanceof AxiosError) {
+            response = err.response as AxiosResponse;
+          } else {
+            throw Error("Something went wrong");
+          }
+        } finally {
+          apiCalling.set(false);
+        }
+
+        const data = response.data;
+        const homestayAnalyticsList: HomestayAnalytics[] = data.map((entry: any) => {
+            const monthlyRatings: MonthlyRating[] = Object.entries(entry.months).map(([date, values]: [string, any]) => ({
+                date,
+                num_bookings: values.bookings,
+                num_rated_bookings: values.total_rated_bookings,
+                avg_rating: parseFloat(values.average_rating),
+                total_price: values.total_price
+            }));
+    
+            return {
+                homestay_id: entry.homestay_id,
+                homestay_name: entry.homestay_name,
+                ratings: monthlyRatings,
+            };
+        });
+    
+        return homestayAnalyticsList;
+    }
+    
+    async updateHomestayDetail(homestayID: string, homestayDetail: IHomestaySummary) {
+        let response: AxiosResponse
+        apiCalling.set(true)
+        try {
+            response = await axios.put(
+                `${HOMESTAY_API}${homestayID}/`,
+                homestayDetail,
+                get(authHeader)
+            );
+        } catch (err) {
+            if (err instanceof AxiosError){
+                response = err.response as AxiosResponse
+            } else {
+                throw Error("Something went wrong")
+            }  
+        } finally {
+            apiCalling.set(false)
+        }
+        console.log(response.data);
+    }
 }
+
 
 class ServiceAPI {
     async getHomestayServices(homestayID: string): Promise<IService[]> {
@@ -863,13 +968,13 @@ class BookingAPI{
         }
     }
 
-    async cancelBooking(username: string, bookingID: number): Promise<void> {
+    async updateBookingStatus(username: string, bookingID: number, status: string): Promise<void> {
         let response: AxiosResponse;
         apiCalling.set(true);
         try {
             response = await axios.put(`${BOOKING_API}${username}/${bookingID}/`,
                 {
-                    status: "cancelled"
+                    status
                 },
                 get(authHeader)
             );

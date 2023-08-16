@@ -1,16 +1,15 @@
 <script lang="ts">
 	export const ssr = false;
-	import { adminAPI, homestayAPI, priceConfigAPI, serviceAPI, userAPI } from '$lib/api/api';
+	import { homestayAPI, priceConfigAPI, serviceAPI, userAPI } from '$lib/api/api';
 	import { FieldsError, NetworkError, UnauthorizedError } from '$lib/api/exception';
 	import { reloadStore } from '$lib/stores/reload';
 	import type {
-		HomestayInfo,
 		ICreateHomestay,
 		IHomestayPage,
+		IHomestaySummary,
 		IPricingConfig,
 		ManagerInfo,
 		UserDetail
-
 	} from '$lib/types/types';
 	import { onMount } from 'svelte';
 	import Pagination from './Pagination.svelte';
@@ -21,7 +20,7 @@
 	let currentPage = 0;
 
 	let editing = false;
-	let editingHomestayInfo: HomestayInfo | null = null;
+	let editingHomestayInfo: IHomestaySummary | null = null;
 	let editingHomstayManagerInfo: ManagerInfo | null = null;
 	let isCreatingHomestay = false;
 
@@ -35,13 +34,13 @@
 	let allPriceConfig: IPricingConfig[] = [];
 	let allManagers: UserDetail[] = [];
 
-	async function turnOnEditing(homestayInfo: HomestayInfo) {
-		const [homestayInfoRes, homestayManagerInfo] = await Promise.all([
-			homestayAPI.getHomestayInfo(homestayInfo.id),
-			userAPI.getManagerInfo(homestayInfo.managerID)
-		])
-		
-		editingHomestayInfo = homestayInfoRes;
+	async function turnOnEditing(homestayInfo: IHomestaySummary) {
+		console.log(homestayInfo)
+		const [homestayManagerInfo] = await Promise.all([
+			userAPI.getManagerInfo(homestayInfo.manager_id)
+		]);
+
+		editingHomestayInfo = homestayInfo;
 		editingHomstayManagerInfo = homestayManagerInfo;
 		editing = true;
 	}
@@ -67,10 +66,10 @@
 				max_page: 0,
 				data: []
 			};
-		}		
+		}
 	}
 
-	async function handleUpdateHomestay(event: { detail: { homestayInfo: HomestayInfo } }) {
+	async function handleUpdateHomestay(event: { detail: { homestayInfo: IHomestaySummary } }) {
 		const homestayDetail = event.detail.homestayInfo;
 		try {
 			await homestayAPI.updateHomestayInfo(homestayDetail);
@@ -99,7 +98,7 @@
 	}) {
 		const homestayCreateDetail = event.detail.homestayCreateInfo;
 		const image = event.detail.bgImage;
-		let newHomestayInfo: HomestayInfo;
+		let newHomestayInfo: IHomestaySummary;
 		// Create homestay
 		try {
 			newHomestayInfo = await homestayAPI.createNewHomestay(homestayCreateDetail);
@@ -117,7 +116,7 @@
 			}
 			return;
 		}
-		console.log("Created homestay")
+		console.log('Created homestay');
 		// Add avatar for homestay
 		try {
 			await homestayAPI.updateHomestayBackground(newHomestayInfo.id, image);
@@ -143,7 +142,7 @@
 		}
 	}
 
-	async function updateHSBG(homestayInfo: HomestayInfo) {
+	async function updateHSBG(homestayInfo: IHomestaySummary) {
 		if (files && files[0]) {
 			let bgImage: string;
 			try {
@@ -168,8 +167,7 @@
 		[allPriceConfig, allManagers] = await Promise.all([
 			priceConfigAPI.getAllPriceConfig(),
 			userAPI.getAllManagers('')
-		])
-		
+		]);
 	});
 </script>
 
@@ -198,7 +196,7 @@
 						<div class="basis-1/4">
 							<img
 								class="object-cover h-[50px] w-[100px]"
-								src={homestayDetail.imageLink}
+								src={homestayDetail.image}
 								alt="Homestay"
 							/>
 						</div>

@@ -1,20 +1,19 @@
 <script lang="ts">
 	import { createEventDispatcher, onMount } from 'svelte';
-	import type { HomestayInfo, IPricingConfig, ManagerInfo, UserDetail } from '$lib/types/types';
+	import type { IHomestaySummary, IPricingConfig, ManagerInfo, UserDetail } from '$lib/types/types';
 	import { getPriceConfigTooltip } from '$lib/types/utils';
 	import { userAPI } from '$lib/api/api';
 	import { reloadStore } from '$lib/stores/reload';
 
 	const dispatch = createEventDispatcher();
 
-	export let homestayInfo: HomestayInfo;
+	export let homestayInfo: IHomestaySummary;
 	export let allPriceConfig: IPricingConfig[];
 	export let allManagers: UserDetail[];
 	export let managerInfo: ManagerInfo;
 
 
 	let query = '';
-	let selectedManagerID: string = managerInfo.id;
 
 	async function searchHomestayManagers() {
 		try {
@@ -25,11 +24,8 @@
 		}
 	}
 
-	let selectedPricingID = homestayInfo.pricing_config.id
-
 	function submit() {
 		// dispatch a custom event with the rating and review
-		homestayInfo.managerID = selectedManagerID;
 		dispatch('submit', { homestayInfo });
 	}
 
@@ -99,7 +95,7 @@
 			</div>
 			<div>
 				<div class="text-xl">Pricing Config</div>
-				<select class="border-2 rounded w-full" bind:value={selectedPricingID}>
+				<select class="border-2 rounded w-full" bind:value={homestayInfo.pricing_config_id}>
 					{#each allPriceConfig as priceConfig}
 						<option title={`${getPriceConfigTooltip(priceConfig)}`} value={priceConfig.id}>{priceConfig.name}</option>
 					{/each} 
@@ -111,8 +107,8 @@
 					<input bind:value={query} class=" border-green-600 border rounded-lg" />
 					<button on:click={() => searchHomestayManagers()}>Search</button>
 				</div>
-				<select class="border-2 rounded w-full" bind:value={selectedManagerID}>
-					{#if !allManagers.map((value)=> value.username).includes(managerInfo.username)}
+				<select class="border-2 rounded w-full" bind:value={homestayInfo.manager_id}>
+					{#if !allManagers.map((value)=> value.id).includes(homestayInfo.manager_id)}
 						<option value={managerInfo.id}>{managerInfo.username}</option>
 					{/if}
 					{#each allManagers as manager}

@@ -12,26 +12,44 @@ interface Review {
     content: string
 }
 
-interface HomestayInfo {
+interface IHomestaySummary {
     id: string
-    managerID: string
+    manager_id: string
     name: string
     description: string
-    numReviews?: number
-    district?: string
-    city?: string
-    street_name?: string
-    street_number?: string
-    allow_pet?: boolean
-    availability?: boolean
-    address: string
     price: number
-    imageLink: string
+    image: string
+    max_num_children: number
+    max_num_adults: number
+    pricing_config_id: number
+    availability: boolean
+    street_name: string
+    street_number: string
+    district: string
+    city: string
+    allow_pet: boolean
+    avg_rating?: number
+}
+
+interface IHomestayDetail {
+    id: string
+    manager_id: string
+    name: string
+    description: string
+    price: number
+    image: string
     max_num_children: number
     max_num_adults: number
     pricing_config: IPricingConfig
-    avg_rating?: number,
+    numReviews?: number
+    avg_rating?: number
     reviews?: Review[]
+    availability?: boolean
+    street_name?: string
+    street_number?: string
+    district?: string
+    city?: string
+    allow_pet?: boolean
 }
 
 interface ICreateHomestay {
@@ -53,7 +71,23 @@ interface ICreateHomestay {
 interface IHomestayPage {
     current_page: number,
     max_page: number,
-    data: HomestayInfo[]
+    data: IHomestaySummary[]
+}
+
+interface ICreateHomestay {
+    name: string
+    price: number
+    description: string
+    max_num_children: number
+    max_num_adults: number
+    allow_pet: boolean
+    availability: boolean
+    district: string
+    city: string
+    street_name: string
+    street_number: string
+    manager_id: string
+    pricing_config_id: number
 }
 
 interface ManagerInfo {
@@ -121,7 +155,7 @@ interface TokenPair{
 }
 
 export interface UserDetail{
-    id?: string,
+    id: string,
     username: string,
     first_name: string,
     last_name: string,
@@ -147,8 +181,23 @@ interface BookingInfo {
     rating?: number
 }
 
+export interface MonthlyRating {
+    date: string,
+    num_bookings: number,
+    num_rated_bookings: number,
+    avg_rating: number,
+    total_price: number
+}
+
+export interface HomestayAnalytics {
+    homestay_id: string,
+    homestay_name: string,
+    ratings: MonthlyRating[],
+}
+
 export {StarType, 
-    type HomestayInfo, 
+    type IHomestaySummary, 
+    type IHomestayDetail,
     type ManagerInfo,
     type PricingConfig, 
     type Review, 

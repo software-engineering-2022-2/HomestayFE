@@ -1,4 +1,5 @@
 import type { BookingPeriod, IBookingService, IPricingConfig } from './types';
+import { goto } from '$app/navigation';
 
 const clamp = (num: number, min: number, max: number) => {
 	return Math.min(Math.max(num, min), max);
@@ -28,6 +29,10 @@ function extractDate(dateString: string) {
 	} catch (err){
 		return `None`
 	}
+}
+
+export function formatPrice(price: number): string {
+	return price.toLocaleString('en-US', { maximumFractionDigits: 0 }) + ' VND';
 }
 
 function formatDateForBooking(dateStr: string) {
@@ -92,6 +97,33 @@ function getSericesPrice(bookingServices: IBookingService[]) {
 
 function getPriceConfigTooltip(pricingConfig: IPricingConfig){
 	return `Free Cancellation Days: ${pricingConfig.free_cancellation_days} days \nDiscount: ${pricingConfig.discount} \nDeposit Percentage: ${pricingConfig.deposit_percentage} \nCancellation Refund Percentage: ${pricingConfig.cancellation_refund_percentage} \n`
+}
+
+export function goToManagerBookingRequests(username: string) {
+	if (username == '') {
+		alert("Logged-in duration has expired. Please log in again");
+		goto("/manager");
+	} else {
+		goto(`/manager/${username}/booking-requests`)
+	}
+}
+
+export function goToManagerHomestaysDetails(username: string) {
+	if (username == '') {
+		alert("Logged-in duration has expired. Please log in again");
+		goto("/manager");
+	} else {
+		goto(`/manager/${username}/homestays-details`)
+	}
+}
+
+export function goToManagerAnalytics(username: string) {
+	if (username == '') {
+		alert("Logged-in duration has expired. Please log in again");
+		goto("/manager");
+	} else {
+		goto(`/manager/${username}/analytics`)
+	}
 }
 
 export {

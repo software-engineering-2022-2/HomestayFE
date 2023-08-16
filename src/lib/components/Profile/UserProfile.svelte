@@ -62,7 +62,7 @@
 		} finally {
 			isPasswordEditing = false;
 		}
-		alert('Change password success!')
+		alert('Changed password sucessfully!')
 	}
 
 	async function openFileDialog() {

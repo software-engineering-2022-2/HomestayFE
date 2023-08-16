@@ -1,10 +1,20 @@
 import { writable } from "svelte/store";
 
-import type {HomestayInfo, IPricingConfig, ManagerInfo, UserDetail, ReserveBookingInfo, BookingInfo } from "$lib/types/types";
+import type {
+    IPricingConfig, 
+    ManagerInfo, 
+    UserDetail, 
+    ReserveBookingInfo, 
+    BookingInfo,
+    HomestayAnalytics,
+    IHomestaySummary,
+    IHomestayDetail
+} from "$lib/types/types";
 
 import { browser } from '$app/environment';
 
 const userDetail: UserDetail = {
+    id: "",
     username: "",
     first_name: "",
     last_name: "",
@@ -16,11 +26,12 @@ const userDetailStore = writable(userDetail);
 
 if (browser){
     userDetailStore.set({
+        id: localStorage.getItem('id') || "",
         username: localStorage.getItem('username') || "",
         first_name: "",
         last_name: "",
         is_superuser: false,
-        is_staff: false
+        is_staff: Boolean(localStorage.getItem('is_staff')) || false
     })
 }
 
@@ -32,6 +43,7 @@ userDetailStore.subscribe((value) => {
 
 export function clearUserDetailStore(){
     userDetailStore.set({
+        id: "",
         username: "",
         first_name: "",
         last_name: "",
@@ -51,26 +63,28 @@ const pricingConfig: IPricingConfig = {
     discount: 0
 }
 
-export const homestayInfo = writable<HomestayInfo>({
+export const homestayInfo = writable<IHomestayDetail>({
     id: "",
     name: "",
-    managerID: "",
+    manager_id: "",
     description: "",
     numReviews: 0,
-    address: "",
     price: 0,
-    imageLink: "",
+    image: "",
     max_num_adults: 0,
     max_num_children: 0,
     pricing_config: pricingConfig,
     avg_rating: 0,
-    reviews: []
+    reviews: [],
+    availability: false
 });
 
 export const managerInfo = writable<ManagerInfo>({
+    id: "",
     name: "",
     numHomestays: 0,
-    avatarLink: ""
+    avatarLink: "",
+    username: ""
 });
 
 export const apiCalling = writable(false)
@@ -83,3 +97,5 @@ export const reserveBookingInfo = writable({
 } as ReserveBookingInfo)
 
 export const bookingHistStore = writable<BookingInfo[]>();
+export const homestayListStore = writable<IHomestaySummary[]>();
+export const analyticsListStore = writable<HomestayAnalytics[]>();

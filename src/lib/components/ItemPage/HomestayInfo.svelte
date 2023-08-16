@@ -16,7 +16,7 @@
         <div class="text-2xl">·</div>
         <div class="underline text-[#555555] text-xl underline-offset-4">{$homestayInfo.numReviews} reviews</div>
         <div class="text-2xl">·</div>
-        <div class="underline text-[#555555] text-xl underline-offset-4">{$homestayInfo.address}</div>
+        <div class="underline text-[#555555] text-xl underline-offset-4">{$homestayInfo.district + ', ' + $homestayInfo.city}</div>
         <div></div>
     </div>
 </div>

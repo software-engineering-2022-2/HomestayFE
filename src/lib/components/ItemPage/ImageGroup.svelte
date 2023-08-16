@@ -5,7 +5,7 @@
 <div class="grid grid-cols-4 justify-items-center w-full h-[360px] rounded-xl overflow-clip">
     <img 
         class="col-span-2 object-cover h-full w-full"
-        src="{$homestayInfo.imageLink}" 
+        src="{$homestayInfo.image}" 
         alt="Homestay"
     >
     <div class="bg-[#41644A] w-full h-full"></div>

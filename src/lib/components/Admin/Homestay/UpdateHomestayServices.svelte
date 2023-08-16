@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { adminAPI, homestayAPI, serviceAPI } from '$lib/api/api';
 	import { reloadStore } from '$lib/stores/reload';
-	import type { HomestayInfo, IService, IServiceType } from '$lib/types/types';
+	import type {IHomestayDetail, IService, IServiceType } from '$lib/types/types';
 	export const ssr = false;
 	import { onMount } from 'svelte';
 
@@ -13,7 +13,7 @@
 	const homestayId = getContext('homestay_id') as string;
 
 	let homestayServices: IService[] = [];
-	let homestayInfo: HomestayInfo;
+	let homestayInfo: IHomestayDetail;
 
 	let editing = false;
 	let editingHomestayService: IService | null = null;
@@ -94,7 +94,7 @@
 		<div class="bg-white shadow overflow-hidden sm:rounded-md">
 			<div class="px-4 py-5 border-b border-gray-200 flex flex-row justify-between">
 				<h3 class="text-xl leading-6 text-gray-800">Manage Homestay {homestayInfo.name}</h3>
-				<img class="object-cover h-[50px] w-[100px]" src={homestayInfo.imageLink} alt="Homestay" />
+				<img class="object-cover h-[50px] w-[100px]" src={homestayInfo.image} alt="Homestay" />
 			</div>
 			<ul class="divide-y divide-gray-200">
 				{#each homestayServices as homestayService}

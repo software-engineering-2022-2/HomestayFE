@@ -21,8 +21,8 @@
 
 <Center>
 	<div class="grid grid-cols-4 gap-x-8 gap-y-8 mx-8" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
-        {#each data.info.data as { id, name, description, address, price, imageLink}}
-            <Item onClick={()=> goToHomestayDetail(id)} {address} {price} {imageLink}></Item>
+        {#each data.info.data as { id, name, description, district, city, price, image}}
+            <Item onClick={()=> goToHomestayDetail(id)} {district} {city} {price} {image}></Item>
         {/each}
     </div>
 </Center>
