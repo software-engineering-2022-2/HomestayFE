@@ -287,14 +287,14 @@ class HomestayAPI {
         const homestayInfo: HomestayInfo = {
             id: response.data.id,
             name: response.data.name,
-            managerID: response.data.manager_id,
+            manager_id: response.data.manager_id,
             description: response.data.description,
             address: response.data.district + ", " + response.data.city,
             price: response.data.price,
             max_num_adults: response.data.max_num_adults,
             max_num_children: response.data.max_num_children,
-            imageLink: extractUrl(response.data.image),
-            pricing_config: response.data.pricing_config as IPricingConfig,
+            image: extractUrl(response.data.image),
+            pricing_config_id: response.data.pricing_config as IPricingConfig,
             avg_rating: response.data.avg_rating,
             reviews: response.data.reviews.map((review: any) => {
                 return {
@@ -329,15 +329,15 @@ class HomestayAPI {
         const homestays: HomestayInfo[] = data.map((homestayRecord: Record<string, string | number>) => {
             const homestay: HomestayInfo = {
                 id: homestayRecord.id as string,
-                managerID: homestayRecord.manager_id as string,
+                manager_id: homestayRecord.manager_id as string,
                 name: homestayRecord.name as string,
                 description: homestayRecord.description as string,
                 address: homestayRecord.district + ", " + homestayRecord.city,
                 price: homestayRecord.price as number,
                 max_num_adults: homestayRecord.max_num_adults as number,
                 max_num_children: homestayRecord.max_num_children as number,
-                imageLink: extractUrl(homestayRecord.image as string),
-                pricing_config: response.data.pricing_config as IPricingConfig
+                image: extractUrl(homestayRecord.image as string),
+                pricing_config_id: response.data.pricing_config as IPricingConfig
             }
             return homestay;
         });
@@ -369,15 +369,15 @@ class HomestayAPI {
         const homestays: HomestayInfo[] = data.map((homestayRecord: Record<string, string | number>) => {
             const homestay: HomestayInfo = {
                 id: homestayRecord.id as string,
-                managerID: homestayRecord.manager_id as string,
+                manager_id: homestayRecord.manager_id as string,
                 name: homestayRecord.name as string,
                 description: homestayRecord.description as string,
                 address: homestayRecord.district + ", " + homestayRecord.city,
                 price: homestayRecord.price as number,
                 max_num_adults: homestayRecord.max_num_adults as number,
                 max_num_children: homestayRecord.max_num_children as number,
-                imageLink: extractUrl(homestayRecord.image as string),
-                pricing_config: response.data.pricing_config as IPricingConfig
+                image: extractUrl(homestayRecord.image as string),
+                pricing_config_id: response.data.pricing_config as IPricingConfig
             }
             return homestay;
         });
@@ -436,16 +436,22 @@ class ManagerAPI {
         const homestays: HomestayInfo[] = data.map((homestayRecord: Record<string, string | number | boolean>) => {
             const homestay: HomestayInfo = {
                 id: homestayRecord.id as string,
-                managerID: homestayRecord.manager_id as string,
+                manager_id: homestayRecord.manager_id as string,
                 name: homestayRecord.name as string,
                 description: homestayRecord.description as string,
-                address: homestayRecord.district + ", " + homestayRecord.city,
+                // address: homestayRecord.district + ", " + homestayRecord.city,
                 price: homestayRecord.price as number,
                 max_num_adults: homestayRecord.max_num_adults as number,
                 max_num_children: homestayRecord.max_num_children as number,
-                imageLink: extractUrl(homestayRecord.image as string),
-                pricing_config: homestayRecord.pricing_config_id as number,
-                available: homestayRecord.availability as boolean,
+                image: extractUrl(homestayRecord.image as string),
+                pricing_config_id: homestayRecord.pricing_config_id as number,
+                availability: homestayRecord.availability as boolean,
+                allow_pet: homestayRecord.allow_pet as boolean,
+                city: homestayRecord.city as string,
+                avg_rating: homestayRecord.avg_rating as number,
+                district: homestayRecord.district as string,
+                street_name: homestayRecord.street_name as string,
+                street_number: homestayRecord.street_number as string
             }
             return homestay;
         });
@@ -476,17 +482,39 @@ class ManagerAPI {
                 num_bookings: values.bookings,
                 num_rated_bookings: values.total_rated_bookings,
                 avg_rating: parseFloat(values.average_rating),
+                total_price: values.total_price
             }));
     
             return {
                 homestay_id: entry.homestay_id,
+                homestay_name: entry.homestay_name,
                 ratings: monthlyRatings,
             };
         });
     
         return homestayAnalyticsList;
-      }
-      
+    }
+    
+    async updateHomestayDetail(homestayID: string, homestayDetail: HomestayInfo) {
+        let response: AxiosResponse
+        apiCalling.set(true)
+        try {
+            response = await axios.put(
+                `${HOMESTAY_API}${homestayID}/`,
+                homestayDetail,
+                get(authHeader)
+            );
+        } catch (err) {
+            if (err instanceof AxiosError){
+                response = err.response as AxiosResponse
+            } else {
+                throw Error("Something went wrong")
+            }  
+        } finally {
+            apiCalling.set(false)
+        }
+        console.log(response.data);
+    }
 }
 
 class ServiceAPI {

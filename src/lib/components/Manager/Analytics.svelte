@@ -3,6 +3,7 @@
     import type { HomestayAnalytics, MonthlyRating } from "$lib/types/types";
     import { Line } from "svelte-chartjs";
     import { Chart } from "chart.js/auto";
+	import { element } from "svelte/internal";
   
     let showModal = false;
     let analyticsModal: HomestayAnalytics | null;
@@ -31,6 +32,15 @@
             tension: 0.1
         }]   
     };
+    let totalRevenueData = {
+        labels: [] as string[],
+        datasets: [{
+            label: "",
+            data: [] as number[],
+            fill: false,
+            tension: 0.1
+        }]   
+    };
     
     let chartOptions = {
         responsive: true
@@ -46,14 +56,18 @@
         numData.datasets[0].label = "Num. bookings";
         numData.datasets[1].label = "Num. rated bookings";
         ratingData.datasets[0].label = "Avg. rating";
+        totalRevenueData.datasets[0].label = "Total revenue per month (VND)"
         homestayAnalytics.ratings.forEach((rating) => {
-        const date = new Date(rating.date);
-        numData.labels.push(formatMonthYear(date));
-        numData.datasets[0].data.push(rating.num_bookings);
-        numData.datasets[1].data.push(rating.num_rated_bookings);
+          const date = new Date(rating.date);
+          numData.labels.push(formatMonthYear(date));
+          numData.datasets[0].data.push(rating.num_bookings);
+          numData.datasets[1].data.push(rating.num_rated_bookings);
 
-        ratingData.labels.push(formatMonthYear(date));
-        ratingData.datasets[0].data.push(rating.avg_rating);
+          ratingData.labels.push(formatMonthYear(date));
+          ratingData.datasets[0].data.push(rating.avg_rating);
+
+          totalRevenueData.labels.push(formatMonthYear(date));
+          totalRevenueData.datasets[0].data.push(rating.total_price);
         });
     }
   
@@ -70,6 +84,11 @@
             element.label = "";
             element.data = [];
         })
+        totalRevenueData.labels = [];
+        totalRevenueData.datasets.forEach((element) => {
+          element.label = "";
+          element.data = [];
+        })
     }
   </script>
   
@@ -83,7 +102,11 @@
           {#each $analyticsListStore as homestayAnalytics}
             <li class="px-4 py-5 sm:px-6">
               <div class="flex items-center justify-between">
-                <div class="text-lg">{homestayAnalytics.homestay_id}</div>
+                <div>
+                  <div class="text-lg">{homestayAnalytics.homestay_name}</div>
+                  <div class="text-md text-gray-500">{homestayAnalytics.homestay_id}</div>
+                </div>
+                
                 <button
                   class="ml-4 text-blue-500 border-blue-500 border-2 text-lg py-0.5 px-4 rounded-md"
                   on:click={() => showAnalyticsModal(homestayAnalytics)}
@@ -105,7 +128,7 @@
     <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-20">
         <div class="bg-white p-4 rounded-lg w-[80%] max-h-[80%] overflow-auto">
         <div class="flex justify-between">
-            <h3 class="text-lg font-semibold mb-2">Analytics for {analyticsModal.homestay_id}</h3>
+            <h3 class="text-lg font-semibold mb-2">Analytics for {analyticsModal.homestay_name}</h3>
             <button class="px-3 py-0.5 border-2 border-gray-500 text-gray-500 rounded-md" on:click={closeAnalyticsModal}>Close</button>
         </div>
         <div class="mt-4">
@@ -114,6 +137,9 @@
         <div class="mt-4">
             <Line data={ratingData} options={chartOptions}/>
         </div>
+        <div class="mt-4">
+          <Line data={totalRevenueData} options={chartOptions}/>
+      </div>
         </div>
     </div>
     {/if}

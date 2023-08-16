@@ -30,7 +30,7 @@
                 <div>
                   <div class="text-lg">{homestay.name}</div>
                   <div class="text-md text-gray-600">Available: 
-                    {#if homestay.available} 
+                    {#if homestay.availability} 
                       <span class="text-green-600">True</span>
                     {:else}
                       <span class="text-red-600">False</span>

@@ -52,7 +52,7 @@
 	$: periodDays = getDaysDiff($reserveBookingInfo.checkin_date, $reserveBookingInfo.checkout_date);
 	$: servicesPrice = getSericesPrice(bookingServices);
 	$: totalPrice = Math.round(periodDays * homestayInfo.price + servicesPrice);
-	$: depositAmount = Math.round(totalPrice * homestayInfo.pricing_config.deposit_percentage);
+	$: depositAmount = Math.round(totalPrice * homestayInfo.pricing_config_id.deposit_percentage);
 
 	function validateInformation() {
 		if (!$reserveBookingInfo.checkin_date || !$reserveBookingInfo.checkout_date) return false;

@@ -62,18 +62,18 @@ const pricingConfig: IPricingConfig = {
 export const homestayInfo = writable<HomestayInfo>({
     id: "",
     name: "",
-    managerID: "",
+    manager_id: "",
     description: "",
     numReviews: 0,
     address: "",
     price: 0,
-    imageLink: "",
+    image: "",
     max_num_adults: 0,
     max_num_children: 0,
-    pricing_config: pricingConfig,
+    pricing_config_id: pricingConfig,
     avg_rating: 0,
     reviews: [],
-    available: false
+    availability: false
 });
 
 export const managerInfo = writable<ManagerInfo>({

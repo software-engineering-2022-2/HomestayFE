@@ -12,7 +12,7 @@ export const load = (async ({ params }) => {
 
     const homestayInfoRes = await findHomestayInfo()
     async function findManagerInfo(){
-        const managerInfoRes = await managerAPI.getManagerInfo(homestayInfoRes.managerID);
+        const managerInfoRes = await managerAPI.getManagerInfo(homestayInfoRes.manager_id);
         return managerInfoRes
     }
     async function findHomestayServices(){

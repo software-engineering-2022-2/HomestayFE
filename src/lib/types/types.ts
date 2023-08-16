@@ -14,19 +14,24 @@ interface Review {
 
 interface HomestayInfo {
     id: string
-    managerID: string
+    manager_id: string
     name: string
     description: string
-    address: string
+    address?: string
     price: number
-    imageLink: string
+    image: string
     max_num_children: number
     max_num_adults: number
-    pricing_config: IPricingConfig | number
+    pricing_config_id: IPricingConfig | number
     numReviews?: number
     avg_rating?: number
     reviews?: Review[]
-    available?: boolean
+    availability?: boolean
+    street_name?: string
+    street_number?: string
+    district?: string
+    city?: string
+    allow_pet?: boolean
 }
 
 interface ManagerInfo {
@@ -121,10 +126,12 @@ export interface MonthlyRating {
     num_bookings: number,
     num_rated_bookings: number,
     avg_rating: number,
+    total_price: number
 }
 
 export interface HomestayAnalytics {
     homestay_id: string,
+    homestay_name: string,
     ratings: MonthlyRating[],
 }
 

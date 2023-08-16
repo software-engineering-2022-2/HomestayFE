@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { managerAPI } from '$lib/api/api';
     import type { HomestayInfo } from '$lib/types/types';
     import { formatPrice } from '$lib/types/utils';
     import { createEventDispatcher } from "svelte";
@@ -17,11 +18,17 @@
         }
     }
 
-    function saveChanges() {
-        // Save editableHomestay or send it to the backend
-        // For demonstration purposes, I'll just update the homestay directly
-        homestay = { ...editableHomestay };
-        toggleEdit();
+    async function saveChanges() {
+        try {
+            homestay = { ...editableHomestay };
+            toggleEdit();
+            await managerAPI.updateHomestayDetail(editableHomestay.id, editableHomestay);
+            alert("Updated homestay details successfully.");
+            location.reload();
+        } catch (error) {
+            alert("Failed to update homestay details.");
+            console.log(error);
+        }
     }
 </script>
 
@@ -34,17 +41,21 @@
                 {homestay.name}
             {/if}
         </h3>
-        <img src={homestay.imageLink} alt="Homestay" class="rounded-md mb-2 w-full h-full max-h-[240px] object-cover"/>
+        <img src={homestay.image} alt="Homestay" class="rounded-md mb-2 w-full h-full max-h-[240px] object-cover"/>
         
         {#if isEditing}
             <div class="mb-4 flex gap-3 justify-between">
-                <div class="w-[70%]">
-                    <div class="block text-gray-700 font-semibold mb-1">Address:</div>
-                    <input type="text" bind:value={editableHomestay.address} class="border-2 w-full rounded-md p-1" />
+                <div class="w-[30%]">
+                    <div class="block text-gray-700 font-semibold mb-1">District:</div>
+                    <input type="text" bind:value={editableHomestay.district} class="border-2 w-full rounded-md p-1" />
+                </div>
+                <div class="w-[30%]">
+                    <div class="block text-gray-700 font-semibold mb-1">City:</div>
+                    <input type="text" bind:value={editableHomestay.city} class="border-2 w-full rounded-md p-1" />
                 </div>
                 <div class="w-[30%]">
                     <div class="block text-gray-700 font-semibold mb-1">Availability:</div>
-                    <select bind:value={editableHomestay.available} class="bg-white border-2 rounded-md p-2 text-md">
+                    <select bind:value={editableHomestay.availability} class="bg-white border-2 rounded-md p-2 text-md">
                         <option value="true">True</option>
                         <option value="false">False</option>
                     </select>
@@ -57,7 +68,7 @@
                 </div>
                 <div class="w-[30%]">
                     <div class="block text-gray-700 font-semibold mb-1">Price Configuration:</div>
-                    <select bind:value={editableHomestay.pricing_config} class="border-2">
+                    <select bind:value={editableHomestay.pricing_config_id} class="border-2">
                       {#each Array(40) as _, i}
                         <option value={i}>{i}</option>
                       {/each}
@@ -91,19 +102,22 @@
 
         {:else}
             <p class="text-gray-700 mb-2 text-md">
-                <span class="font-semibold">Availability:</span> {homestay.available}
+                <span class="font-semibold">Availability:</span> {homestay.availability}
             </p>
             <p class="text-gray-700 mb-2 text-md">
                 <span class="font-semibold">Price:</span> {formatPrice(homestay.price)}
             </p>
             <p class="text-gray-700 mb-2 text-md">
-                <span class="font-semibold">Price Configuration:</span> {homestay.pricing_config}
+                <span class="font-semibold">Price Configuration:</span> {homestay.pricing_config_id}
             </p>
             <p class="text-gray-700 mb-2 text-md">
                 <span class="font-semibold">Description:</span> {homestay.description}
             </p>
             <p class="text-gray-700 mb-2 text-md">
-                <span class="font-semibold">Address:</span> {homestay.address}
+                <span class="font-semibold">District:</span> {homestay.district}
+            </p>
+            <p class="text-gray-700 mb-2 text-md">
+                <span class="font-semibold">City:</span> {homestay.city}
             </p>
             <p class="text-gray-700 mb-2 text-md">
                 <span class="font-semibold">Max. adults:</span> {homestay.max_num_adults}
