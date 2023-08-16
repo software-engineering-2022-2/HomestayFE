@@ -1,9 +1,9 @@
 import axios, { AxiosError } from 'axios';
-import type { AxiosResponse } from 'axios';
+import type { AxiosInstance, AxiosResponse } from 'axios';
 import type {
     HomestayInfo, IService, ManagerInfo, IBookingService,
     TokenPair, UserDetail, IPricingConfig, ReserveBookingInfo, 
-    BookingPeriod, BookingInfo
+    BookingPeriod, BookingInfo, HomestayAnalytics, MonthlyRating
 } from '$lib/types/types'
 import { get } from 'svelte/store';
 import { authHeader, noAuthHeader, tokens, uploadAvatarHeader } from './headers';
@@ -139,7 +139,20 @@ class UserAPI {
             throw new NotFoundError("User not found")
         }
 
-        const userDetail: UserDetail = response.data as UserDetail
+        const userDetail: UserDetail = {
+            id: response.data.id,
+            username: response.data.username,
+            first_name: response.data.first_name,
+            last_name: response.data.last_name,
+            phone_number: response.data.phone_number,
+            avatar: response.data.avatar,
+            city: response.data.city,
+            district: response.data.district,
+            email: response.data.email,
+            street_name: response.data.street_name,
+            street_number: response.data.street_number,
+            is_manager: response.data.is_staff,
+        };
         return userDetail;
     }
 
@@ -172,7 +185,20 @@ class UserAPI {
             throw new FieldsError("Bad Request", fieldsError)
         }
 
-        const newUserDetail: UserDetail = response.data as UserDetail
+        const newUserDetail: UserDetail = {
+            id: response.data.id,
+            username: response.data.username,
+            first_name: response.data.first_name,
+            last_name: response.data.last_name,
+            phone_number: response.data.phone_number,
+            avatar: response.data.avatar,
+            city: response.data.city,
+            district: response.data.district,
+            email: response.data.email,
+            street_name: response.data.street_name,
+            street_number: response.data.street_number,
+            is_manager: response.data.is_staff
+        };
         return newUserDetail;
     }
 
@@ -261,14 +287,14 @@ class HomestayAPI {
         const homestayInfo: HomestayInfo = {
             id: response.data.id,
             name: response.data.name,
-            managerID: response.data.manager_id,
+            manager_id: response.data.manager_id,
             description: response.data.description,
             address: response.data.district + ", " + response.data.city,
             price: response.data.price,
             max_num_adults: response.data.max_num_adults,
             max_num_children: response.data.max_num_children,
-            imageLink: extractUrl(response.data.image),
-            pricing_config: response.data.pricing_config as IPricingConfig,
+            image: extractUrl(response.data.image),
+            pricing_config_id: response.data.pricing_config as IPricingConfig,
             avg_rating: response.data.avg_rating,
             reviews: response.data.reviews.map((review: any) => {
                 return {
@@ -303,15 +329,15 @@ class HomestayAPI {
         const homestays: HomestayInfo[] = data.map((homestayRecord: Record<string, string | number>) => {
             const homestay: HomestayInfo = {
                 id: homestayRecord.id as string,
-                managerID: homestayRecord.manager_id as string,
+                manager_id: homestayRecord.manager_id as string,
                 name: homestayRecord.name as string,
                 description: homestayRecord.description as string,
                 address: homestayRecord.district + ", " + homestayRecord.city,
                 price: homestayRecord.price as number,
-                max_num_adults: response.data.max_num_adults,
-                max_num_children: response.data.max_num_children,
-                imageLink: extractUrl(homestayRecord.image as string),
-                pricing_config: response.data.pricing_config as IPricingConfig
+                max_num_adults: homestayRecord.max_num_adults as number,
+                max_num_children: homestayRecord.max_num_children as number,
+                image: extractUrl(homestayRecord.image as string),
+                pricing_config_id: response.data.pricing_config as IPricingConfig
             }
             return homestay;
         });
@@ -343,15 +369,15 @@ class HomestayAPI {
         const homestays: HomestayInfo[] = data.map((homestayRecord: Record<string, string | number>) => {
             const homestay: HomestayInfo = {
                 id: homestayRecord.id as string,
-                managerID: homestayRecord.manager_id as string,
+                manager_id: homestayRecord.manager_id as string,
                 name: homestayRecord.name as string,
                 description: homestayRecord.description as string,
                 address: homestayRecord.district + ", " + homestayRecord.city,
                 price: homestayRecord.price as number,
-                max_num_adults: response.data.max_num_adults,
-                max_num_children: response.data.max_num_children,
-                imageLink: extractUrl(homestayRecord.image as string),
-                pricing_config: response.data.pricing_config as IPricingConfig
+                max_num_adults: homestayRecord.max_num_adults as number,
+                max_num_children: homestayRecord.max_num_children as number,
+                image: extractUrl(homestayRecord.image as string),
+                pricing_config_id: response.data.pricing_config as IPricingConfig
             }
             return homestay;
         });
@@ -383,6 +409,111 @@ class ManagerAPI {
             numHomestays: response.data.number_of_homestays
         }
         return managerInfo;
+    }
+
+    async getAllHomestaysOwned(managerID: string): Promise<HomestayInfo[]> {
+        let response: AxiosResponse
+        apiCalling.set(true)
+        try {
+            response = await axios.get(`${HOMESTAY_API}`,
+            {
+                ...get(noAuthHeader),
+                params: {manager: managerID}
+            }
+            );
+        } catch (err) {
+            if (err instanceof AxiosError){
+                response = err.response as AxiosResponse
+            } else {
+                throw Error("Something went wrong")
+            }  
+        } finally {
+            apiCalling.set(false)
+        }
+        console.log(response.data.data);
+    
+        const data = response.data.data as Array<Record<string, string | number| boolean>>;
+        const homestays: HomestayInfo[] = data.map((homestayRecord: Record<string, string | number | boolean>) => {
+            const homestay: HomestayInfo = {
+                id: homestayRecord.id as string,
+                manager_id: homestayRecord.manager_id as string,
+                name: homestayRecord.name as string,
+                description: homestayRecord.description as string,
+                // address: homestayRecord.district + ", " + homestayRecord.city,
+                price: homestayRecord.price as number,
+                max_num_adults: homestayRecord.max_num_adults as number,
+                max_num_children: homestayRecord.max_num_children as number,
+                image: extractUrl(homestayRecord.image as string),
+                pricing_config_id: homestayRecord.pricing_config_id as number,
+                availability: homestayRecord.availability as boolean,
+                allow_pet: homestayRecord.allow_pet as boolean,
+                city: homestayRecord.city as string,
+                avg_rating: homestayRecord.avg_rating as number,
+                district: homestayRecord.district as string,
+                street_name: homestayRecord.street_name as string,
+                street_number: homestayRecord.street_number as string
+            }
+            return homestay;
+        });
+
+        return homestays;
+    }
+
+    async getAnalytics(managerName: string): Promise<HomestayAnalytics[]> {
+        let response: AxiosResponse;
+        apiCalling.set(true);
+      
+        try {
+          response = await axios.get(`${BOOKING_API}${managerName}/analytics/`, get(authHeader));
+        } catch (err) {
+          if (err instanceof AxiosError) {
+            response = err.response as AxiosResponse;
+          } else {
+            throw Error("Something went wrong");
+          }
+        } finally {
+          apiCalling.set(false);
+        }
+
+        const data = response.data;
+        const homestayAnalyticsList: HomestayAnalytics[] = data.map((entry: any) => {
+            const monthlyRatings: MonthlyRating[] = Object.entries(entry.months).map(([date, values]: [string, any]) => ({
+                date,
+                num_bookings: values.bookings,
+                num_rated_bookings: values.total_rated_bookings,
+                avg_rating: parseFloat(values.average_rating),
+                total_price: values.total_price
+            }));
+    
+            return {
+                homestay_id: entry.homestay_id,
+                homestay_name: entry.homestay_name,
+                ratings: monthlyRatings,
+            };
+        });
+    
+        return homestayAnalyticsList;
+    }
+    
+    async updateHomestayDetail(homestayID: string, homestayDetail: HomestayInfo) {
+        let response: AxiosResponse
+        apiCalling.set(true)
+        try {
+            response = await axios.put(
+                `${HOMESTAY_API}${homestayID}/`,
+                homestayDetail,
+                get(authHeader)
+            );
+        } catch (err) {
+            if (err instanceof AxiosError){
+                response = err.response as AxiosResponse
+            } else {
+                throw Error("Something went wrong")
+            }  
+        } finally {
+            apiCalling.set(false)
+        }
+        console.log(response.data);
     }
 }
 
@@ -501,13 +632,13 @@ class BookingAPI{
         }
     }
 
-    async cancelBooking(username: string, bookingID: number): Promise<void> {
+    async updateBookingStatus(username: string, bookingID: number, status: string): Promise<void> {
         let response: AxiosResponse;
         apiCalling.set(true);
         try {
             response = await axios.put(`${BOOKING_API}${username}/${bookingID}/`,
                 {
-                    status: "cancelled"
+                    status
                 },
                 get(authHeader)
             );

@@ -1,13 +1,23 @@
 import { writable } from "svelte/store";
 
-import type {HomestayInfo, IPricingConfig, ManagerInfo, UserDetail, ReserveBookingInfo, BookingInfo } from "$lib/types/types";
+import type {
+    HomestayInfo, 
+    IPricingConfig, 
+    ManagerInfo, 
+    UserDetail, 
+    ReserveBookingInfo, 
+    BookingInfo,
+    HomestayAnalytics
+} from "$lib/types/types";
 
 import { browser } from '$app/environment';
 
 const userDetail: UserDetail = {
+    id: "",
     username: "",
     first_name: "",
     last_name: "",
+    is_manager: false,
     is_superuser: false
 }
 
@@ -15,9 +25,11 @@ const userDetailStore = writable(userDetail);
 
 if (browser){
     userDetailStore.set({
+        id: localStorage.getItem('id') || "",
         username: localStorage.getItem('username') || "",
         first_name: "",
         last_name: "",
+        is_manager: Boolean(localStorage.getItem('is_manager')) || false,
         is_superuser: false
     })
 }
@@ -30,9 +42,11 @@ userDetailStore.subscribe((value) => {
 
 export function clearUserDetailStore(){
     userDetailStore.set({
+        id: "",
         username: "",
         first_name: "",
         last_name: "",
+        is_manager: false,
         is_superuser: false
     })
 }
@@ -51,17 +65,18 @@ const pricingConfig: IPricingConfig = {
 export const homestayInfo = writable<HomestayInfo>({
     id: "",
     name: "",
-    managerID: "",
+    manager_id: "",
     description: "",
     numReviews: 0,
     address: "",
     price: 0,
-    imageLink: "",
+    image: "",
     max_num_adults: 0,
     max_num_children: 0,
-    pricing_config: pricingConfig,
+    pricing_config_id: pricingConfig,
     avg_rating: 0,
-    reviews: []
+    reviews: [],
+    availability: false
 });
 
 export const managerInfo = writable<ManagerInfo>({
@@ -80,3 +95,5 @@ export const reserveBookingInfo = writable({
 } as ReserveBookingInfo)
 
 export const bookingHistStore = writable<BookingInfo[]>();
+export const homestayListStore = writable<HomestayInfo[]>();
+export const analyticsListStore = writable<HomestayAnalytics[]>();

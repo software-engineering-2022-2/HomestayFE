@@ -14,18 +14,24 @@ interface Review {
 
 interface HomestayInfo {
     id: string
-    managerID: string
+    manager_id: string
     name: string
     description: string
-    numReviews?: number
-    address: string
+    address?: string
     price: number
-    imageLink: string
+    image: string
     max_num_children: number
     max_num_adults: number
-    pricing_config: IPricingConfig
-    avg_rating?: number,
+    pricing_config_id: IPricingConfig | number
+    numReviews?: number
+    avg_rating?: number
     reviews?: Review[]
+    availability?: boolean
+    street_name?: string
+    street_number?: string
+    district?: string
+    city?: string
+    allow_pet?: boolean
 }
 
 interface ManagerInfo {
@@ -91,6 +97,7 @@ interface TokenPair{
 }
 
 export interface UserDetail{
+    id: string,
     username: string,
     first_name: string,
     last_name: string,
@@ -101,7 +108,8 @@ export interface UserDetail{
     city?: string,
     avatar?: string,
     email?: string,
-    is_superuser: boolean
+    is_manager?: boolean
+    is_superuser?: boolean
 }
 
 interface BookingInfo {
@@ -112,6 +120,20 @@ interface BookingInfo {
     total_price: number,
     comment?: string,
     rating?: number
+}
+
+export interface MonthlyRating {
+    date: string,
+    num_bookings: number,
+    num_rated_bookings: number,
+    avg_rating: number,
+    total_price: number
+}
+
+export interface HomestayAnalytics {
+    homestay_id: string,
+    homestay_name: string,
+    ratings: MonthlyRating[],
 }
 
 export {StarType, 
