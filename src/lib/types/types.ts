@@ -108,7 +108,8 @@ export interface UserDetail{
     city?: string,
     avatar?: string,
     email?: string,
-    is_manager: boolean
+    is_manager?: boolean
+    is_superuser?: boolean
 }
 
 interface BookingInfo {

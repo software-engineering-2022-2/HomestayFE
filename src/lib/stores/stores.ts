@@ -17,7 +17,8 @@ const userDetail: UserDetail = {
     username: "",
     first_name: "",
     last_name: "",
-    is_manager: false
+    is_manager: false,
+    is_superuser: false
 }
 
 const userDetailStore = writable(userDetail);
@@ -28,7 +29,8 @@ if (browser){
         username: localStorage.getItem('username') || "",
         first_name: "",
         last_name: "",
-        is_manager: Boolean(localStorage.getItem('is_manager')) || false
+        is_manager: Boolean(localStorage.getItem('is_manager')) || false,
+        is_superuser: false
     })
 }
 
@@ -44,7 +46,8 @@ export function clearUserDetailStore(){
         username: "",
         first_name: "",
         last_name: "",
-        is_manager: false
+        is_manager: false,
+        is_superuser: false
     })
 }
 
