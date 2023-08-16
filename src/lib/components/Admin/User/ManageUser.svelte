@@ -5,6 +5,7 @@
 	import { FieldsError, UnauthorizedError } from '$lib/api/exception';
 	import { reloadStore } from '$lib/stores/reload';
 	import type { UserDetail } from '$lib/types/types';
+	import { onMount } from 'svelte';
 	import CreateUser from './CreateUser.svelte';
 	import UpdateUser from './UpdateUser.svelte';
 
@@ -66,6 +67,10 @@
 		}
 		editing = false;
 	}
+
+	onMount(async () => {
+		usersList = await userAPI.getAllUsers(queryString);
+	})
 </script>
 
 <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">

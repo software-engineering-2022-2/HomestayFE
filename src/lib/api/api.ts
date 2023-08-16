@@ -1040,6 +1040,78 @@ class AdminAPI{
         const allServiceTypes = response.data as  IServiceType[]
         return allServiceTypes;
     }
+
+    async updateServiceType(serviceType: IServiceType){
+        let response: AxiosResponse
+        apiCalling.set(true)
+        try {
+            response = await axios.put(`${SERVICE_TYPES_API}${serviceType.id}/`,
+                serviceType,
+                get(authHeader));
+        } catch (err) {
+            if (err instanceof AxiosError){
+                response = err.response as AxiosResponse
+            } else {
+                throw Error("Nothing")
+            }  
+        } finally {
+            apiCalling.set(false)
+        }
+
+        if (response.status == 401){
+            console.log(response.data);
+            throw new UnauthorizedError("Token is invalid or expired")
+        }
+
+        if (response.status == 400){
+            console.log(response.data);
+            const fieldsError = response.data as object
+            throw new FieldsError("Bad Request", fieldsError)
+        }
+
+        if (response.status == 500){
+            throw new NetworkError("Server Error")
+        }
+
+        const newService: IServiceType = response.data as IServiceType
+        return newService
+    }
+
+    async createServiceType(serviceType: IServiceType){
+        let response: AxiosResponse
+        apiCalling.set(true)
+        try {
+            response = await axios.post(`${SERVICE_TYPES_API}`,
+                serviceType,
+                get(authHeader));
+        } catch (err) {
+            if (err instanceof AxiosError){
+                response = err.response as AxiosResponse
+            } else {
+                throw Error("Nothing")
+            }  
+        } finally {
+            apiCalling.set(false)
+        }
+
+        if (response.status == 401){
+            console.log(response.data);
+            throw new UnauthorizedError("Token is invalid or expired")
+        }
+
+        if (response.status == 400){
+            console.log(response.data);
+            const fieldsError = response.data as object
+            throw new FieldsError("Bad Request", fieldsError)
+        }
+
+        if (response.status == 500){
+            throw new NetworkError("Server Error")
+        }
+
+        const newService: IServiceType = response.data as IServiceType
+        return newService
+    }
 }
 
 export const authAPI = new AuthAPI();

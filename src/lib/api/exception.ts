@@ -51,10 +51,12 @@ export class FieldsError extends Error {
     }
 
     getMessage(){
-        const myArray = [];
+        const totalArray: string[] = [];
         for (const [key, value] of Object.entries(this.errorFields)){
+            const myArray = [];
             myArray.push(...value)
+            totalArray.push(key + " : " + myArray.join(" ; "))
         }
-        return myArray.join("\n")
+        return totalArray.join("\n")
     }
 }
