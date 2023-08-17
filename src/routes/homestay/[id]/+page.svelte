@@ -8,6 +8,7 @@
 
     homestayInfo.set(data.homestayInfo);
     managerInfo.set(data.managerInfo);
+    console.log("Manager username: " + data.managerInfo.username);
     setContext("homestayServices", data.serviceInfo)
     setContext("homestayBookedDates", data.bookedDates)
 

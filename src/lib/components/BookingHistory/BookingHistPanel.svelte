@@ -70,12 +70,22 @@
               <button on:click={() => cancelBooking(booking.id)} class="ml-4 text-gray-500 border-gray-500 border-2 font-medium py-1 px-4 rounded">
                 Cancel
               </button>
+
+              {:else if booking.status.toLocaleLowerCase() === "confirmed"}
+              <div class="ml-4 text-blue-500 underline text-lg py-1 px-4">
+                Confirmed
+              </div>
+              <button on:click={() => cancelBooking(booking.id)} class="ml-4 text-gray-500 border-gray-500 border-2 font-medium py-1 px-4 rounded">
+                Cancel
+              </button>
+
               {:else if booking.status.toLowerCase() === "cancelled"}
               <div class="ml-4 text-gray-500 border-gray-500 underline text-lg py-1 px-4">
                 Cancelled
               </div>
+
               {:else if booking.status.toLowerCase() === "completed"}
-                <div class="ml-4 text-blue-500 border-blue-500 underline text-lg py-1 px-4">
+                <div class="ml-4 text-green-500 underline text-lg py-1 px-4">
                   Completed
                 </div>
                 {#if showReviewPanel}
