@@ -11,7 +11,6 @@
 
     let username = '';
     let password = '';
-    let is_manager = 'false';
 
     async function handleSubmit() {
         // Do Login
@@ -39,7 +38,7 @@
             }  
             return;
         }
-        if (managerDetail.is_manager == false) {
+        if (managerDetail.is_staff == false) {
             clearTokens();
             alert("Account is not a manager");
             return;
@@ -47,15 +46,11 @@
 
         localStorage.setItem('username', username);
         localStorage.setItem('id', managerDetail.id);
-        if (managerDetail.is_manager == true) {
-            is_manager = 'true';
-        }
-        localStorage.setItem('is_manager', is_manager);
 
         userDetailStore.update(value => {
             value.username = username;
             value.id = managerDetail.id;
-            value.is_manager = managerDetail.is_manager;
+            value.is_staff = managerDetail.is_staff;
             return value;
         })
         console.log($userDetailStore);

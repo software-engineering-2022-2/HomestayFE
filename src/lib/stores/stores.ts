@@ -31,7 +31,7 @@ if (browser){
         first_name: "",
         last_name: "",
         is_superuser: false,
-        is_staff: Boolean(localStorage.getItem('is_staff')) || false
+        is_staff: false
     })
 }
 
