@@ -1,8 +1,23 @@
 <script lang="ts">
+    export const ssr = false;
 	import { goToManagerAnalytics, goToManagerBookingRequests, goToManagerHomestaysDetails } from "$lib/types/utils";
 	import ProfileMenu from "../Profile/ProfileMenu.svelte";
     import { userDetailStore } from "$lib/stores/stores";
 	import { goto } from "$app/navigation";
+    import { reloadStore } from "$lib/stores/reload";
+    import { clearTokens } from "$lib/api/headers";
+    import { clearUserDetailStore } from "$lib/stores/stores";
+
+    // Reload when value is set to true
+	reloadStore.subscribe((value) => {
+		if (value) {
+			clearTokens();
+			clearUserDetailStore();
+			reloadStore.set(false);
+			goto('/')
+		}
+	});
+
 </script>
 
 <div class="flex py-4 justify-center items-center bg-[#41644A] text-white">
