@@ -116,10 +116,18 @@
 					{/each}
 				</select>
 			</div>
+			<div>
+				<div class="text-xl">Available</div>
+				<input
+					class="value_input h-[15px] w-[15px]"
+					type="checkbox"
+					bind:checked={homestayInfo.availability}
+				/>
+			</div>
 		</div>
 		<div class="w-full">
 			<div class="text-xl">Description</div>
-			<textarea class="w-full min-h-[100px]" bind:value={homestayInfo.description} />
+			<textarea class="w-full min-h-[50px]" bind:value={homestayInfo.description} />
 		</div>
 
 		<div class="button mt-4 flex justify-center">
