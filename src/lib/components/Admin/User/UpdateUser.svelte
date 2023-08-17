@@ -24,7 +24,7 @@
 	>
 		<h2 class="text-xl font-bold text-gray-800">Update user profile: {userDetail.username}</h2>
 		<div class="grid grid-cols-2 self-start w-full gap-3">
-			<div>
+			<!-- <div>
 				<div class="text-xl">First name</div>
 				<input
 					class="w-full value_input border-2 rounded"
@@ -59,18 +59,17 @@
 					type="email"
 					bind:value={userDetail.email}
 				/>
-			</div>
+			</div> -->
 			<div>
 				<div class="text-xl">Is Homestay Manager</div>
 				<input
 					class="value_input h-[15px] w-[15px]"
 					type="checkbox"
 					bind:checked={userDetail.is_staff}
-					disabled
 				/>
 			</div>
 		</div>
-		<div class="grid grid-cols-2 self-start w-full gap-3">
+		<!-- <div class="grid grid-cols-2 self-start w-full gap-3">
 			<div>
 				<div class="text-xl">Street number</div>
 				<input
@@ -103,7 +102,7 @@
 					bind:value={userDetail.city}
 				/>
 			</div>
-		</div>
+		</div> -->
 
 		<div class="button mt-4 flex justify-center">
 			<!-- Add a cancel button -->

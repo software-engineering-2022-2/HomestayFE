@@ -91,9 +91,9 @@
 					<div class="flex flex-row justify-between">
 						<div class="basis-1/4">{userDetail.username}</div>
 						<div class="basis-1/4">{userDetail.email}</div>
-						<!-- <button class="basis-1/4" on:click={() => turnOnEditing(userDetail)}
+						<button class="basis-1/4" on:click={() => turnOnEditing(userDetail)}
 							><iconify-icon icon="mingcute:edit-line" /></button
-						> -->
+						>
 						<button class="basis-1/4" on:click={() => deleteUser(userDetail.username)}>
 							<iconify-icon class="text-red-600 text-2xl" icon="ic:baseline-delete" /></button
 						>
